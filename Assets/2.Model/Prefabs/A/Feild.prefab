@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8956886198432800761}
   - component: {fileID: 189495668625136220}
   - component: {fileID: 7547764809050392227}
+  - component: {fileID: 8067668612467846834}
   m_Layer: 0
   m_Name: Feild
   m_TagString: Untagged
@@ -26,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4296930309473668744}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.69969, y: -3.04, z: 0.71438}
   m_LocalScale: {x: 14.883296, y: 1.3001075, z: 14.883296}
   m_ConstrainProportionsScale: 0
@@ -66,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -876546973899608171, guid: 971159a1c516d8047ae96114cafe2b7b, type: 3}
+  - {fileID: 2100000, guid: 2104afcd13e694e41aae96ec0245002d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -89,3 +90,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8067668612467846834
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4296930309473668744}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5495902117074765545, guid: 971159a1c516d8047ae96114cafe2b7b, type: 3}
