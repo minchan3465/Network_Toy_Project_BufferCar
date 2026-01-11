@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     [SerializeField]private Inputsystem _input;//확인용 필드
     private Rigidbody rb;
@@ -12,10 +13,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float forceSpeed = 0.3f;
     [SerializeField] private float turnSpeed = 10f;  // 회전 속도
 
-    private void Awake()
+    private void Start()
     {
         transform.TryGetComponent(out rb);
-        _input = FindAnyObjectByType<Inputsystem>();
+        if (isLocalPlayer)
+        {
+            _input = FindAnyObjectByType<Inputsystem>();
+            if (_input != null) _input.ESCEvent += HandleMenu;
+        }
     }
 
     private void Playermove()
@@ -51,23 +56,18 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!isLocalPlayer) return;
         Playermove();
     }
 
-    private void OnEnable()
-    {
-        if (_input != null) _input.ESCEvent += HandleMenu;
-    }
-
+    
     private void OnDisable()
     {
-        // 연결 해제
-        if (_input != null) _input.ESCEvent -= HandleMenu;
+        if (isLocalPlayer&& _input != null) _input.ESCEvent -= HandleMenu;
     }
-
+    
     private void HandleMenu()
     {
         Debug.Log("ESC 또는 패드 스타트 버튼이 눌렸습니다!");
-        // 여기에 메뉴 UI 띄우는 코드 작성
     }
 }

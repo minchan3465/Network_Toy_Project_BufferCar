@@ -10,7 +10,7 @@ public class Inputsystem : MonoBehaviour
     private bool canmove = true;
     private float canmovetime = 0.3f;
 
-    private @Player_Input _controls;
+    private @Player_Input _controls;//input system c#
 
     private void Awake()
     {
@@ -34,6 +34,7 @@ public class Inputsystem : MonoBehaviour
 
     public void Enter()
     {
+        if (!canmove) return;
         StartCoroutine(cantmove());
     }
 
