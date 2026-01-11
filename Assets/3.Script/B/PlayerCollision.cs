@@ -75,6 +75,8 @@ public class PlayerCollision : NetworkBehaviour
         StartCoroutine(PushCooldownRoutine());
 
         // 물리 적용
+        //Vector3 currentVel = rb.linearVelocity;
+        //rb.linearVelocity = new Vector3(0, currentVel.y, 0);
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(force + Vector3.up * 2f, ForceMode.Impulse); // 살짝 띄워줌
         Debug.Log($"힘 적용 완료 {name}에게 {force}만큼의 힘을 가함");
