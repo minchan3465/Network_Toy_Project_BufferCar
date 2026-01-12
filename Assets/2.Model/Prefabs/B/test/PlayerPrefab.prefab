@@ -179,7 +179,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  pushForce: 19
+  pushForce: 15
   pushCooldown: 0.1
 --- !u!114 &6453544688654551916
 MonoBehaviour:

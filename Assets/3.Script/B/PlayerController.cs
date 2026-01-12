@@ -9,7 +9,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]private Inputsystem _input;//확인용 필드
     private Rigidbody rb;
 
-    [SerializeField] private float Speed = 8.5f;
+    [SerializeField] private float Speed = 9.5f;
     [SerializeField] private float forceSpeed = 0.3f;
     [SerializeField] private float turnSpeed = 10f;  // 회전 속도
 
