@@ -284,6 +284,16 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  ironBody:
+    duration: 5
+    massMultiplier: 5
+    scaleMultiplier: 1.5
+  nitro:
+    duration: 3
+    speedMultiplier: 2.5
+    impulseForce: 50
+  emp:
+    stunDuration: 0.2
 --- !u!114 &-501228450488924470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -299,4 +309,4 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  isLocalTestMode: 0
+  isLocalTestMode: 1
