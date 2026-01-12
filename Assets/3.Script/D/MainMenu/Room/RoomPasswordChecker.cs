@@ -31,7 +31,7 @@ public class RoomPasswordChecker : NetworkAuthenticator {
 
 	public override void OnServerAuthenticate(NetworkConnectionToClient conn) {
 		//클라이언트로부터 메시지 대기중...
-		NetworkServer.RegisterHandler<AuthRequestMessage>(OnAuthRequest, false);
+		NetworkServer.ReplaceHandler<AuthRequestMessage>(OnAuthRequest, false);
 	}
 
 	//메시지 받고, 검사 후, 결과 출력하는 메서드
@@ -70,7 +70,7 @@ public class RoomPasswordChecker : NetworkAuthenticator {
 		NetworkClient.Send(msg);
 
 		//그 TCP에서 비동기같은걸로 메시지 수신 대기하는건듯.
-		NetworkClient.RegisterHandler<AuthResponseMessage>(OnAuthResponse, false);
+		NetworkClient.ReplaceHandler<AuthResponseMessage>(OnAuthResponse, false);
 	}
 
 	//메시지 보내기, 수신한 결과값 출력.
