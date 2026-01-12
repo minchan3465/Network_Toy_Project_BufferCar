@@ -25,6 +25,13 @@ public class PlayerRespawn : NetworkBehaviour //민섭님 스크립트 참조
         // ---------------------------------------------------------
     }
 
+    [Command]
+    public void CmdRequestRespawn()
+    {
+        // 클라이언트의 요청을 받은 서버가 실행
+        OnFellInDeadZone();
+    }
+
     // 서버 사이드에서 점수 처리를 위한 함수 (DeadZone에서 호출)
     [Server]
     public void OnFellInDeadZone()
