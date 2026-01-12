@@ -23,7 +23,7 @@ public class GameSystem : MonoBehaviour {
 	 */
 
 	//플레이어 정보
-	public PlayerInfo[] players_info;
+	//public PlayerInfo[] players_info;
 	public Stack<GameObject> ranks;
 	public GameObject[] ranks_result;
 	public int max_player = 4;
@@ -66,7 +66,7 @@ public class GameSystem : MonoBehaviour {
 	private void Start() {
 		players_object = new GameObject[max_player];
 
-		players_info = new PlayerInfo[max_player];
+		//players_info = new PlayerInfo[max_player];
 		ranks = new Stack<GameObject>();
 		ranks_result = new GameObject[max_player];
 
