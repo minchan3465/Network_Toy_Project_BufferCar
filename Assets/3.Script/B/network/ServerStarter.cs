@@ -1,7 +1,7 @@
 using UnityEngine;
 using Mirror;
 
-public enum Type
+public enum Type1
 {
     Server = 0,
     Client = 1
@@ -9,7 +9,7 @@ public enum Type
 
 public class ServerStarter : MonoBehaviour
 {
-    [SerializeField] public Type ty;
+    [SerializeField] public Type1 ty;
 
     private NetworkManager manager;
 
@@ -17,7 +17,7 @@ public class ServerStarter : MonoBehaviour
     {
         manager = NetworkManager.singleton;
 
-        if (ty.Equals(Type.Server))
+        if (ty.Equals(Type1.Server))
         {
             StartServer();
         }
