@@ -168,6 +168,7 @@ MonoBehaviour:
   Speed: 18
   forceSpeed: 1
   turnSpeed: 10
+  IsStunned: 0
 --- !u!114 &2002319848022054986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,7 +185,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   pushForce: 35
-  pushCooldown: 0.1
+  pushCooldown: 0.2
 --- !u!114 &1974450758930867227
 MonoBehaviour:
   m_ObjectHideFlags: 0
