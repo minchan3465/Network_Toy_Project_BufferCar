@@ -65,7 +65,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
-        // ★ [핵심] 스턴 상태라면 이동 로직 차단
+        // 스턴 상태라면 이동 로직 차단
         if (IsStunned)
         {
             // 움직임을 확실히 멈추고 싶다면 속도 초기화 (선택 사항)
