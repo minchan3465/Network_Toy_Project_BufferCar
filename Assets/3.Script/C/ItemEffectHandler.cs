@@ -8,18 +8,20 @@ public class ItemEffectHandler : NetworkBehaviour
     private PlayerController controller;
     private Rigidbody rb;
 
-    // 복구용 기본 수치
+    // 복구용 기본 수치 저장
     private float defaultMass;
-    private float defaultMaxSpeed;
+    private float defaultSpeed; // 변수명 변경 (MaxSpeed -> Speed)
     private Vector3 defaultScale;
 
     void Start()
     {
         controller = GetComponent<PlayerController>();
+
+        // PlayerController에서 추가한 프로퍼티(Rb)를 통해 접근
         rb = controller.Rb;
 
         defaultMass = rb.mass;
-        defaultMaxSpeed = controller.maxSpeed;
+        defaultSpeed = controller.Speed; // PlayerController.Speed 저장
         defaultScale = transform.localScale;
     }
 
@@ -30,8 +32,7 @@ public class ItemEffectHandler : NetworkBehaviour
         {
             case 0: StartCoroutine(IronBodyRoutine()); break;
             case 1: StartCoroutine(NitroChargeRoutine()); break;
-            // 2번 EMP: 전체 공격
-            case 2: Svr_GlobalStun(); break;
+            case 2: Svr_GlobalStun(); break; // EMP
         }
 
         TargetShowItemMessage(connectionToClient, index);
@@ -39,21 +40,21 @@ public class ItemEffectHandler : NetworkBehaviour
 
     #region 아이템 스킬 구현
 
-    // [EMP] 모든 플레이어 이동 차단
+    // [EMP] 맵에 있는 모든 플레이어(자신 제외) 스턴
     [Server]
     private void Svr_GlobalStun()
     {
-        // 서버의 모든 연결(Connection)을 순회
         foreach (NetworkConnection conn in NetworkServer.connections.Values)
         {
             if (conn.identity != null)
             {
-                // 시전자는 제외
+                // 자기 자신은 제외
                 if (conn.identity.gameObject == gameObject) continue;
 
                 var targetHandler = conn.identity.GetComponent<ItemEffectHandler>();
                 if (targetHandler)
                 {
+                    // 0.2초 스턴 부여
                     targetHandler.Svr_ApplyStun(0.2f);
                 }
             }
@@ -65,7 +66,7 @@ public class ItemEffectHandler : NetworkBehaviour
 
     private IEnumerator StunRoutine(float time)
     {
-        // SyncVar 값을 변경 -> 클라이언트에게 자동 전파 -> 클라이언트 입력 차단됨
+        // PlayerController의 SyncVar 변수를 제어 -> 클라이언트 FixedUpdate 멈춤
         controller.IsStunned = true;
 
         yield return new WaitForSeconds(time);
@@ -73,7 +74,7 @@ public class ItemEffectHandler : NetworkBehaviour
         controller.IsStunned = false;
     }
 
-    // [Iron Body] 무게 증가
+    // [Iron Body] 질량 증가 및 크기 변화
     [Server]
     private IEnumerator IronBodyRoutine()
     {
@@ -84,19 +85,22 @@ public class ItemEffectHandler : NetworkBehaviour
         RpcSetScale(defaultScale);
     }
 
-    // [Nitro] 속도 증가
+    // [Nitro] 이동 속도(Speed) 증가
     [Server]
     private IEnumerator NitroChargeRoutine()
     {
-        controller.maxSpeed = defaultMaxSpeed * 2.5f;
-        rb.AddForce(transform.forward * 50f, ForceMode.Impulse);
+        // PlayerController.Speed를 조작
+        controller.Speed = defaultSpeed * 2.5f;
+        rb.AddForce(transform.forward * 50f, ForceMode.Impulse); // 순간 가속
+
         yield return new WaitForSeconds(3f);
-        controller.maxSpeed = defaultMaxSpeed;
+
+        controller.Speed = defaultSpeed; // 원상 복구
     }
 
     #endregion
 
-    #region 클라이언트 시각 처리
+    #region 클라이언트 시각/알림 처리
 
     [ClientRpc] private void RpcSetScale(Vector3 s) => transform.localScale = s;
 
