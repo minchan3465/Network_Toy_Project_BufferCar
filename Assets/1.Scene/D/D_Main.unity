@@ -829,13 +829,14 @@ GameObject:
   - component: {fileID: 523587976}
   - component: {fileID: 523587978}
   - component: {fileID: 523587977}
+  - component: {fileID: 523587979}
   m_Layer: 5
   m_Name: RoomEnter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &523587976
 RectTransform:
   m_ObjectHideFlags: 0
@@ -900,6 +901,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523587975}
   m_CullTransparentMesh: 1
+--- !u!114 &523587979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 523587975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 165dceaa4cce46a40bd6773fb8c5782f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomEnter
+  input_ip: {fileID: 1861242029}
+  input_password: {fileID: 126784291}
 --- !u!1 &560944855
 GameObject:
   m_ObjectHideFlags: 0
@@ -1012,6 +1027,7 @@ GameObject:
   - component: {fileID: 593982678}
   - component: {fileID: 593982679}
   - component: {fileID: 593982680}
+  - component: {fileID: 593982681}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -1059,7 +1075,7 @@ MonoBehaviour:
   maxConnections: 4
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
-  authenticator: {fileID: 0}
+  authenticator: {fileID: 593982681}
   playerPrefab: {fileID: 3753425388539423679, guid: 3f306bd0ee95e6d4b912130b9c3ff450, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
@@ -1087,6 +1103,7 @@ MonoBehaviour:
   _allPlayersReady: 0
   clientIndex: 0
   password: 0
+  tempPassword: 0
 --- !u!114 &593982680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1116,6 +1133,25 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
+--- !u!114 &593982681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 593982677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c95ff66c31790b243889e32d018fafcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomPasswordChecker
+  OnServerAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
+  roomMnager: {fileID: 593982679}
 --- !u!1 &653611888
 GameObject:
   m_ObjectHideFlags: 0
@@ -3192,9 +3228,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1526689728}
-        m_TargetAssemblyTypeName: RoomCreate, Assembly-CSharp
-        m_MethodName: CreateRoom
+      - m_Target: {fileID: 523587979}
+        m_TargetAssemblyTypeName: RoomEnter, Assembly-CSharp
+        m_MethodName: EnterRoom
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
