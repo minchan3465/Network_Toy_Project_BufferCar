@@ -167,6 +167,7 @@ MonoBehaviour:
   Speed: 18
   forceSpeed: 1
   turnSpeed: 10
+  IsStunned: 0
 --- !u!114 &2002319848022054986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,7 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
   sceneId: 0
-  _assetId: 3551331306
+  _assetId: 1961204226
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
