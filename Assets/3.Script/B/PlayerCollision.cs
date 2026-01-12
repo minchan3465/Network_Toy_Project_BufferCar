@@ -6,11 +6,11 @@ using Mirror;
 public class PlayerCollision : NetworkBehaviour
 {
     private Rigidbody rb;
-    [SerializeField] private float pushForce = 12; // 밀어내는 힘의 세기
+    [SerializeField] private float pushForce = 19; // 밀어내는 힘의 세기
     private Inputsystem input;
 
-    private bool isPushing = false;
-    [SerializeField] private float pushCooldown = 0.2f;
+    [SyncVar]private bool isPushing = false;
+    [SerializeField] private float pushCooldown = 0.1f;
 
     public override void OnStartLocalPlayer()
     {
@@ -45,19 +45,31 @@ public class PlayerCollision : NetworkBehaviour
     [Command]
     public void CmdPushBoth(NetworkIdentity self, NetworkIdentity target, Vector3 force)
     {
-        // 1. 나에게 반대 방향으로 힘 적용
-        if (self.TryGetComponent(out PlayerCollision selfCol))
-            selfCol.RpcApplyImpulse(-force);
+        if (this.isPushing || (target.TryGetComponent(out PlayerCollision t) && t.isPushing))
+        {
+            Debug.Log("이미 밀고 당기는 중이라 추가 요청 무시함");
+            return;
+        }
 
-        // 2. 상대방에게 정방향으로 힘 적용
+        // 상태 확정 (서버가 도장을 찍어줌)
+        this.isPushing = true;
         if (target.TryGetComponent(out PlayerCollision targetCol))
-            targetCol.RpcApplyImpulse(force);
+        {
+            targetCol.isPushing = true;
+
+            // 3. 양쪽에 RPC 실행
+            this.RpcApplyImpulse(this.connectionToClient ,- force);
+            targetCol.RpcApplyImpulse(target.connectionToClient,force);
+
+            // 4. 쿨타임 후 서버에서 상태 해제
+            StartCoroutine(ServerResetPushStatus(targetCol));
+        }
     }
 
-    [ClientRpc]
-    public void RpcApplyImpulse(Vector3 force)
+    [TargetRpc]
+    public void RpcApplyImpulse(NetworkConnection targetConn, Vector3 force)
     {
-        if (!isLocalPlayer) return;
+        //if (!isLocalPlayer) return;
 
         Debug.Log($"{name} RPC 실행됨. IsLocal: {isLocalPlayer}");
         // 각 플레이어의 화면에서 실행
@@ -70,9 +82,9 @@ public class PlayerCollision : NetworkBehaviour
         }
 
         // 조작 일시 정지
-        if (isLocalPlayer && input != null) input.Enter();
+        if (input != null) input.Enter();
 
-        StartCoroutine(PushCooldownRoutine());
+        //StartCoroutine(PushCooldownRoutine());
 
         // 물리 적용
         //Vector3 currentVel = rb.linearVelocity;
@@ -82,10 +94,18 @@ public class PlayerCollision : NetworkBehaviour
         Debug.Log($"힘 적용 완료 {name}에게 {force}만큼의 힘을 가함");
     }
 
-    private IEnumerator PushCooldownRoutine()
+    //private IEnumerator PushCooldownRoutine()
+    //{
+    //    isPushing = true;
+    //    yield return new WaitForSeconds(pushCooldown);
+    //    isPushing = false;
+    //}
+
+    [Server]
+    private IEnumerator ServerResetPushStatus(PlayerCollision target)
     {
-        isPushing = true;
         yield return new WaitForSeconds(pushCooldown);
-        isPushing = false;
+        this.isPushing = false;
+        if (target != null) target.isPushing = false;
     }
 }
