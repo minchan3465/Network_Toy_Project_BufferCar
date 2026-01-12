@@ -18,7 +18,7 @@ public class PlayerCollision : NetworkBehaviour
         // 따라서 Start에서 if(isLocalPlayer)를 쓰는 것보다 명확
         input = FindAnyObjectByType<Inputsystem>();
         rb = GetComponent<Rigidbody>();
-        Debug.Log($"[LocalPlayer] {name} 준비 완료. RB: {rb != null}");
+        Debug.Log($"[LocalPlayer] {name} Ready. RB: {rb != null}");
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -31,7 +31,7 @@ public class PlayerCollision : NetworkBehaviour
 
             if (targetIdentity != null)
             {
-                Debug.Log("상대방과 부딪힘!");
+                Debug.Log("OnCollisionEnter!");
 
                 // 미는 방향
                 Vector3 dirToTarget = (collision.transform.position - transform.position).normalized;
@@ -47,7 +47,7 @@ public class PlayerCollision : NetworkBehaviour
     {
         if (this.isPushing || (target.TryGetComponent(out PlayerCollision t) && t.isPushing))
         {
-            Debug.Log("이미 밀고 당기는 중이라 추가 요청 무시함");
+            Debug.Log("ignore cammand, isPushing");
             return;
         }
 
@@ -71,13 +71,13 @@ public class PlayerCollision : NetworkBehaviour
     {
         //if (!isLocalPlayer) return;
 
-        Debug.Log($"{name} RPC 실행됨. IsLocal: {isLocalPlayer}");
+        Debug.Log($"{name} RPC execution. IsLocal: {isLocalPlayer}");
         // 각 플레이어의 화면에서 실행
         if (rb == null) rb = GetComponent<Rigidbody>();
 
         if (rb == null)
         {
-            Debug.LogError($"{name}의 Rigidbody를 찾을 수 없음!");
+            Debug.LogError($"can't find {name}'s Rigidbody!");
             return;
         }
 
@@ -91,7 +91,7 @@ public class PlayerCollision : NetworkBehaviour
         //rb.linearVelocity = new Vector3(0, currentVel.y, 0);
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(force + Vector3.up * 2f, ForceMode.Impulse); // 살짝 띄워줌
-        Debug.Log($"힘 적용 완료 {name}에게 {force}만큼의 힘을 가함");
+        Debug.Log($"Addforce {force} power to {name} player");
     }
 
     //private IEnumerator PushCooldownRoutine()

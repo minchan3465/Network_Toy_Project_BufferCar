@@ -68,6 +68,6 @@ public class PlayerController : NetworkBehaviour
     
     private void HandleMenu()
     {
-        Debug.Log("ESC 또는 패드 스타트 버튼이 눌렸습니다!");
+        Debug.Log("ESC or Xbox Gamepad menu!");
     }
 }
