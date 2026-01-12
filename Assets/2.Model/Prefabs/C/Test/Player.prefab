@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 4576622002593997331}
   - component: {fileID: 2257085659359569764}
   - component: {fileID: 6990017582429615904}
+  - component: {fileID: 6789645550701373811}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -234,7 +235,22 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  acceleration: 15
   maxSpeed: 10
   turnSpeed: 150
+  IsSlipping: 0
+--- !u!114 &6789645550701373811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6364041234023171641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332b08f8fbf88e34b8a58fbaf6568523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemEffectHandler
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   oilPrefab: {fileID: 3199433624051707954, guid: e3e01983995c11047b89cb68610be1f6, type: 3}
