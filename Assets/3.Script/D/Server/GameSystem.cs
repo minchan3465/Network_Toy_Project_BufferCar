@@ -56,7 +56,6 @@ public class GameSystem : MonoBehaviour {
 		player_spawn_position[1] = spawn_position + new Vector3(spawn_radius, 0, 0);
 		player_spawn_position[2] = spawn_position + new Vector3(0, 0, spawn_radius);
 		player_spawn_position[3] = spawn_position + new Vector3(-spawn_radius, 0, 0);
-
 	}
 
 	//---------------------------------------------------------------------------
@@ -81,6 +80,10 @@ public class GameSystem : MonoBehaviour {
 		}
 	}
 
+	public void Game_Drop_Player(PlayerInfo player) {
+		ranks.Push(player);
+	}
+
 	// 게임 흐름 제어 플로우 상태머신?
 	public void Game_Flow(FlowState state) {
 		switch (state) {
@@ -101,7 +104,6 @@ public class GameSystem : MonoBehaviour {
 				break;
 		}
 	}
-
 
 	//-----------------------------------------------------------------------
 	//실질적으로 게임 흐름 동작? 할 코드들 
@@ -163,14 +165,12 @@ public class GameSystem : MonoBehaviour {
 		Game_Flow(FlowState.End);
 	}
 
-
 	private void Game_End() {
 		//누군가가 혼자 살아남는다
 		//또는 시간초가 다 지났는데도 살아있는다.
 		//그러면 여기로 오고
 		//일단 바로 게임 종료
 		isGameStarted = false;
-
 
 		//모든 플레이어의 움직임을 제한.
 		//게임 종료 메시지 띄우고
@@ -191,6 +191,5 @@ public class GameSystem : MonoBehaviour {
 	private void Game_RankResult() {
 		//1등부터 4등까지 for문으로 하나씩 stack에서 꺼낸다.
 		//UI에 등수 표시 및, rating 값 변동.
-
 	}
 }
