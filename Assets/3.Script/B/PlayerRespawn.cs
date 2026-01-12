@@ -15,7 +15,7 @@ public class PlayerRespawn : NetworkBehaviour //민섭님 스크립트 참조
         transform.TryGetComponent(out rb); //player한테 넣어주세요
 
         // 1. 소환되자마자 현재 위치를 리스폰 지점으로 저장
-        initialPosition = transform.position;
+        initialPosition = transform.position + Vector3.up * 9f;
         initialRotation = transform.rotation;
 
         Debug.Log($"Respawn_Position: {initialPosition}");
@@ -25,9 +25,12 @@ public class PlayerRespawn : NetworkBehaviour //민섭님 스크립트 참조
         // ---------------------------------------------------------
     }
 
+    [SyncVar] private bool isRespawning = false; // 중복 방지 변수
+
     [Command]
     public void CmdRequestRespawn()
     {
+        if (isRespawning) return;
         // 클라이언트의 요청을 받은 서버가 실행
         OnFellInDeadZone();
     }
@@ -36,19 +39,32 @@ public class PlayerRespawn : NetworkBehaviour //민섭님 스크립트 참조
     [Server]
     public void OnFellInDeadZone()
     {
-        // ---------------------------------------------------------
-        // 체력이 달게 합니다
-        // ---------------------------------------------------------
-
-        TargetRpcRespawn(connectionToClient);
-
-        UIupdateRPC();
+        if (connectionToClient != null && connectionToClient.isReady)
+        {
+            // ---------------------------------------------------------
+            // 체력이 달게 합니다
+            // ---------------------------------------------------------
+            TargetRpcRespawn(connectionToClient);
+            UIupdateRPC();
+        }
+        else
+        {
+            // 연결이 불안정하면 상태 초기화
+            isRespawning = false;
+        }
     }
 
     [TargetRpc]//타겟으로 돌리고
     void TargetRpcRespawn(NetworkConnection thisconnection)
     {
         ExecuteRespawn();
+        Invoke(nameof(ResetRespawnFlag), 0.5f);
+    }
+
+    [Command]
+    private void ResetRespawnFlag()
+    {
+        isRespawning = false;
     }
 
     //UI전용 ClientRPC사용
