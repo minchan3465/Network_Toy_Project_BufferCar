@@ -3,7 +3,27 @@ guid: d7a30a01fec19eb4a9f6e850f7814038
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bumper
+    second: {fileID: 2100000, guid: 5a6cc4aa243b101419d6cf10f990be52, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass
+    second: {fileID: 2100000, guid: 1213f46311eb52544819002c46449bc4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: body
+    second: {fileID: 2100000, guid: 436782f92b20c4f4eb54ef2e759b993f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: jangsik
+    second: {fileID: 2100000, guid: 218f62b2dd589bc438349def642a5625, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
