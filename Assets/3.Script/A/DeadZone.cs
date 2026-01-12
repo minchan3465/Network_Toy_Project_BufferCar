@@ -26,6 +26,8 @@ public class DeadZone : MonoBehaviour
             //player number
             //제한시간
 
+            //인게임이던 로비던 튕길때 로직 수정
+
             PlayerRespawn respawnController = other.GetComponent<PlayerRespawn>();
 
             if (respawnController != null)
