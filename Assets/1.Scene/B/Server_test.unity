@@ -170,11 +170,11 @@ MonoBehaviour:
   offlineSceneLoadDelay: 0
   transport: {fileID: 3462461399241260730}
   networkAddress: 52.79.227.146
-  maxConnections: 5
+  maxConnections: 4
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 4473450733414656359, guid: 09ff8552417351841a537875d194aefe, type: 3}
+  playerPrefab: {fileID: 514292793999585233, guid: 655a8ca020730324a871874d79471c5f, type: 3}
   autoCreatePlayer: 0
   playerSpawnMethod: 1
   spawnPrefabs: []
