@@ -8,7 +8,7 @@ public class Camera_manager : MonoBehaviour
     public static Camera_manager instance;
     private CinemachineCamera cam;
     private CinemachineImpulseSource impulseSource;
-    private float shake = 0.15f;
+    private float shake = 1.5f;
 
     private void Awake()
     {
