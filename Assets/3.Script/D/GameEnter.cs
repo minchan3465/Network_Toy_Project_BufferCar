@@ -11,6 +11,6 @@ public class GameEnter : MonoBehaviour {
 		Debug.Log($"생성된 ID: {TempID} 로 접속을 시도합니다.");
 
 		NetworkManager.singleton.StartClient();
-		Debug.Log("서버 연결 시도 중...");
+		//Debug.Log("서버 연결 시도 중...");
 	}
 }
