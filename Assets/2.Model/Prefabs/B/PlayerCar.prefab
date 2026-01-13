@@ -186,6 +186,8 @@ MonoBehaviour:
   syncInterval: 0
   pushForce: 35
   pushCooldown: 0.2
+  vpower: 0.7
+  duration: 0.3
 --- !u!114 &1974450758930867227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,6 +288,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  playerNumber: 0
 --- !u!1 &2111726238738312953
 GameObject:
   m_ObjectHideFlags: 0

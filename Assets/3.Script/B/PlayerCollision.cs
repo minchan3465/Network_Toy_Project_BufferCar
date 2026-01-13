@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.InputSystem.XInput;
+using UnityEngine.InputSystem;
 
 public class PlayerCollision : NetworkBehaviour
 {
@@ -33,6 +35,7 @@ public class PlayerCollision : NetworkBehaviour
             Vector3 contactPoint = contact.point;
           
             if (isPushing) return;
+            //PlayVibration(vpower, duration);
             NetworkIdentity targetIdentity = collision.gameObject.GetComponent<NetworkIdentity>();
 
             if (targetIdentity != null)
@@ -98,8 +101,6 @@ public class PlayerCollision : NetworkBehaviour
     [TargetRpc]
     public void RpcApplyImpulse(Vector3 force)
     {
-        //if (!isLocalPlayer) return;
-
         Debug.Log($"{name} RPC execution. IsLocal: {isLocalPlayer}");
         // 각 플레이어의 화면에서 실행
         if (rb == null) rb = GetComponent<Rigidbody>();
@@ -112,6 +113,8 @@ public class PlayerCollision : NetworkBehaviour
 
         // 조작 일시 정지
         if (input != null) input.Enter();
+
+        PlayVibration(vpower, duration);//진동호출
 
         //StartCoroutine(PushCooldownRoutine());
 
@@ -129,8 +132,37 @@ public class PlayerCollision : NetworkBehaviour
         //충돌 사운드, 파티클 효과
     }
 
+    [Header("설정")]
+    [SerializeField] private float vpower = 0.7f;  // 진동 강도
+    [SerializeField] private float duration = 0.2f;  // 진동 지속 시간
+
+    private Coroutine hapticCoroutine;
+
+    public void PlayVibration(float intensity, float time)
+    {
+        var xboxGamepad = Gamepad.current as XInputController;
+        if (xboxGamepad == null) return;
+
+        // 이미 진동 중이라면 멈추고 새로 시작
+        if (hapticCoroutine != null) StopCoroutine(hapticCoroutine);
+        hapticCoroutine = StartCoroutine(HapticRoutine(xboxGamepad, intensity, time));
+    }
+
+    private IEnumerator HapticRoutine(Gamepad gamepad, float intensity, float time)
+    {
+        // 낮은 주파수(왼쪽)와 높은 주파수(오른쪽)에 강도 적용
+        gamepad.SetMotorSpeeds(intensity * 0.8f, intensity);
+
+        yield return new WaitForSeconds(time);
+
+        // 진동 종료
+        gamepad.SetMotorSpeeds(0f, 0f);
+    }
+
     private void OnDisable()
     {
+        // 오브젝트가 비활성화될 때 진동 강제 종료 (버그 방지)
+        Gamepad.current?.SetMotorSpeeds(0f, 0f);
         // 오브젝트가 꺼질 때 변수를 초기화하여 다음 활성화 때 버그 방지
         isPushing = false;
     }
