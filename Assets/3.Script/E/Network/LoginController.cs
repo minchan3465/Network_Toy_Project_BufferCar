@@ -19,7 +19,7 @@ public class LoginController : MonoBehaviour
         Login_btn.onClick.AddListener(LoginEvent);
     }
 
-    private void LogText_viewing(string text)
+    public void LogText_viewing(string text)
     {
         logText.text = text;
     }
@@ -28,6 +28,7 @@ public class LoginController : MonoBehaviour
         if (name_input.text.Equals(string.Empty) || Pwd_input.text.Equals(string.Empty))
         {
             LogText_viewing("이름 또는 비밀번호를 입력 해주세요");
+            LogText_viewing("Name or PassWord check Please");
             return;
         }
         if(DataManager.instance.Login(name_input.text, Pwd_input.text))
@@ -42,6 +43,7 @@ public class LoginController : MonoBehaviour
         else
         {
             LogText_viewing("이름 또는 비밀번호를 확인 해주세요");
+            LogText_viewing("Name or PassWord check Please");
         }
     }
 }
