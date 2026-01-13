@@ -58,12 +58,28 @@ public class PlayerRespawn : NetworkBehaviour
         {
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
-            rb.Sleep();
+            rb.isKinematic = true;
         }
 
         // 저장해둔 나만의 지정석으로 이동
         transform.position = myInitialPosition;
         transform.rotation = myInitialRotation;
+
+        StartCoroutine(ReleasePhysics(2.0f));
+    }
+
+    private IEnumerator ReleasePhysics(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (rb != null)
+        {
+            // 다시 중력과 충돌 영향을 받음
+            rb.isKinematic = false;
+            // 위치 이동 직후이므로 다시 한번 속도 제로 확인
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     [Server]

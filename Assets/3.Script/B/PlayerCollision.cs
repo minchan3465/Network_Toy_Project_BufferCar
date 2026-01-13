@@ -142,6 +142,7 @@ public class PlayerCollision : NetworkBehaviour
     {
         var xboxGamepad = Gamepad.current as XInputController;
         if (xboxGamepad == null) return;
+        Camera_manager.instance.ShakeCamera();
 
         // 이미 진동 중이라면 멈추고 새로 시작
         if (hapticCoroutine != null) StopCoroutine(hapticCoroutine);

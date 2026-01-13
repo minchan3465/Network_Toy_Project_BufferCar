@@ -32,6 +32,7 @@ public class PlayerController : NetworkBehaviour
         if (isLocalPlayer)
         {
             _input = FindAnyObjectByType<Inputsystem>();
+            Camera_manager.instance.SetCamera(this.transform);
             if (_input != null) _input.ESCEvent += HandleMenu;
         }
     }
