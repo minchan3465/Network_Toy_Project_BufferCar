@@ -7,8 +7,6 @@ using Mirror;
 public class PlayerRespawn : NetworkBehaviour
 {
     private Rigidbody rb;
-    private Vector3 myInitialPosition;
-    private Quaternion myInitialRotation;
     [SyncVar] private bool isRespawning = false; // 중복 방지 변수
 
     public int playerNumber = 0;//-1
@@ -18,8 +16,6 @@ public class PlayerRespawn : NetworkBehaviour
         transform.TryGetComponent(out rb); //player한테 넣어주세요
 
         List<Transform> startPositions = NetworkManager.startPositions;
-
-        //playerNumber 를 여기서 바꿔주세요
 
         // 이름순 정렬 (순서 꼬임 방지) 0123
         startPositions.Sort((a, b) => string.Compare(a.name, b.name));
@@ -31,14 +27,9 @@ public class PlayerRespawn : NetworkBehaviour
             transform.position = targetPos.position;
             transform.rotation = targetPos.rotation;
         }
-        myInitialPosition = transform.position;
-        myInitialRotation = transform.rotation;
-
-        Debug.Log($"[Respawn transform] {name} (Player {playerNumber}) : {myInitialPosition}");
     }
 
     [Command]
-
     public void CmdRequestRespawn()
     {
         if (isRespawning) return;
@@ -61,9 +52,13 @@ public class PlayerRespawn : NetworkBehaviour
             rb.isKinematic = true;
         }
 
-        // 저장해둔 나만의 지정석으로 이동
-        transform.position = myInitialPosition;
-        transform.rotation = myInitialRotation;
+        var spawnmanager = FindAnyObjectByType<RespawnManager>();
+        GameObject spawnob = spawnmanager.spawnList[playerNumber];
+
+        transform.position = spawnob.transform.position;
+        transform.rotation = spawnob.transform.rotation;
+
+        //사운드
 
         StartCoroutine(ReleasePhysics(2.0f));
     }
