@@ -20,12 +20,12 @@ public class Lobby_UI_Controller : MonoBehaviour {
 			//서버에 준비되었다는 메시지
 			//UI상으로 Ready표시
 			Ready_btn_text.text = "준비해제";
-			_LobbyManager.Lobby_Start();
+			//_LobbyManager.Lobby_Start();
 		} else {
 			//서버에 준비 해제되었다는 메시지
 			//UI상으로 Ready표시 해제
 			Ready_btn_text.text = "준비하기";
-			_LobbyManager.Lobby_Stop();
+			//_LobbyManager.Lobby_Stop();
 		}
 	}
 
