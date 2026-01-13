@@ -192,6 +192,116 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "switch_procon",
+                    "id": "46edda0e-8652-4654-a2e0-c90dd4d906a3",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "StickDeadzone",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "8f1bbbec-a6c6-496c-9fc5-eb64df69202c",
+                    "path": "<SwitchProControllerHID>/leftStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Switch_procon",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "db003027-135d-498f-9358-ce8fb8017382",
+                    "path": "<SwitchProControllerHID>/leftStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Switch_procon",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "487c70e9-117a-446a-81f1-ddeaeafb7698",
+                    "path": "<SwitchProControllerHID>/leftStick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Switch_procon",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "ba30fd19-58fe-4bb2-a11f-cdf1e54abfcc",
+                    "path": "<SwitchProControllerHID>/leftStick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Switch_procon",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Gamepad",
+                    "id": "34681016-4c0f-48fe-a07b-c10b3bd1efb3",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "StickDeadzone",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "0b2fb522-016b-4f4b-b1b8-08a1e40e7165",
+                    "path": "<Gamepad>/leftStick/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "166abe44-db08-4b77-be05-028586f2acb4",
+                    "path": "<Gamepad>/leftStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "8f2b732e-6757-4b78-b0f2-846e11c19dde",
+                    "path": "<Gamepad>/leftStick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "99ac93f7-65e9-4ce7-ae64-8aad36e3151c",
+                    "path": "<Gamepad>/leftStick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "8bdd78c6-3380-4222-99b7-e07e81209d82",
                     "path": "<Keyboard>/escape",
@@ -209,6 +319,28 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";xbox",
+                    "action": "ESC",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "73d5d4c7-46ce-41f7-bff5-ef08c915c4f0",
+                    "path": "<SwitchProControllerHID>/home",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Switch_procon",
+                    "action": "ESC",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6bd49710-1d15-4f70-9112-c2a468584608",
+                    "path": "<Gamepad>/{Back}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";gamepad",
                     "action": "ESC",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -236,6 +368,16 @@
         {
             "name": "xbox",
             "bindingGroup": "xbox",
+            "devices": []
+        },
+        {
+            "name": "Switch_procon",
+            "bindingGroup": "Switch_procon",
+            "devices": []
+        },
+        {
+            "name": "gamepad",
+            "bindingGroup": "gamepad",
             "devices": []
         }
     ]
