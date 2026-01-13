@@ -8,7 +8,7 @@ public class Camera_manager : MonoBehaviour
     public static Camera_manager instance;
     private CinemachineCamera cam;
     private CinemachineImpulseSource impulseSource;
-    private float shake = 0.12f;
+    private float shake = 0.15f;
 
     private void Awake()
     {
@@ -34,8 +34,7 @@ public class Camera_manager : MonoBehaviour
 
             cam.LookAt = null;
 
-            // 2. 현재 설정된 Offset 값을 고려하여 카메라가 즉시 위치해야 할 좌표를 계산합니다.
-            // 예: Y: 10, Z: -15 설정 시
+            // 2. 현재 설정된 Offset 값을 고려하여 카메라가 즉시 위치해야 할 좌표를 계산
             Vector3 targetOffset = new Vector3(0, 42, -42);
             Vector3 immediatePos = playertransform.position + targetOffset;
 
