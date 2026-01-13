@@ -11,16 +11,16 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/1.Scene/B/Server_test.unity
     guid: a695dae5dd75cfa45a0de01bee7cfd0e
-  - enabled: 1
+  - enabled: 0
     path: Assets/1.Scene/D/D_Main.unity
     guid: ae87d118541072841995cbf4ec7a2b6b
-  - enabled: 1
+  - enabled: 0
     path: Assets/1.Scene/D/D_Room.unity
     guid: e74ee4ec14b6fbf45a5d76fa1dc09bec
-  - enabled: 1
+  - enabled: 0
     path: Assets/1.Scene/D/D_Game.unity
     guid: 960fabcf839b2594291875a0c6a9a59c
-  - enabled: 1
+  - enabled: 0
     path: Assets/1.Scene/D/D_Test_Game.unity
     guid: 69f8214b336dbae4bad01e7e129ff949
   m_configObjects:

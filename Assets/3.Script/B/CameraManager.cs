@@ -31,7 +31,18 @@ public class Camera_manager : MonoBehaviour
         if (cam != null)
         {
             cam.Follow = playertransform;
-            cam.LookAt = playertransform;
+
+            cam.LookAt = null;
+
+            // 2. 현재 설정된 Offset 값을 고려하여 카메라가 즉시 위치해야 할 좌표를 계산합니다.
+            // 예: Y: 10, Z: -15 설정 시
+            Vector3 targetOffset = new Vector3(0, 42, -42);
+            Vector3 immediatePos = playertransform.position + targetOffset;
+
+            // 3. 카메라를 해당 위치로 즉시 순간이동(Warp) 시킵니다.
+            // Quaternion.Euler(45, 0, 0)은 카메라가 아래를 내려다보는 고정 각도입니다.
+            cam.ForceCameraPosition(immediatePos, Quaternion.Euler(52, 0, 0));
+
             cam.Lens.FieldOfView = 60;
         }
     }

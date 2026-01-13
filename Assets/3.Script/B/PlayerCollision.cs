@@ -101,6 +101,7 @@ public class PlayerCollision : NetworkBehaviour
     [TargetRpc]
     public void RpcApplyImpulse(Vector3 force)
     {
+        PlayVibration(vpower, duration);//진동호출
         Debug.Log($"{name} RPC execution. IsLocal: {isLocalPlayer}");
         // 각 플레이어의 화면에서 실행
         if (rb == null) rb = GetComponent<Rigidbody>();
@@ -113,8 +114,6 @@ public class PlayerCollision : NetworkBehaviour
 
         // 조작 일시 정지
         if (input != null) input.Enter();
-
-        PlayVibration(vpower, duration);//진동호출
 
         //StartCoroutine(PushCooldownRoutine());
 
@@ -140,9 +139,11 @@ public class PlayerCollision : NetworkBehaviour
 
     public void PlayVibration(float intensity, float time)
     {
-        var xboxGamepad = Gamepad.current as XInputController;
+        if (!isLocalPlayer) return;
+
+        var xboxGamepad = Gamepad.current;
         if (xboxGamepad == null) return;
-        Camera_manager.instance.ShakeCamera();
+        if (Camera_manager.instance != null) Camera_manager.instance.ShakeCamera();
 
         // 이미 진동 중이라면 멈추고 새로 시작
         if (hapticCoroutine != null) StopCoroutine(hapticCoroutine);
@@ -157,7 +158,7 @@ public class PlayerCollision : NetworkBehaviour
         yield return new WaitForSeconds(time);
 
         // 진동 종료
-        gamepad.SetMotorSpeeds(0f, 0f);
+        if (gamepad != null) gamepad.SetMotorSpeeds(0f, 0f);
     }
 
     private void OnDisable()

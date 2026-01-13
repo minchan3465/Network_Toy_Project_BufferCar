@@ -161,9 +161,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _input: {fileID: 0}
-  Speed: 9.5
+  Speed: 11.5
   forceSpeed: 0.3
   turnSpeed: 10
+  IsStunned: 0
 --- !u!114 &8731790803336126830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,8 +180,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  pushForce: 15
+  pushForce: 17
   pushCooldown: 0.1
+  vpower: 0.2
+  duration: 0.2
 --- !u!114 &6453544688654551916
 MonoBehaviour:
   m_ObjectHideFlags: 0
