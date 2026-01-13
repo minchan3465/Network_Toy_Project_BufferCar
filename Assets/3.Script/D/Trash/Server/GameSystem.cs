@@ -190,7 +190,7 @@ public class GameSystem : MonoBehaviour {
 
 	private IEnumerator Game_Start_Timer() {
 		//보니까 Ready 2번 깜빡이고, Go! 하면서 바로 움직일 수 있게 되어있음!
-		int start_countdown = 2;
+		int start_countdown = 3;
 		while(start_countdown >= 0) {
 			if(start_countdown > 0) {
 				MiddleTitle_text.text = start_countdown.ToString();

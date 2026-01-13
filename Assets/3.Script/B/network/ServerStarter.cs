@@ -23,7 +23,7 @@ public class ServerStarter : MonoBehaviour
         }
         else
         {
-            StartClient();
+            //StartClient();
         }
     }
 
