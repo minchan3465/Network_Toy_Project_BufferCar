@@ -27,12 +27,13 @@ public class PlayerInfo
 {
     // 유저 아이디, 비밀번호, 등수
     public string User_ID { get; private set; }
-    public string User_PW { get; private set; }
-    public string User_Rate { get; private set; }
-    public PlayerInfo(string _id, string _pw, string _rate)
+    public string User_Nic { get; private set; }
+    public int User_Rate { get; private set; }
+    public int PlayerNum { get; set; }
+    public PlayerInfo(string _id, string _nic, int _rate)
     {
         User_ID = _id;
-        User_PW = _pw;
+        User_Nic = _nic;
         User_Rate = _rate;
     }
 }
@@ -143,7 +144,6 @@ public class DataManager : MonoBehaviour
     {
         return File.Exists(path + "/config.json");
     }
-
     private bool Connection_Check(MySqlConnection connection)
     {
         if (connection.State != System.Data.ConnectionState.Open)
@@ -164,7 +164,7 @@ public class DataManager : MonoBehaviour
             {
                 return false;
             }
-            string sqlCommand = string.Format(@"SELECT User_Name, User_Password, User_Rate FROM userinfo WHERE User_Name='{0}' AND User_Password = '{1}';", _name, _paasword);
+            string sqlCommand = string.Format(@"SELECT User_Name, User_Password FROM userinfo WHERE User_Name='{0}' AND User_Password = '{1}';", _name, _paasword);
 
             MySqlCommand command = new MySqlCommand(sqlCommand, connection);
             reader = command.ExecuteReader();
@@ -174,31 +174,30 @@ public class DataManager : MonoBehaviour
                 {
                     string name = (reader.IsDBNull(0) ? string.Empty : reader["User_Name"].ToString());
                     string pwd = (reader.IsDBNull(1) ? string.Empty : reader["User_Password"].ToString());
-                    string num = (reader.IsDBNull(2) ? string.Empty : reader["User_Rate"].ToString());
-                    if (!name.Equals(string.Empty) || !pwd.Equals(string.Empty) || !num.Equals(string.Empty))
+                    //string num = (reader.IsDBNull(2) ? string.Empty : reader["User_Rate"].ToString());
+                    if (!name.Equals(string.Empty) || !pwd.Equals(string.Empty)/* || !num.Equals(string.Empty)*/)
                     {//데이터 정상
-                        playerInfo = new PlayerInfo(name, pwd, num);
                         if (!reader.IsClosed) reader.Close();
                         return true;
                     }
                     else
                     {
                         if (!reader.IsClosed) reader.Close();
-                        return true;
+                        return false;
                     }
                 }
             }
             if (!reader.IsClosed) reader.Close();
-            return true;
+            return false;
         }
         catch (Exception e)
         {
             Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
+            return false;
         }
-        return true;
     }
-    public bool Signup(string _name, string _paasword)
+    public bool SignupCheck(string _name)
     {
         try
         {
@@ -206,7 +205,8 @@ public class DataManager : MonoBehaviour
             {
                 return false;
             }
-            string sqlCommand = string.Format(@"INSERT User_Name, User_Password, User_PhoneNum FROM userinfo WHERE User_Name='{0}' AND User_Password = '{1}';", _name, _paasword);
+            //SELECT User_Name FROM userinfo WHERE User_Name = 'lwj';
+            string sqlCommand = string.Format(@"SELECT User_Name FROM userinfo WHERE User_Name='{0}';", _name);
 
             MySqlCommand command = new MySqlCommand(sqlCommand, connection);
             reader = command.ExecuteReader();
@@ -215,29 +215,95 @@ public class DataManager : MonoBehaviour
                 while (reader.Read())
                 {
                     string name = (reader.IsDBNull(0) ? string.Empty : reader["User_Name"].ToString());
-                    string pwd = (reader.IsDBNull(1) ? string.Empty : reader["User_Password"].ToString());
-                    string num = (reader.IsDBNull(2) ? string.Empty : reader["User_Rate"].ToString());
-                    if (!name.Equals(string.Empty) || !pwd.Equals(string.Empty) || !num.Equals(string.Empty))
+                    //string num = (reader.IsDBNull(2) ? string.Empty : reader["User_Rate"].ToString());
+                    if (!name.Equals(string.Empty))
                     {//데이터 정상
-                        playerInfo = new PlayerInfo(name, pwd, num);
                         if (!reader.IsClosed) reader.Close();
                         return true;
                     }
                     else
                     {
                         if (!reader.IsClosed) reader.Close();
-                        return true;
+                        return false;
                     }
                 }
             }
             if (!reader.IsClosed) reader.Close();
-            return true;
+            return false;
         }
         catch (Exception e)
         {
             Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
+            return false;
         }
-        return true;
+    }
+    public bool Signup(string _name, string _nic, string _paasword)
+    {
+        try
+        {
+            if (!Connection_Check(connection))
+            {
+                Debug.Log("connection not open");
+                return false;
+            }
+            string sqlCommand = string.Format(@"INSERT INTO `userdata`.`userinfo` (`User_Name`, `User_Nic`, `User_Password`, `User_Rate`) VALUES('{0}', '{1}', '{2}', '{3}');", _name, _nic, _paasword, 0);
+            MySqlCommand command = new MySqlCommand(sqlCommand, connection);
+            if (command.ExecuteNonQuery() == 1)//데이터 업데이트 성공
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            return false;
+        }
+    }
+    public bool GetRate(string _name)
+    {
+        try
+        {
+            if (!Connection_Check(connection))
+            {
+                return false;
+            }
+            string sqlCommand = string.Format(@"SELECT User_Name, User_Nic, User_Rate FROM userinfo WHERE User_Name='{0}';", _name);
+
+            MySqlCommand command = new MySqlCommand(sqlCommand, connection);
+            reader = command.ExecuteReader();
+            if (reader.HasRows)
+            {// 조회된 데이터가 있는지 확인
+                while (reader.Read())
+                {
+                    string name = (reader.IsDBNull(0) ? string.Empty : reader["User_Name"].ToString());
+                    string Nic = (reader.IsDBNull(1) ? string.Empty : reader["User_Nic"].ToString());
+                    int num = (reader.IsDBNull(2) ? -1 : int.Parse(reader["User_Rate"].ToString()));
+                    if (!name.Equals(string.Empty) || !Nic.Equals(string.Empty) || !num.Equals(-1))
+                    {//데이터 정상
+                        playerInfo = new PlayerInfo(name, Nic, num);
+                        if (!reader.IsClosed) reader.Close();
+                        return true;
+                    }
+                    else
+                    {
+                        if (!reader.IsClosed) reader.Close();
+                        return false;
+                    }
+                }
+            }
+            if (!reader.IsClosed) reader.Close();
+            return false;
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            if (!reader.IsClosed) reader.Close();
+            return false;
+        }
     }
 }
