@@ -2020,18 +2020,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ItemSpawner
       objectReference: {fileID: 0}
-    - target: {fileID: 2728916218058981638, guid: 252dab8b309c356489a52f2ca1d2bcdf, type: 3}
-      propertyPath: spawnRadius
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 2728916218058981638, guid: 252dab8b309c356489a52f2ca1d2bcdf, type: 3}
-      propertyPath: maxSpawnRadius
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 2728916218058981638, guid: 252dab8b309c356489a52f2ca1d2bcdf, type: 3}
-      propertyPath: mapCenterPoint.y
-      value: -1
-      objectReference: {fileID: 0}
     - target: {fileID: 4003186962685002203, guid: 252dab8b309c356489a52f2ca1d2bcdf, type: 3}
       propertyPath: sceneId
       value: 1466936896
