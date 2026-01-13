@@ -13,6 +13,7 @@ public class DeadZone : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("Player Tag Detected!");
+
             PlayerRespawn respawnController = other.GetComponent<PlayerRespawn>();
 
             if (respawnController != null)

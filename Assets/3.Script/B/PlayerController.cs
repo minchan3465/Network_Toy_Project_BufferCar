@@ -2,29 +2,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Mirror;
 
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private Inputsystem _input; // 확인용 필드
-    private Rigidbody rb;
 
     [Header("--- 이동 설정 ---")]
-    // [수정] ItemEffectHandler에서 속도를 조절해야 하므로 public으로 변경
+    // [남훈님] ItemEffectHandler에서 속도를 조절을 위해public으로 변경 //+OK
     public float Speed = 9.5f;
     [SerializeField] private float forceSpeed = 0.3f;
     [SerializeField] private float turnSpeed = 10f;  // 회전 속도
 
-    [Header("--- 상태 변수 ---")]
-    // [추가] EMP 피격 시 상태 동기화
+    [Header("--- 상태 변수 ---")]//[남훈님] EMP 피격 시 상태 동기화
     [SyncVar] public bool IsStunned = false;
 
-    // [추가] 외부에서 Rigidbody에 접근하기 위한 프로퍼티
+    // [남훈님] 외부에서 Rigidbody에 접근하기 위한 프로퍼티
     public Rigidbody Rb => rb;
+    private Rigidbody rb;
 
     private void Start()
     {
-        // rb 할당 (TryGetComponent 대신 GetComponent가 더 명확할 수 있음)
         if (!TryGetComponent(out rb))
         {
             rb = gameObject.AddComponent<Rigidbody>();
@@ -33,6 +32,7 @@ public class PlayerController : NetworkBehaviour
         if (isLocalPlayer)
         {
             _input = FindAnyObjectByType<Inputsystem>();
+            Camera_manager.instance.SetCamera(this.transform);
             if (_input != null) _input.ESCEvent += HandleMenu;
         }
     }
@@ -65,10 +65,11 @@ public class PlayerController : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
-        // ★ [핵심] 스턴 상태라면 이동 로직 차단
+        // 스턴 상태라면 이동 로직 차단
         if (IsStunned)
         {
-            // 움직임을 확실히 멈추고 싶다면 속도 초기화 (선택 사항)
+            // 움직임을 확실히 멈추고 싶다면 속도 초기화??
+            // [희수]+이러면 스턴 상태에선 충돌했을때 안밀리는 상태가 되려나요
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             return;

@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using Mirror;
+using TMPro;
 
 public enum FlowState {
 	Wait,
@@ -12,131 +13,123 @@ public enum FlowState {
 	Result
 }
 
-public class GameSystem : MonoBehaviour {
-	//서버용 스크립트.
-	//즉, Client에서 신호를 받아서 처리가 된다면, 다음 게임 진행이 되어야함.
+public class GameSystem : NetworkBehaviour {
+	public readonly SyncList<int> playersHp = new SyncList<int>();
 
-	/*
-	 서버가 가지고 있을 정보
-	 1. 유저 순서 ( 1 ~ 4 P )
-	 2. 유저 순위 Stack형
-	 */
+	public GameObject[] playerHpUIs;
 
-	//플레이어 정보
-	//public PlayerInfo[] players_info;
+	public void Setup_PlayersHp() {
+		// 서버가 시작될 때 4명의 체력을 3으로 초기화
+		for (int i = 0; i < 4; i++) playersHp.Add(3);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	//---------------Player Data
+	public GameObject[] players_object;
+	private int player_count = 0;
+	private int player_number = 0;
+
+
+	//순위용
 	public Stack<GameObject> ranks;
 	public GameObject[] ranks_result;
 	public int max_player = 4;
 
-	//테스트용
-	public GameObject[] players_object;
-	private int player_count = 0;
+
+
+	[SyncVar]
+	public FlowState state;
 
 	//시간
+	[SyncVar] 
 	public int timer = 99;
+	public TextMeshPro Timer;
 	WaitForSeconds wfs = new WaitForSeconds(1f);
+
 	//게임 플레이중 인지
+	[SyncVar] 
 	public bool isGameStarted = false;
 
-
 	[Header("UI 오브젝트")]
-	public Text MiddleTitle_text;
-	public Text Playing_Timer_text;
-
-	[Header("플레이어 스폰 위치")]
-	public GameObject set_spawn_position;
-	public float spawn_radius = 1f;
-	public Vector3 spawn_position;
-	public Vector3[] player_spawn_position;
+	public TextMeshPro MiddleTitle;
+	[SyncVar]
+	public string MiddleTitle_text;
 
 	//-----------------------------------------------------
-
-	public static GameSystem singletone = null;
-
-	private void Awake() {
-		if (singletone == null) {
-			singletone = this;
-		} else {
-			Destroy(gameObject);
-		}
-		DontDestroyOnLoad(gameObject);
-	}
-
 	//켰을때 세팅
 	private void Start() {
-		players_object = new GameObject[max_player];
+		if(isLocalPlayer) {
+			Enter_Player(gameObject);
+		}
+		else if (isServer) {
+			players_object = new GameObject[max_player];
+			//players_hp = new int[max_player];
+	;
+			ranks = new Stack<GameObject>();
+			ranks_result = new GameObject[max_player];
 
-		//players_info = new PlayerInfo[max_player];
-		ranks = new Stack<GameObject>();
-		ranks_result = new GameObject[max_player];
-
-		player_spawn_position = new Vector3[max_player];
-		player_spawn_position[0] = spawn_position + new Vector3(0, 0, -spawn_radius);
-		player_spawn_position[1] = spawn_position + new Vector3(spawn_radius, 0, 0);
-		player_spawn_position[2] = spawn_position + new Vector3(0, 0, spawn_radius);
-		player_spawn_position[3] = spawn_position + new Vector3(-spawn_radius, 0, 0);
-
-		Game_Start_Btn();
+			Game_Start_Server();
+		}
 	}
 
-	public void Test_Add_Player(GameObject player) {
+	//--------- Client To Server
+	[Command]
+	public void Enter_Player(GameObject player) {
 		players_object[player_count] = player;
+		playersHp[player_count] = 3;
+		Set_PlayerNumber(connectionToClient, player_count);
 		player_count += 1;
 	}
 
-	//---------------------------------------------------------------------------
-
-	//만약 시작 버튼을 눌렀을 때, 흐름 시작
-	public void Game_Start_Btn() {
-		Game_Flow(FlowState.SetUp);
+	[TargetRpc]
+	void Set_PlayerNumber(NetworkConnection target, int number) {
+		player_number = number;
 	}
 
-	//플레이어 리스트에 추가
-
-
-	private void Update() {
-		//게임 중이 아니라면, return
-		if (!isGameStarted) return;
-		//게임 중이라면
-		//플레이하면서 Last Man Standing 하게 된다면
-		//게임 즉시 종료!
-		if (ranks.Count.Equals(3)) {
-			Debug.Log("끝난 이유 : Last Man Standing");
-			//등수가 2위까지 정해진다면,
-			//마지막 한명의 등수까지 넣어줍니다 (1등).
-			Game_RankSort();
-
-
-			//타이머 돌아가는 코루틴 종료
-			StopCoroutine("Game_Playing_Timer");
-			
-			//게임 종료 flow로.
-			Game_Flow(FlowState.End);
-		}
-	}
-
+	[Command]
 	public void Game_Over_Player(GameObject player) {
 		ranks.Push(player);
 		Debug.Log($"{5 - ranks.Count}등 : {player.transform.name} 플레이어");
 	}
 
-	private void Game_RankSort() {
-		//일단 1등 넣어주고
-		foreach(GameObject player in players_object) {
-			if(player.TryGetComponent(out Test_Player player_script)) {
-				if(player_script.hp > 0) {
-					Game_Over_Player(player);
-				}
-			}
-		}
-		//1등부터 4등까지 순차적으로 배열로 넣어주기.
-		for(int i = 0; i<max_player; i++) {
-			ranks_result[i] = ranks.Pop();
+	//---------------------------------------------------------------------------
+
+	//만약 시작 버튼을 눌렀을 때, 흐름 시작
+	[Server]
+	public void Game_Start_Server() {
+		Game_Flow();
+	}
+
+	//플레이어 리스트에 추가
+	//게임 중이 아니라면, return
+	//게임 중이라면 아래 코드
+
+	//등수가 2위까지 정해진다면,마지막 한명의 등수까지 넣어줍니다 (1등).
+	//타이머 돌아가는 코루틴 종료
+	//게임 종료 flow로.
+	private void Update() {
+		if (!isGameStarted) return;
+		if (ranks.Count.Equals(3)) {
+			Debug.Log("끝난 이유 : Last Man Standing");
+			//Game_RankSort();								
+			StopCoroutine("Game_Playing_Timer");			
+			Game_Flow();                       
 		}
 	}
 
+
 	// 게임 흐름 제어 플로우 상태머신?
-	public void Game_Flow(FlowState state) {
+	public void Game_Flow() {
 		switch (state) {
 			case FlowState.SetUp:
 				Debug.Log("현재 플로우 상태 : SetUp");
@@ -161,24 +154,22 @@ public class GameSystem : MonoBehaviour {
 		}
 	}
 
-	//-----------------------------------------------------------------------
-	//실질적으로 게임 흐름 동작? 할 코드들 
+	//-------------실질적으로 게임 흐름 동작? 할 코드들 
 
 	private void Game_SetUp() {
 		//타이머 99초 설정
 		timer = 99;
-		Playing_Timer_text.text = timer.ToString();
+		Timer.text = timer.ToString();
 
 		//각 플레이어의 시작 위치 조정
 		for (int i = 0; i<max_player; i++) {
 			//players_object[i].transform.position = player_spawn_position[i];
 		}
 
-		Game_Flow(FlowState.Start);
+		Game_Flow();
 	}
 
-	//----------------------------------------------------------------------
-	//Game_Start
+	//--------------Game_Start
 
 	private void Game_Start() {
 		//UI적으로 3,2,1 하고
@@ -190,20 +181,20 @@ public class GameSystem : MonoBehaviour {
 
 	private IEnumerator Game_Start_Timer() {
 		//보니까 Ready 2번 깜빡이고, Go! 하면서 바로 움직일 수 있게 되어있음!
-		int start_countdown = 2;
+		int start_countdown = 3;
 		while(start_countdown >= 0) {
 			if(start_countdown > 0) {
-				MiddleTitle_text.text = start_countdown.ToString();
+				MiddleTitle_text = start_countdown.ToString();
 				//UI Ready FadeOut...
 			} else {
-				MiddleTitle_text.text = "GO!";
+				MiddleTitle_text = "GO!";
 				//UI Go! FadeOut, ZoomIn
 			}
 			yield return wfs;
 			start_countdown += -1;
 		}
-		MiddleTitle_text.text = string.Empty;
-		Game_Flow(FlowState.Playing);
+		MiddleTitle_text = string.Empty;
+		Game_Flow();
 	}
 
 	//----------------------------------------------------------------------
@@ -232,11 +223,11 @@ public class GameSystem : MonoBehaviour {
 				//Debug.Log("맵 범위 축소");
 			}
 			//타이머 UI 변경
-			Playing_Timer_text.text = timer.ToString();
+			Timer.text = timer.ToString();
 		}
 		//0초 될 경우,
 		//게임 종료 flow로.
-		Game_Flow(FlowState.End);
+		Game_Flow();
 	}
 
 	//----------------------------------------------------------------------
@@ -251,7 +242,7 @@ public class GameSystem : MonoBehaviour {
 
 		//모든 플레이어의 움직임을 제한.
 		//게임 종료 메시지 띄우고
-		MiddleTitle_text.text = "G A M E  S E T !";
+		MiddleTitle_text = "GAME SET!";
 		//2초 뒤에 결과창.
 		StartCoroutine("Game_End_Delay");
 		//2초뒤에 나올 때, 다음 Flow 'Game_Flow(FlowState.Result)'
@@ -260,10 +251,9 @@ public class GameSystem : MonoBehaviour {
 	private IEnumerator Game_End_Delay() {
 		yield return wfs;
 		yield return wfs;
-		Game_Flow(FlowState.Result);
+		Game_Flow();
 	}
 
-	//----------------------------------------------------------------------
 	//Game_Result
 
 	private void Game_Result() {
@@ -274,7 +264,7 @@ public class GameSystem : MonoBehaviour {
 		StartCoroutine("Game_RankResult");
 		//방 대기실로 넘어가기
 
-		Game_Flow(FlowState.Wait);
+		Game_Flow();
 	}
 
 	private IEnumerator Game_RankResult() {
