@@ -321,7 +321,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  currnet_hp: 3
+  playernumber: -1
+  playerRespawn: {fileID: 0}
 --- !u!1 &2111726238738312953
 GameObject:
   m_ObjectHideFlags: 0

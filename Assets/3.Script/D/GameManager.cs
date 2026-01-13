@@ -57,19 +57,19 @@ public class GameManager : NetworkBehaviour {
         Debug.Log($"게임 셋업 완료: {_connectedPlayers.Count}명의 플레이어 준비됨.");
     }
 
+    // 1. 이미 등록된 플레이어인지 확인
+    // 2. 리스트에 추가 (들어온 순서대로 순번이 결정됨)
+    // 3. 플레이어 객체에 순번 할당 (SyncVar를 통해 클라이언트로 전달됨)
+    // 4. 해당 플레이어의 초기 HP 생성 (3으로 설정)
     [Server]
     public void RegisterPlayer(PlayerManager player) {
-        // 1. 이미 등록된 플레이어인지 확인
         if (_connectedPlayers.Contains(player)) return;
 
-        // 2. 리스트에 추가 (들어온 순서대로 순번이 결정됨)
         _connectedPlayers.Add(player);
 
-        // 3. 플레이어 객체에 순번 할당 (SyncVar를 통해 클라이언트로 전달됨)
         int newIndex = _connectedPlayers.Count - 1;
         player.playernumber = newIndex;
 
-        // 4. 해당 플레이어의 초기 HP 생성 (3으로 설정)
         playersHp.Add(3);
 
         Debug.Log($"플레이어 등록 완료: Index {newIndex}, 현재 총원: {_connectedPlayers.Count}");
@@ -101,7 +101,6 @@ public class GameManager : NetworkBehaviour {
     // 예: HP가 2라면 -> 0,1번 버튼은 ON(true), 2번 버튼은 OFF(false)
     // 버튼 인덱스가 현재 체력보다 작으면 활성화, 크거나 같으면 비활성화
     private void UpdateSinglePlayerUI(int playernumber, int currentHp) {
-        Debug.Log(currentHp);
         if (playernumber >= playerUIs.Count) return;
         for (int i = 0; i < playerUIs[playernumber].hpButtons.Length; i++) {
             playerUIs[playernumber].hpButtons[i].interactable = (i < currentHp);
