@@ -9,7 +9,7 @@ public class PlayerRespawn : NetworkBehaviour
     private Rigidbody rb;
     [SyncVar] private bool isRespawning = false; // 중복 방지 변수
 
-    public int playerNumber = 0;//-1
+    public int playerNumber = 2;//-1
 
     public override void OnStartLocalPlayer()
     {
