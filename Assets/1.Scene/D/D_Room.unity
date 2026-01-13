@@ -443,8 +443,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4276269f1f559b54d8754dc0b19ed8e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LobbyManager
-  Lobby_Start_Text_text: {fileID: 1567387910}
-  Lobby_Start_Timer_text: {fileID: 963814992}
+  Lobby_Start_Text: {fileID: 0}
+  Lobby_Start_Timer: {fileID: 0}
 --- !u!4 &881161546
 Transform:
   m_ObjectHideFlags: 0
