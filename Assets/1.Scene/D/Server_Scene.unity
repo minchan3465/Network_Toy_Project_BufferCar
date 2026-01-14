@@ -191,6 +191,18 @@ PrefabInstance:
       propertyPath: networkAddress
       value: localhost
       objectReference: {fileID: 0}
+    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: editorAutoStart
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: autoCreatePlayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: headlessStartMode
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
