@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Player_Lobby
+  - Deadzone
   layers:
   - Default
   - TransparentFX
@@ -13,7 +14,7 @@ TagManager:
   - Water
   - UI
   - trigger
-  - 
+  - groundLayer
   - 
   - 
   - 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 [Serializable]
 public class SoundData
@@ -10,7 +11,7 @@ public class SoundData
     public AudioClip clip;
 }
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : NetworkBehaviour
 {
     public static SoundManager instance = null;
 
@@ -28,7 +29,7 @@ public class SoundManager : MonoBehaviour
         if (instance == null) 
         {
             instance = this; 
-            DontDestroyOnLoad(gameObject); 
+            DontDestroyOnLoad(gameObject);
         }
         else 
         {
@@ -36,13 +37,29 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // 효과음 재생 함수
-    public void PlaySFX(string clipName)
+    // 모든 클라이언트에서 소리가 나오게 하는 곳
+    [ClientRpc]
+    public void RpcPlaySFX(string clipName)
+    {
+        PlaySFXInternal(clipName);
+    }
+
+    // 특정 위치에서 소리가 나게 하는 곳
+    [ClientRpc]
+    public void PlaySFXPoint(string clipName, Vector3 position, float volum)
+    {
+        SoundData data = sfxClips.Find(x => x.name == clipName);
+        if(data != null)
+        {
+            sfxSource.PlayOneShot(data.clip);
+        }
+    }
+    //실제 재생하는 곳
+    private void PlaySFXInternal(string clipName)
     {
         SoundData data = sfxClips.Find(x => x.name == clipName);
         if (data != null)
         {
-           
             sfxSource.PlayOneShot(data.clip);
         }
     }
@@ -54,6 +71,7 @@ public class SoundManager : MonoBehaviour
         bgmSource.loop = true;
         bgmSource.Play();
     }
+
 }
 
 

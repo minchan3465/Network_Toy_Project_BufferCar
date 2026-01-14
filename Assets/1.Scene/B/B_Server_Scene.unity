@@ -186,7 +186,7 @@ PrefabInstance:
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: playerPrefab
       value: 
-      objectReference: {fileID: 514292793999585233, guid: 655a8ca020730324a871874d79471c5f, type: 3}
+      objectReference: {fileID: 6970800248564378294, guid: 5961d07891f1ddb40a59c76327ec498f, type: 3}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: autoCreatePlayer
       value: 0
