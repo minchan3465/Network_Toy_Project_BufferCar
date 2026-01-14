@@ -59,7 +59,7 @@ public class ItemEffectHandler : NetworkBehaviour
     private IEnumerator IronBodyRoutine()
     {
         if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("PowerUpSFX", transform.position, 1.0f);
+            SoundManager.instance.PlaySFXPoint("Power UpSFX", transform.position, 1.0f);
 
         rb.mass = defaultMass * ironMassMultiplier;
         RpcSetScale(defaultScale * ironScaleMultiplier);
@@ -131,8 +131,7 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     public void Svr_ApplyStun(float time)
     {
-        // 1. 이미 스턴 타이머가 돌고 있다면? -> 강제 종료! (초기화)
-        // 이걸 안 하면 "1초 남은 이전 타이머"가 방금 건 20초짜리 스턴을 1초 뒤에 풀어버립니다.
+        
         if (currentStunCoroutine != null)
         {
             StopCoroutine(currentStunCoroutine);
