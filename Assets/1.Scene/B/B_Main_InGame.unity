@@ -3411,26 +3411,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1893798912}
   - component: {fileID: 1893798911}
-  - component: {fileID: 1893798910}
   m_Layer: 0
   m_Name: Deadzone
-  m_TagString: Untagged
+  m_TagString: Deadzone
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1893798910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1893798909}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8933526d334216408ed358146c71e6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DeadZone
 --- !u!65 &1893798911
 BoxCollider:
   m_ObjectHideFlags: 0
