@@ -107,9 +107,14 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    private float _checkInterval = 0.2f; // 0.2초마다 검사 연산량 줄임
+    private float _nextCheckTime;
     private void CheckAndCommandParticle()
     {
         if (moveParticleSystem == null) return;
+
+        if (Time.fixedTime < _nextCheckTime) return;
+        _nextCheckTime = Time.fixedTime + _checkInterval;
 
         // 땅에 닿아 있는지 체크
         bool isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance, groundLayer);
