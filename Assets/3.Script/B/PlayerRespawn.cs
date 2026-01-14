@@ -80,13 +80,7 @@ public class PlayerRespawn : NetworkBehaviour
         }
         car.SetActive(true);
 
-        // [로컬 전용] 2초 깜빡임이 끝난 후 서버에 물리 해제 요청
-        if (isLocalPlayer)
-        {
-            CmdSetKinematic(false);
-        }
-
-        // [로컬 전용] 깜빡임이 끝난 "이 시점"에 모든 클라이언트의 물리 엔진을 켭니다.
+        // 깜빡임이 끝난 "이 시점"에 모든 클라이언트의 물리 엔진을 켭니다.
         if (isLocalPlayer)
         {
             CmdSetKinematic(false);
