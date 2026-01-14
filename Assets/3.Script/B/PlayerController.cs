@@ -80,7 +80,7 @@ public class PlayerController : NetworkBehaviour
 
     #region 이동 Particle
     [Header("--- 효과 설정 ---")]//파티클 예시
-    [SerializeField] private GameObject moveParticle; // 발밑 이동 불꽃같은거 파티클
+    [SerializeField] private ParticleSystem moveParticleSystem;
     [SerializeField] private float particleThreshold = 4.0f; // 파티클이 나올 최소 속도
     [SerializeField] private float groundCheckDistance = 1f; // 바닥 감지 거리 (차 높이에 따라 조절)
     [SerializeField] private LayerMask groundLayer; // 바닥 레이어 (Inspector에서 설정 필수)
@@ -92,21 +92,34 @@ public class PlayerController : NetworkBehaviour
 
     private void OnMoveParticleChanged(bool oldVal, bool newVal)
     {
-        if (moveParticle != null)
+        if (moveParticleSystem == null) return;
+
+        if (newVal)
         {
-            moveParticle.SetActive(newVal);
+            // 재생 중이 아닐 때만 Play 호출 (중복 방지)
+            if (!moveParticleSystem.isPlaying) moveParticleSystem.Play();
+        }
+        else
+        {
+            // 재생 중일 때만 Stop 호출 (중복 방지)
+            // Stop()을 하면 새로 생성만 안 될 뿐, 이미 나온 입자는 수명만큼 유지됨
+            if (moveParticleSystem.isPlaying) moveParticleSystem.Stop();
         }
     }
 
     private void CheckAndCommandParticle()
     {
-        if (moveParticle == null) return;
+        if (moveParticleSystem == null) return;
 
+        // 땅에 닿아 있는지 체크
         bool isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance, groundLayer);
+        // 일정 속도 이상인지 체크
         float currentSpeed = rb.linearVelocity.magnitude;
-        bool shouldShow = isGrounded && (currentSpeed > particleThreshold);
 
-        // 현재 상태가 서버에 기록된 상태와 다를 때만 명령 보냄 (네트워크 트래픽 최적화)
+        // 땅에 닿음 + 속도 기준 통과 + 스턴 아님 -> Play 조건
+        bool shouldShow = isGrounded && (currentSpeed > particleThreshold) && !IsStunned;
+
+        // 상태가 바뀔 때만 서버에 보고 (네트워크 최적화)
         if (_shouldShowParticle != shouldShow)
         {
             CmdSetMoveParticle(shouldShow);
