@@ -8,7 +8,7 @@ public class Camera_manager : MonoBehaviour
     public static Camera_manager instance;
     private CinemachineCamera cam;
     private CinemachineImpulseSource impulseSource;
-    private float shake = 1.5f;
+    private float shake = 1.5f; //카메라 흔들림 강도
 
     private void Awake()
     {
@@ -34,12 +34,12 @@ public class Camera_manager : MonoBehaviour
 
             cam.LookAt = null;
 
-            // 2. 현재 설정된 Offset 값을 고려하여 카메라가 즉시 위치해야 할 좌표를 계산
+            // 현재 설정된 Offset 값을 고려하여 카메라가 즉시 위치해야 할 좌표를 계산
             Vector3 targetOffset = new Vector3(0, 42, -42);
             Vector3 immediatePos = playertransform.position + targetOffset;
 
-            // 3. 카메라를 해당 위치로 즉시 순간이동(Warp) 시킵니다.
-            // Quaternion.Euler(45, 0, 0)은 카메라가 아래를 내려다보는 고정 각도입니다.
+            // 카메라를 해당 위치로 즉시 순간이동
+            // Quaternion.Euler은 카메라가 아래를 내려다보는 고정 각도
             cam.ForceCameraPosition(immediatePos, Quaternion.Euler(52, 0, 0));
 
             cam.Lens.FieldOfView = 60;
