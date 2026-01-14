@@ -23,6 +23,7 @@ public class GameManager : NetworkBehaviour {
 	[SyncVar(hook = nameof(OnMiddleTextChanged))] public string middleText;
 	[SyncVar(hook = nameof(OnWinTextChanged))] public string winnerText;
 
+	[SyncVar] public int winnerNumber;
 
 	//모두가 개인적으로 간직하는거
 	public List<PlayerUI> playerUIs = new List<PlayerUI>();
@@ -34,7 +35,6 @@ public class GameManager : NetworkBehaviour {
 
 	//Server가 관리할거
 	public List<PlayerManager> _connectedPlayers = new List<PlayerManager>();
-	private int winnerNumber;
 
 
 	//---------메서드 파트
