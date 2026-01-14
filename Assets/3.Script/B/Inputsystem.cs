@@ -13,11 +13,8 @@ public class Inputsystem : MonoBehaviour
 
     private void Awake()
     {
-        // 인스턴스화
-        _controls = new @Player_Input();
-
-        // 버튼 액션 구독 (performed 시점에 이벤트 발생)
-        _controls.Player.ESC.performed += ctx => ESCEvent?.Invoke();
+        _controls = new @Player_Input();// 인스턴스화
+        _controls.Player.ESC.performed += ctx => ESCEvent?.Invoke();// 버튼 액션 구독 (performed 시점에 이벤트 발생)
     }
 
     private void Update()
@@ -26,9 +23,7 @@ public class Inputsystem : MonoBehaviour
             move_input = Vector2.zero;
             return;
         }
-            
-        // 이동 값 매 프레임 읽기 (Polling 방식)
-        move_input = _controls.Player.Move.ReadValue<Vector2>();
+        move_input = _controls.Player.Move.ReadValue<Vector2>(); // 이동 값 매 프레임 읽기
     }
 
     public void Enter()
@@ -44,7 +39,7 @@ public class Inputsystem : MonoBehaviour
         canmove = true;
     }
 
-    // 매우 중요: 입력을 활성화/비활성화 해줘야 합니다.
+    // 입력을 활성화/비활성화 해줘야 합니다.
     private void OnEnable() => _controls.Enable();
     private void OnDisable() => _controls.Disable();
 }

@@ -7,9 +7,10 @@ using Mirror;
 public class PlayerRespawn : NetworkBehaviour
 {
     private Rigidbody rb;
-    [SyncVar] private bool isRespawning = false; // 중복 방지 변수
+    [SyncVar] public bool isRespawning = false; // 중복 방지 변수
+    private GameObject respawn_ob;
 
-    public int playerNumber = 2;//-1
+    public int playerNumber = -1;//값 쏴주면 받아주세요
 
     public override void OnStartLocalPlayer()
     {
@@ -27,21 +28,27 @@ public class PlayerRespawn : NetworkBehaviour
             transform.position = targetPos.position;
             transform.rotation = targetPos.rotation;
         }
+
+        var respawnList = FindAnyObjectByType<RespawnList>();
+        if (respawnList != null && playerNumber < respawnList.spawnList.Count)
+        {
+            respawn_ob = respawnList.spawnList[playerNumber];
+        }
     }
 
+    #region 리스폰 로직
     [Command]
-    public void CmdRequestRespawn()
+    public void CmdRequestRespawn()//PlaterCollsion 에서 Trigger에서 불러옵니다.
     {
         if (isRespawning) return;
-
         isRespawning = true;
-        // 클라이언트의 요청을 받은 서버가 실행
-        UIupdateRPC();
-        TargetRpcRespawn(connectionToClient);
-        // 1초 뒤 리스폰 잠금 해제
-        Invoke(nameof(ResetRespawnFlag), 1.0f);
+        TargetRpcRespawn(connectionToClient);// 클라이언트의 요청을 받은 서버가 실행
+        Invoke(nameof(ResetRespawnFlag), 1.0f);// 1초 뒤 리스폰 잠금 해제
     }
+    [Server]
+    private void ResetRespawnFlag() => isRespawning = false;
 
+    private Coroutine respawnRoutine;
     [TargetRpc]
     void TargetRpcRespawn(NetworkConnection target)
     {
@@ -51,35 +58,61 @@ public class PlayerRespawn : NetworkBehaviour
             rb.angularVelocity = Vector3.zero;
             rb.isKinematic = true;
         }
-
-        var spawnmanager = FindAnyObjectByType<RespawnManager>();
-        GameObject spawnob = spawnmanager.spawnList[playerNumber];
-
-        transform.position = spawnob.transform.position;
-        transform.rotation = spawnob.transform.rotation;
-
-        //사운드
-
-        StartCoroutine(ReleasePhysics(2.0f));
+        if (respawnRoutine != null) StopCoroutine(respawnRoutine);
+        respawnRoutine = StartCoroutine(RespawnSequence());
     }
 
-    private IEnumerator ReleasePhysics(float delay)
+    private IEnumerator RespawnSequence()
     {
-        yield return new WaitForSeconds(delay);
+        // 1초 대기 (추락한 곳에서 잠시 멈춤), 파티클 시간에 따라 시간 바꿔야됌
+        yield return new WaitForSeconds(1f);
+        // 리스폰 위치로 이동
+        transform.position = respawn_ob.transform.position;
+        transform.rotation = respawn_ob.transform.rotation;
 
+        CmdRequestAppearEffect(transform.position);
+        //공중에서 잠시 대기 여기서도 부활 파티클 같은거 있으면 좋을 것 같습니다.(공중에 그냥 가만히 있음)
+        yield return new WaitForSeconds(2f);
+
+        // 물리 해제
         if (rb != null)
         {
-            // 다시 중력과 충돌 영향을 받음
             rb.isKinematic = false;
-            // 위치 이동 직후이므로 다시 한번 속도 제로 확인
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
+        respawnRoutine = null;
+    }
+    #endregion
+
+    #region 부활 Particle
+    [SerializeField] private GameObject appearParticlePrefab;
+
+    [Command]
+    void CmdRequestAppearEffect(Vector3 pos)
+    {
+        RpcPlayAppearEffect(pos); // 서버가 모든 클라이언트에게 실행 명령을 내림
     }
 
-    [Server]
-    private void ResetRespawnFlag() => isRespawning = false;
-
     [ClientRpc]
-    private void UIupdateRPC() { /* 체력 UI 업데이트 로직 */ }
+    void RpcPlayAppearEffect(Vector3 pos)
+    {
+        // 모든 플레이어의 화면에서 실행됨
+        if (appearParticlePrefab != null)
+        {
+            Instantiate(appearParticlePrefab, pos, Quaternion.identity);
+        }
+    }
+    #endregion
+
+    private void OnDisable()
+    {
+        if (respawnRoutine != null)
+        {
+            StopCoroutine(respawnRoutine);
+            respawnRoutine = null;
+        }
+        // 리스폰 도중 오브젝트가 꺼지면 상태를 초기화
+        isRespawning = false;
+    }
 }
