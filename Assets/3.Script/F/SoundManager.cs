@@ -47,6 +47,15 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    public void PlaySFXPoint(string clipName, Vector3 position, float volum = 1.0f)
+    {
+        SoundData data = sfxClips.Find(x => x.name == clipName);
+        if(data != null)
+        {
+            sfxSource.PlayOneShot(data.clip);
+        }
+    }
+
     // BGM 재생 함수
     public void PlayBGM(AudioClip clip)
     {
@@ -54,6 +63,7 @@ public class SoundManager : MonoBehaviour
         bgmSource.loop = true;
         bgmSource.Play();
     }
+
 }
 
 
