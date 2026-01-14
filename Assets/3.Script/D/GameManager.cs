@@ -209,6 +209,7 @@ public class GameManager : NetworkBehaviour {
 		winnerCamera.SetActive(true);
 	}
 
+	[ClientRpc]
 	private void offWinnerCamera() {
 		winnerCamera.SetActive(false);
 	}

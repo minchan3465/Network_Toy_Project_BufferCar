@@ -63,7 +63,7 @@ public class PlayerManager : NetworkBehaviour {
 
 	//-----------Ãß¶ô
 	private void OnTriggerEnter(Collider other) {
-		if (other.CompareTag("DeadZone")) {
+		if (other.CompareTag("Deadzone")) {
 			OnFall();
 		}
 	}
