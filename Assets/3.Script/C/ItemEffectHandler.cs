@@ -59,7 +59,7 @@ public class ItemEffectHandler : NetworkBehaviour
     private IEnumerator IronBodyRoutine()
     {
         if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("PowerUpSFX", transform.position, 1.0f);
+            SoundManager.instance.PlaySFXPoint("Power UpSFX", transform.position, 1.0f);
 
         rb.mass = defaultMass * ironMassMultiplier;
         RpcSetScale(defaultScale * ironScaleMultiplier);
