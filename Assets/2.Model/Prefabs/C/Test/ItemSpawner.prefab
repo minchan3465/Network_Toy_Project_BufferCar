@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 4589703768861639580}
   - component: {fileID: 2728916218058981638}
   - component: {fileID: 4003186962685002203}
-  - component: {fileID: 2880775615625688017}
-  - component: {fileID: 8055959493570716489}
   m_Layer: 0
   m_Name: ItemSpawner
   m_TagString: Untagged
@@ -73,49 +71,3 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
---- !u!114 &2880775615625688017
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2347871477053999977}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f3aa1dd8f551de4c860f37dbf17abbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  _input: {fileID: 0}
-  Speed: 9.5
-  forceSpeed: 0.3
-  turnSpeed: 10
-  IsStunned: 0
-  moveParticle: {fileID: 0}
-  particleThreshold: 2
---- !u!114 &8055959493570716489
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2347871477053999977}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 332b08f8fbf88e34b8a58fbaf6568523, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemEffectHandler
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  effectRoots: []
-  ironDuration: 3
-  ironMassMultiplier: 5
-  ironScaleMultiplier: 2.5
-  nitroDuration: 3
-  nitroSpeedMultiplier: 1.8
-  nitroImpulseForce: 25
-  empStunDuration: 1
-  empBlastVfxDuration: 1
