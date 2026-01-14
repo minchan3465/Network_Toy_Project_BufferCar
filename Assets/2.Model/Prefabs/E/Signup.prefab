@@ -2002,13 +2002,14 @@ GameObject:
   - component: {fileID: 1819300776394450675}
   - component: {fileID: 5345811398136598376}
   - component: {fileID: 5536088203034453876}
+  - component: {fileID: 5738219867709805891}
   m_Layer: 5
   m_Name: Signup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1819300776394450675
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2072,6 +2073,25 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &5738219867709805891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6438720523351675729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8741f0dbef5b9c4b99b65c2e8c486ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SignupController
+  LoginController: {fileID: 8879459504596022010, guid: ccc8b693d3ca2b74e919309afa214119, type: 3}
+  Signup_ob: {fileID: 6438720523351675729}
+  Name_input: {fileID: 3851650956962605305}
+  Nic_input: {fileID: 7004941986220576220}
+  Pwd_input: {fileID: 8953750021213896339}
+  logText: {fileID: 8695985189170744358}
+  Signup_btn: {fileID: 9122904528552013864}
 --- !u!1 &6502007195743092596
 GameObject:
   m_ObjectHideFlags: 0

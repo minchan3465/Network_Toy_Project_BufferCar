@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 1974450758930867227}
   - component: {fileID: 5068316160132208121}
   - component: {fileID: 6918037111152811518}
+  - component: {fileID: -5221784473865349485}
   - component: {fileID: 8136635153530835336}
   m_Layer: 0
   m_Name: PlayerCar
@@ -165,9 +166,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _input: {fileID: 0}
-  Speed: 18
+  Speed: 22
   forceSpeed: 1
   turnSpeed: 10
+  IsStunned: 0
 --- !u!114 &2002319848022054986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,8 +185,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  pushForce: 35
-  pushCooldown: 0.1
+  pushForce: 38
+  pushCooldown: 0.2
+  vpower: 0.7
+  duration: 0.3
 --- !u!114 &1974450758930867227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,6 +274,21 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &-5221784473865349485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 514292793999585233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 332b08f8fbf88e34b8a58fbaf6568523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemEffectHandler
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!114 &8136635153530835336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -285,6 +304,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  playerNumber: 2
 --- !u!1 &2111726238738312953
 GameObject:
   m_ObjectHideFlags: 0
