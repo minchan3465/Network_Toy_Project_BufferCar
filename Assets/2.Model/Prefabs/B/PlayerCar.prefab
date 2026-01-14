@@ -172,6 +172,8 @@ MonoBehaviour:
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
+  moveParticle: {fileID: 0}
+  particleThreshold: 2
 --- !u!114 &2002319848022054986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,8 +191,10 @@ MonoBehaviour:
   syncInterval: 0
   pushForce: 38
   pushCooldown: 0.2
+  collisionParticlePrefab: {fileID: 0}
   vpower: 0.7
   duration: 0.3
+  deadparticle: {fileID: 0}
 --- !u!114 &1974450758930867227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -319,7 +323,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  isRespawning: 0
   playerNumber: 2
+  appearParticlePrefab: {fileID: 0}
 --- !u!1 &2111726238738312953
 GameObject:
   m_ObjectHideFlags: 0
@@ -955,23 +961,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6624621944890009980, guid: 0d6267d68544be845895539c310dc662, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6624621944890009980, guid: 0d6267d68544be845895539c310dc662, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6624621944890009980, guid: 0d6267d68544be845895539c310dc662, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6624621944890009980, guid: 0d6267d68544be845895539c310dc662, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6624621944890009980, guid: 0d6267d68544be845895539c310dc662, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -270
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6624621944890009980, guid: 0d6267d68544be845895539c310dc662, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
