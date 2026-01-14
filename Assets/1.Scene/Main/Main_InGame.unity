@@ -1414,6 +1414,7 @@ MonoBehaviour:
   gameTime: 0
   middleText: 
   winnerText: 
+  winnerNumber: 0
   playerUIs:
   - hpButtons:
     - {fileID: 127312649}
@@ -2205,7 +2206,7 @@ MonoBehaviour:
   onlineScene: 
   offlineSceneLoadDelay: 0
   transport: {fileID: 6621241228613974925}
-  networkAddress: localhost
+  networkAddress: 52.79.227.146
   maxConnections: 4
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
