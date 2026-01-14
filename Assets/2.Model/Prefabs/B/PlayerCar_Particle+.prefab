@@ -151,7 +151,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -382,8 +382,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.15
-      minScalar: 0.05
+      scalar: 0.24
+      minScalar: 0.2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -699,7 +699,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 1000
+    maxNumParticles: 500
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -965,7 +965,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 200
+      scalar: 120
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1643,7 +1643,7 @@ ParticleSystem:
     y:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 3
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1696,7 +1696,7 @@ ParticleSystem:
     z:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 12
+      scalar: 3
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -3916,7 +3916,7 @@ ParticleSystem:
   LightsModule:
     enabled: 1
     ratio: 0.05
-    light: {fileID: 8721740018429152644, guid: d2e8c2f23dbd1e54eb4ed38ec3577e50, type: 3}
+    light: {fileID: 1849506292115274482}
     randomDistribution: 1
     color: 1
     range: 1
@@ -5122,7 +5122,7 @@ Transform:
   m_GameObject: {fileID: 3251336972168468041}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 0.39, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5554,7 +5554,7 @@ MonoBehaviour:
   turnSpeed: 10
   IsStunned: 0
   moveParticle: {fileID: 3251336972168468041}
-  particleThreshold: 2
+  particleThreshold: 1
   groundCheckDistance: 1
   groundLayer:
     serializedVersion: 2
@@ -5696,6 +5696,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   isRespawning: 0
+  isKinematicSynced: 0
   car: {fileID: 681800734350143724}
   playerNumber: 2
   appearParticlePrefab: {fileID: 0}

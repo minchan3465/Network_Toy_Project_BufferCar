@@ -69,8 +69,6 @@ public class PlayerController : NetworkBehaviour
         }
         if (IsStunned)
         {
-            // 움직임을 확실히 멈추고 싶다면 속도 초기화??
-            // [희수]+이러면 스턴 상태에선 충돌했을때 안밀리는 상태가 되려나요
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             return;
