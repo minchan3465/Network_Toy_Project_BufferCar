@@ -11,7 +11,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("--- 이동 설정 ---")]
     // [남훈님] ItemEffectHandler에서 Speed를 조절을 위해public으로 변경 //+OK
-    public float Speed = 9.5f;
+    [SyncVar] public float Speed = 9.5f;
     [SerializeField] private float forceSpeed = 0.3f;
     [SerializeField] private float turnSpeed = 10f;  // 회전 속도
 
@@ -63,14 +63,12 @@ public class PlayerController : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        HandleMovementEffects();//여기서 파티클 실행해주시면 됩니다 이동 자체는 여러 클라이언트가 다 봐야됍니다
-
-        if (!isLocalPlayer) return;
-        // 스턴 상태라면 이동 로직 차단
+        if (isLocalPlayer)
+        {
+            CheckAndCommandParticle();
+        }
         if (IsStunned)
         {
-            // 움직임을 확실히 멈추고 싶다면 속도 초기화??
-            // [희수]+이러면 스턴 상태에선 충돌했을때 안밀리는 상태가 되려나요
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             return;
@@ -81,25 +79,43 @@ public class PlayerController : NetworkBehaviour
 
     #region 이동 Particle
     [Header("--- 효과 설정 ---")]//파티클 예시
-    [SerializeField] private ParticleSystem moveParticle; // 발밑 이동 불꽃같은거 파티클
-    [SerializeField] private float particleThreshold = 2.0f; // 파티클이 나올 최소 속도
+    [SerializeField] private GameObject moveParticle; // 발밑 이동 불꽃같은거 파티클
+    [SerializeField] private float particleThreshold = 4.0f; // 파티클이 나올 최소 속도
+    [SerializeField] private float groundCheckDistance = 1f; // 바닥 감지 거리 (차 높이에 따라 조절)
+    [SerializeField] private LayerMask groundLayer; // 바닥 레이어 (Inspector에서 설정 필수)
+    [Header("--- 동기화 변수 ---")]
+    [SyncVar(hook = nameof(OnMoveParticleChanged))]
+    private bool _shouldShowParticle = false;
 
-    private void HandleMovementEffects()
+    // SyncVar Hook: 값이 변할 때 모든 클라이언트에서 실행됨
+
+    private void OnMoveParticleChanged(bool oldVal, bool newVal)
+    {
+        if (moveParticle != null)
+        {
+            moveParticle.SetActive(newVal);
+        }
+    }
+
+    private void CheckAndCommandParticle()
     {
         if (moveParticle == null) return;
 
-        // 현재 실제 물리 속도(크기)를 계산
+        bool isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDistance, groundLayer);
         float currentSpeed = rb.linearVelocity.magnitude;
+        bool shouldShow = isGrounded && (currentSpeed > particleThreshold);
 
-        // 일정 속도 이상이면
-        if (currentSpeed > particleThreshold)
+        // 현재 상태가 서버에 기록된 상태와 다를 때만 명령 보냄 (네트워크 트래픽 최적화)
+        if (_shouldShowParticle != shouldShow)
         {
-            if (!moveParticle.isPlaying) moveParticle.Play();
+            CmdSetMoveParticle(shouldShow);
         }
-        else
-        {
-            if (moveParticle.isPlaying) moveParticle.Stop();
-        }
+    }
+
+    [Command]
+    private void CmdSetMoveParticle(bool state)
+    {
+        _shouldShowParticle = state; // 서버에서 값을 바꾸면 모든 클라이언트의 Hook 실행
     }
     #endregion
 
