@@ -12,6 +12,7 @@ public class PlayerController : NetworkBehaviour
     [Header("--- 이동 설정 ---")]
     // [남훈님] ItemEffectHandler에서 Speed를 조절을 위해public으로 변경 //+OK
     [SyncVar] public float Speed = 9.5f;
+
     [SerializeField] private float forceSpeed = 0.3f;
     [SerializeField] private float turnSpeed = 10f;  // 회전 속도
 
