@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 6918037111152811518}
   - component: {fileID: -5221784473865349485}
   - component: {fileID: 8136635153530835336}
+  - component: {fileID: 7990814421243446661}
   m_Layer: 0
   m_Name: PlayerCar
   m_TagString: Player
@@ -166,7 +167,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _input: {fileID: 0}
-  Speed: 22
+  Speed: 18
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
@@ -185,7 +186,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  pushForce: 38
+  pushForce: 35
   pushCooldown: 0.2
   vpower: 0.7
   duration: 0.3
@@ -202,7 +203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
   sceneId: 0
-  _assetId: 1961204226
+  _assetId: 950577296
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -304,7 +305,24 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  playerNumber: 2
+  playerNumber: 0
+--- !u!114 &7990814421243446661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 514292793999585233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67d1dd55bd809f84babebf21856fe573, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  playernumber: -1
+  playerRespawn: {fileID: 0}
 --- !u!1 &2111726238738312953
 GameObject:
   m_ObjectHideFlags: 0

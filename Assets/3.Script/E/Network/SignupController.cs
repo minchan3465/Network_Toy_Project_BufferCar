@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class SignupController : MonoBehaviour
 {
+    [SerializeField] private GameObject Login;
     [SerializeField] private LoginController LoginController;
     [SerializeField] private GameObject Signup_ob;
     [SerializeField] private TMP_InputField Name_input;
@@ -43,8 +44,6 @@ public class SignupController : MonoBehaviour
         }
         if (DataManager.instance.Signup(Name_input.text, Nic_input.text, Pwd_input.text))
         {
-            LoginController.LogText_viewing("생성되었습니다.");
-            LoginController.LogText_viewing("Success Sign UP.");
             //GameObject manager = NetworkManager.singleton.gameObject;
             //if (manager.TryGetComponent(out Serverchecker checker))
             //{
@@ -53,7 +52,14 @@ public class SignupController : MonoBehaviour
             //gameObject.SetActive(false);
             Name_input.text = string.Empty;
             Pwd_input.text = string.Empty;
+            Debug.Log(LoginController.gameObject.transform.name);
+            //LoginController.gameObject.SetActive(false);
+            Debug.Log(LoginController.gameObject.activeSelf);
+            Login.gameObject.SetActive(true);
+            Debug.Log(LoginController.gameObject.activeSelf);
             Signup_ob.SetActive(false);
+            LoginController.LogText_viewing("생성되었습니다.");
+            LoginController.LogText_viewing("Success Sign UP.");
         }
         else
         {

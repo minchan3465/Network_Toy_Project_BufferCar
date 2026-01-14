@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Now....
+  m_text: Success Sign UP.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b20aa364a2e4a9343a7223f851f16d31, type: 2}
   m_sharedMaterial: {fileID: 4867554414670008779, guid: b20aa364a2e4a9343a7223f851f16d31, type: 2}
@@ -1024,6 +1024,8 @@ MonoBehaviour:
   Pwd_input: {fileID: 1210469244849937406}
   logText: {fileID: 2413551808533308131}
   Login_btn: {fileID: 6570536414923605505}
+  Signup_btn: {fileID: 0}
+  signupController: {fileID: 0}
 --- !u!1 &5137061416887623845
 GameObject:
   m_ObjectHideFlags: 0
