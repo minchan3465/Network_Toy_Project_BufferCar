@@ -52,8 +52,9 @@ MonoBehaviour:
   syncInterval: 0
   itemBoxPrefab: {fileID: 4094428297778913346, guid: fdad2ff8f108396438db56e15ed28b65, type: 3}
   spawnInterval: 3
-  spawnRadius: 30
+  maxSpawnRadius: 30
   spawnHeight: 15
+  mapCenterPoint: {x: 0, y: -1, z: 0}
 --- !u!114 &4003186962685002203
 MonoBehaviour:
   m_ObjectHideFlags: 0
