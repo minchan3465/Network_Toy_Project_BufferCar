@@ -29,7 +29,8 @@ public class GameManager : NetworkBehaviour {
 	public TMP_Text gameTimer;
 	public TMP_Text middleTextUI;
 	public TMP_Text winnerTextUI;
-	public GameObject winnerCar;
+	public MeshRenderer winnerCar;
+	public GameObject winnerCamera;
 
 	//Server가 관리할거
 	public List<PlayerManager> _connectedPlayers = new List<PlayerManager>();
@@ -151,6 +152,7 @@ public class GameManager : NetworkBehaviour {
 		yield return new WaitForSeconds(3f);
 		middleText = string.Empty;
 
+		onWinnerCamera();
 		if (winnerNumber.Equals(-1)) {
 			winnerText = "NO ONE\nDRAW!";
 		} else {
@@ -177,6 +179,7 @@ public class GameManager : NetworkBehaviour {
 
 		//임시 재시작
 		yield return new WaitForSeconds(5f);
+		offWinnerCamera();
 		Game_Start();
 	}
 
@@ -197,6 +200,39 @@ public class GameManager : NetworkBehaviour {
 	//승리 텍스트 UI에 text값 입력, 화면 끄기
 	private void UpdateWinTextUI() {
 		winnerTextUI.text = winnerText;
+	}
+
+	//승리 시, 카메라 활성화. 시간 후에 종료할거임.
+	[ClientRpc]
+	private void onWinnerCamera() {
+		winnerCar.materials[0].color = setCarBodyColor(winnerNumber);
+		winnerCamera.SetActive(true);
+	}
+
+	private void offWinnerCamera() {
+		winnerCamera.SetActive(false);
+	}
+
+	private Color setCarBodyColor(int index) {
+		Color color;
+		switch (index) {
+			case 0:
+				color = Color.red;
+				break;
+			case 1:
+				color = Color.green;
+				break;
+			case 2:
+				color = Color.blue;
+				break;
+			case 3:
+				color = Color.yellow;
+				break;
+			default:
+				color = Color.white;
+				break;
+		}
+		return color;
 	}
 
 	//------------ HP 변경
