@@ -7,8 +7,13 @@ using Mirror;
 public class PlayerRespawn : NetworkBehaviour
 {
     private Rigidbody rb;
-    [SyncVar] public bool isRespawning = false; // 중복 방지 변수
+    [SyncVar(hook = nameof(OnRespawnStateChanged))]
+    public bool isRespawning = false;
+    // 물리 고정 상태 동기화 (상대방 화면에서도 Kinematic이 되도록)
+    [SyncVar(hook = nameof(OnKinematicChanged))]
+    public bool isKinematicSynced = false;
     private GameObject respawn_ob;
+    [SerializeField] private GameObject car;
 
     public int playerNumber = -1;//값 쏴주면 받아주세요
 
@@ -37,16 +42,82 @@ public class PlayerRespawn : NetworkBehaviour
     }
 
     #region 리스폰 로직
+
+    // 변수 값이 변할 때마다 모든 클라이언트에서 실행 (동기화 핵심)
+    private void OnRespawnStateChanged(bool oldVal, bool newVal)
+    {
+        if (car == null) return;
+
+        if (newVal == true) // 리스폰 시작: 차 숨김
+        {
+            car.SetActive(false);
+        }
+        else // 리스폰 위치 이동 완료: 깜빡임 시작
+        {
+            StartCoroutine(BlinkVisuals());
+        }
+    }
+
+    private void OnKinematicChanged(bool oldVal, bool newVal)
+    {
+        if (rb == null) transform.TryGetComponent(out rb);
+        if (rb != null)
+        {
+            rb.isKinematic = newVal;
+        }
+    }
+    private IEnumerator BlinkVisuals()
+    {
+        float duration = 2.0f;
+        float interval = 0.2f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            car.SetActive(!car.activeSelf);
+            yield return new WaitForSeconds(interval);
+            elapsed += interval;
+        }
+        car.SetActive(true);
+
+        // [로컬 전용] 2초 깜빡임이 끝난 후 서버에 물리 해제 요청
+        if (isLocalPlayer)
+        {
+            CmdSetKinematic(false);
+        }
+
+        // [로컬 전용] 깜빡임이 끝난 "이 시점"에 모든 클라이언트의 물리 엔진을 켭니다.
+        if (isLocalPlayer)
+        {
+            CmdSetKinematic(false);
+
+            // 물리 해제 직후 속도 확실히 초기화 (버그 방지)
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+        }
+    }
+
     [Command]
-    public void CmdRequestRespawn()//PlaterCollsion 에서 Trigger에서 불러옵니다.
+    private void CmdSetKinematic(bool state) => isKinematicSynced = state;
+
+    [Command]
+    public void CmdRequestRespawn()
     {
         if (isRespawning) return;
+
         isRespawning = true;
-        TargetRpcRespawn(connectionToClient);// 클라이언트의 요청을 받은 서버가 실행
-        Invoke(nameof(ResetRespawnFlag), 1.0f);// 1초 뒤 리스폰 잠금 해제
+        isKinematicSynced = true; // 서버에서 물리 고정 시작
+
+        TargetRpcRespawn(connectionToClient);
+        Invoke(nameof(ResetRespawnFlag), 3.0f);
     }
+
     [Server]
     private void ResetRespawnFlag() => isRespawning = false;
+    
 
     private Coroutine respawnRoutine;
     [TargetRpc]
@@ -72,15 +143,7 @@ public class PlayerRespawn : NetworkBehaviour
 
         CmdRequestAppearEffect(transform.position);
         //공중에서 잠시 대기 여기서도 부활 파티클 같은거 있으면 좋을 것 같습니다.(공중에 그냥 가만히 있음)
-        yield return new WaitForSeconds(2f);
 
-        // 물리 해제
-        if (rb != null)
-        {
-            rb.isKinematic = false;
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-        }
         respawnRoutine = null;
     }
     #endregion
@@ -100,7 +163,28 @@ public class PlayerRespawn : NetworkBehaviour
         // 모든 플레이어의 화면에서 실행됨
         if (appearParticlePrefab != null)
         {
-            Instantiate(appearParticlePrefab, pos, Quaternion.identity);
+            // 1. 지정된 위치에 파티클 생성 (회전은 기본값)
+            GameObject effect = Instantiate(appearParticlePrefab, pos, Quaternion.identity);
+
+            // 2. 여러 개의 자식 파티클 시스템 중 가장 긴 시간을 찾음 (배열 처리)
+            ParticleSystem[] allParticles = effect.GetComponentsInChildren<ParticleSystem>();
+
+            float maxLifeTime = 0f;
+
+            foreach (ParticleSystem ps in allParticles)
+            {
+                var main = ps.main;
+                // 지속 시간 + 생존 시간 계산
+                float currentLifeTime = main.duration + main.startLifetime.constantMax;
+                if (currentLifeTime > maxLifeTime)
+                {
+                    maxLifeTime = currentLifeTime;
+                }
+            }
+
+            // 3. 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 통째로 삭제
+            // 계산된 시간이 없으면 기본 3초 후 삭제
+            Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
         }
     }
     #endregion
