@@ -10,7 +10,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Inputsystem _input; // 확인용 필드
 
     [Header("--- 이동 설정 ---")]
-    // [남훈님] ItemEffectHandler에서 속도를 조절을 위해public으로 변경 //+OK
+    // [남훈님] ItemEffectHandler에서 Speed를 조절을 위해public으로 변경 //+OK
     public float Speed = 9.5f;
     [SerializeField] private float forceSpeed = 0.3f;
     [SerializeField] private float turnSpeed = 10f;  // 회전 속도
@@ -37,7 +37,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    // 실제 물리 이동 로직
+    #region 이동 로직
     private void Playermove()
     {
         if (_input == null || _input.move_input.sqrMagnitude < 0.01f) return;
@@ -63,8 +63,9 @@ public class PlayerController : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (!isLocalPlayer) return;
+        HandleMovementEffects();//여기서 파티클 실행해주시면 됩니다 이동 자체는 여러 클라이언트가 다 봐야됍니다
 
+        if (!isLocalPlayer) return;
         // 스턴 상태라면 이동 로직 차단
         if (IsStunned)
         {
@@ -74,10 +75,35 @@ public class PlayerController : NetworkBehaviour
             rb.angularVelocity = Vector3.zero;
             return;
         }
-
         Playermove();
     }
+    #endregion
 
+    #region 이동 Particle
+    [Header("--- 효과 설정 ---")]//파티클 예시
+    [SerializeField] private ParticleSystem moveParticle; // 발밑 이동 불꽃같은거 파티클
+    [SerializeField] private float particleThreshold = 2.0f; // 파티클이 나올 최소 속도
+
+    private void HandleMovementEffects()
+    {
+        if (moveParticle == null) return;
+
+        // 현재 실제 물리 속도(크기)를 계산
+        float currentSpeed = rb.linearVelocity.magnitude;
+
+        // 일정 속도 이상이면
+        if (currentSpeed > particleThreshold)
+        {
+            if (!moveParticle.isPlaying) moveParticle.Play();
+        }
+        else
+        {
+            if (moveParticle.isPlaying) moveParticle.Stop();
+        }
+    }
+    #endregion
+
+    #region input key 추가키 할당방식
     private void OnDisable()
     {
         if (isLocalPlayer && _input != null) _input.ESCEvent -= HandleMenu;
@@ -87,4 +113,5 @@ public class PlayerController : NetworkBehaviour
     {
         Debug.Log("ESC or Xbox Gamepad menu!");
     }
+    #endregion
 }
