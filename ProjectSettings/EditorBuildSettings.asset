@@ -5,21 +5,27 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/1.Scene/B/InGame.unity
-    guid: ab514d07800fb4642971fd76f5737c51
   - enabled: 1
-    path: Assets/1.Scene/B/Server_test.unity
-    guid: a695dae5dd75cfa45a0de01bee7cfd0e
+    path: Assets/1.Scene/B/B_Server_Scene.unity
+    guid: c51d438cab9517b4d9c6f1184d5fc2e5
   - enabled: 1
-    path: Assets/1.Scene/D/D_Main.unity
-    guid: ae87d118541072841995cbf4ec7a2b6b
+    path: Assets/1.Scene/B/B_Main_Title.unity
+    guid: bac9b01ba199b2747a4bccd07d6ccc86
   - enabled: 1
-    path: Assets/1.Scene/D/D_Game.unity
-    guid: 960fabcf839b2594291875a0c6a9a59c
+    path: Assets/1.Scene/B/B_Main_InGame.unity
+    guid: ced5476c287f8b2408bde4b0ae546b14
   - enabled: 1
     path: Assets/1.Scene/D/D_Room.unity
     guid: e74ee4ec14b6fbf45a5d76fa1dc09bec
+  - enabled: 1
+    path: Assets/1.Scene/D/B_Main_InGame.unity
+    guid: 863be5316ec27a342b991218c2b021dc
+  - enabled: 1
+    path: Assets/1.Scene/D/Main_Title.unity
+    guid: ef2a93151c6f91049a9fb0d89c345509
+  - enabled: 1
+    path: Assets/1.Scene/D/Server_Scene.unity
+    guid: bdeda1c98c529924a8de56eee07c92ff
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
