@@ -107,3 +107,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  effectRoots: []
+  ironDuration: 3
+  ironMassMultiplier: 5
+  ironScaleMultiplier: 2.5
+  nitroDuration: 3
+  nitroSpeedMultiplier: 2.5
+  nitroImpulseForce: 50
+  empStunDuration: 1
+  empBlastVfxDuration: 1
