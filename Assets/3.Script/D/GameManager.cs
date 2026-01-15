@@ -87,9 +87,8 @@ public class GameManager : NetworkBehaviour {
 		if (_connectedPlayers.Contains(manager)) return;
 		StartCoroutine(delay(manager));
 	}
-
 	private IEnumerator delay(NetworkPlayer manager) {
-		yield return new WaitForSeconds(0.2f);
+		yield return new WaitForSeconds(1f);
 		_connectedPlayers.Add(manager);
 		playersHp.Add(3);
 		playersName.Add(manager.nickname);
@@ -147,12 +146,12 @@ public class GameManager : NetworkBehaviour {
 		yield return new WaitForSeconds(3f);
 		UpdateMiddleTextUI(string.Empty);
 
-		onWinnerCamera();
 		/////////////////////////////////////////////////// 승리한 사람 텍스트
 		string str = string.Empty;
 		string color = setColor(winnerNumber);
 		str = $"<color={color}>{winnerName}</color>\n{winnerNumber + 1}P Win!";
 		///////////////////////////////////////////////////
+		onWinnerCamera(winnerNumber);
 		UpdateWinTextUI(str);
 
 		//임시 재시작
@@ -166,13 +165,12 @@ public class GameManager : NetworkBehaviour {
 	[ClientRpc] private void UpdateWinTextUI(string str) { winnerTextUI.text = str; }//승리 텍스트 UI에 text값 입력, 화면 끄기
 	////////////////////////////승리 시, 카메라 활성화. 시간 후에 종료할거임.
 	[ClientRpc]
-	private void onWinnerCamera() {
+	private void onWinnerCamera(int winnerNumber) {
 		winnerCar.materials[0].color = setCarBodyColor(winnerNumber);
 		winnerCamera.SetActive(true);
 	}
 	////////////////////////////
 	[ClientRpc] private void offWinnerCamera() { winnerCamera.SetActive(false); }
-
 
 
 	//------------ UI 변경
