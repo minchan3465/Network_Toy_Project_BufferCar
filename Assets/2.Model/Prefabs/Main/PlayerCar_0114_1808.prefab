@@ -5689,6 +5689,7 @@ MonoBehaviour:
   - {fileID: 6244597109234425346}
   - {fileID: 0}
   - {fileID: 8588997018763582332}
+  sfxVolume: 1
   ironDuration: 5
   ironMassMultiplier: 5
   ironScaleMultiplier: 1.5
@@ -5715,6 +5716,7 @@ MonoBehaviour:
   isRespawning: 0
   isKinematicSynced: 0
   car: {fileID: 681800734350143724}
+  nplayer: {fileID: 5641249817105288841}
   playerNumber: 2
   appearParticlePrefab: {fileID: 4143439122255155475, guid: d75f41abb5a1fa840adc3bcef1d89353, type: 3}
 --- !u!114 &-3160357476037317387
