@@ -796,8 +796,8 @@ GameObject:
   m_Component:
   - component: {fileID: 574418524}
   - component: {fileID: 574418523}
-  - component: {fileID: 574418526}
   - component: {fileID: 574418525}
+  - component: {fileID: 574418526}
   m_Layer: 0
   m_Name: Network_Start_position
   m_TagString: Untagged
@@ -867,15 +867,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 574418522}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64e98da3d8a5a1a46b5748bdbca40cb9, type: 3}
+  m_Script: {fileID: 11500000, guid: 55e0f3f01d5ee5245bad222aa1ddc784, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapShrinker
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  startDelay: 5
-  shrinkDuration: 30
-  targetRatio: 0.4
+  m_EditorClassIdentifier: Assembly-CSharp::ScaleFollower
+  shrinkSpeedMultiplier: 1.2
+  minScaleRatio: 0.4
 --- !u!1 &592540689
 GameObject:
   m_ObjectHideFlags: 0
@@ -1494,6 +1490,7 @@ GameObject:
   - component: {fileID: 949795780}
   - component: {fileID: 949795781}
   - component: {fileID: 949795779}
+  - component: {fileID: 949795782}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1576,6 +1573,18 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &949795782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949795778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a13cefc6c8e60a74cbf5ae8b93979141, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDirector
 --- !u!1 &1022458493
 GameObject:
   m_ObjectHideFlags: 0
