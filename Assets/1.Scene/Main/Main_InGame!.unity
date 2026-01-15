@@ -1479,6 +1479,61 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!114 &926434804 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2251107908074387742, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 127312634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &926434805 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3114179439469148313, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 127312634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &926434806 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5406014203561814597, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 127312634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &926434807 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 92025523344577962, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 127312634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &926434808 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 737785426159859306, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 127312634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &949795778
 GameObject:
   m_ObjectHideFlags: 0
@@ -1515,10 +1570,7 @@ MonoBehaviour:
   syncInterval: 0
   isGameStart: 0
   gameTime: 0
-  middleText: 
-  winnerText: 
-  winnerNumber: 0
-  playerUIs:
+  playerHpUI:
   - hpButtons:
     - {fileID: 127312649}
     - {fileID: 127312648}
@@ -1535,11 +1587,19 @@ MonoBehaviour:
     - {fileID: 127312640}
     - {fileID: 127312639}
     - {fileID: 127312638}
+  playerNameUI:
+  - {fileID: 926434808}
+  - {fileID: 926434807}
+  - {fileID: 926434806}
+  - {fileID: 926434805}
   gameTimer: {fileID: 127312637}
   middleTextUI: {fileID: 127312636}
   winnerTextUI: {fileID: 127312635}
   winnerCar: {fileID: 365568386}
   winnerCamera: {fileID: 592540689}
+  winnerNumber: 0
+  winnerName: 
+  feverTextUI: {fileID: 926434804}
   _connectedPlayers: []
 --- !u!4 &949795780
 Transform:
