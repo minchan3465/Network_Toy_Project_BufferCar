@@ -17,14 +17,14 @@ public class PlayerRespawn : NetworkBehaviour
     [SerializeField] private GameObject car;
     [SerializeField] private NetworkPlayer netplayer;
 
-    public int playerNumber = -1;
+    public int playerNumber = 0;
 
     public override void OnStartLocalPlayer()
     {
         transform.TryGetComponent(out rb);
 
         List<Transform> startPositions = NetworkManager.startPositions;
-        playerNumber = netplayer.playerNumber;
+        //playerNumber = netplayer.playerNumber;
 
         startPositions.Sort((a, b) => string.Compare(a.name, b.name));
 
