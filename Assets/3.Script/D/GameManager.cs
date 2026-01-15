@@ -17,10 +17,8 @@ public class GameManager : NetworkBehaviour {
 	//Sync할거
 	[SyncVar(hook = nameof(OnGameStartingCheck))] public bool isGameStart;
 	[SyncVar(hook = nameof(OnTimerChanged))] public int gameTime;
-
 	public readonly SyncList<int> playersHp = new SyncList<int>();
 
-	[SyncVar] public int winnerNumber;
 
 	//모두가 개인적으로 간직하는거
 	public List<PlayerUI> playerUIs = new List<PlayerUI>();
@@ -29,6 +27,7 @@ public class GameManager : NetworkBehaviour {
 	public TMP_Text winnerTextUI;
 	public MeshRenderer winnerCar;
 	public GameObject winnerCamera;
+	public int winnerNumber;
 
 	public TMP_Text feverTextUI;
 	private bool isFever = false;
@@ -193,9 +192,8 @@ public class GameManager : NetworkBehaviour {
 	private void UpdateMiddleTextUI(string str) {
 		middleTextUI.text = str;
 	}
-
-	[ClientRpc]
 	//승리 텍스트 UI에 text값 입력, 화면 끄기
+	[ClientRpc]
 	private void UpdateWinTextUI(string str) {
 		winnerTextUI.text = str;
 	}
