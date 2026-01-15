@@ -72,7 +72,7 @@ public class GameManager : NetworkBehaviour {
 			if (players[i].TryGetComponent(out PlayerManager manager)) {
 				manager.playerNumber = i; // 순번 배정
 				_connectedPlayers.Add(manager);
-				playersHp.Add(3); // 초기 HP 설정
+				playersHp.Add(6); // 초기 HP 설정
 			}
 		}
 
