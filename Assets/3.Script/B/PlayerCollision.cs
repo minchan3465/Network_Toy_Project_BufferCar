@@ -208,76 +208,68 @@ public class PlayerCollision : NetworkBehaviour
     }
     #endregion
 
-    #region 충돌로직2 OnTriggerEnter_Deadzone
+    #region 충돌로직2 OnTriggerEnter_Deadzone+Particle
+    [SerializeField] private GameObject deadparticle; // 충돌 파티클 프리팹
     private void OnTriggerEnter(Collider other)
     {
+        // 1. 서버에서만 판정 (가장 중요: 체력 차감은 서버 권한이어야 함)
+        if (!isServer) return;
+
         if (other.CompareTag("Deadzone"))
         {
-            Debug.Log("Deadzone Tag Detected!");
+            // 2. 이미 리스폰 절차를 밟고 있다면 즉시 리턴 (중복 실행 방지)
+            if (res == null || res.isRespawning) return;
 
-            if (res != null)
+            Debug.Log("Deadzone Detected on Server - Processing Death...");
+
+            // 3. 리스폰 상태 즉시 설정 (다음 프레임의 추가 충돌을 여기서 막음)
+            res.isRespawning = true;
+
+            // 4. [체력 차감 로직] - 서버에서 딱 한 번만 실행됨
+            // PlayerHealth.instance.TakeDamage(1); // 예시
+
+            // 5. 서버 측 물리 중단
+            if (rb != null)
             {
-                if (res.isLocalPlayer)
-                {
-                    if (res.isRespawning) { return; }
-                    PlayVibration(vpower, duration);//진동호출!
-                    //여기 사운드나 파티클 넣어주세요?
-
-                    //체력이 남아있다면 리스폰 호출, 그렇지 않으면 실격처리 들어가야됩니다.
-
-                    if (rb != null)
-                    {
-                        rb.linearVelocity = Vector3.zero;
-                        rb.angularVelocity = Vector3.zero;
-                        rb.isKinematic = true;
-                    }
-                    res.CmdRequestRespawn();
-                    CmdRpcDeadEffect(transform.position);
-                    Debug.Log("My car fell! Requesting Respawn to Server...");
-                }
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.isKinematic = true;
             }
+
+            // 6. 리스폰 프로세스 시작 (서버 로직 호출)
+            // CmdRequestRespawn이 내부적으로 서버 로직을 실행한다면 그대로 호출
+            res.CmdRequestRespawn();
+
+            // 7. 모든 클라이언트에게 이펙트(진동, 파티클) 재생 알림
+            RpcPlayDeadEffects(transform.position);
         }
     }
-    #endregion
 
-    #region Dead_Particle
-    [SerializeField] private GameObject deadparticle; // 충돌 파티클 프리팹
-
-    [Command]
-    void CmdRpcDeadEffect(Vector3 pos)
-    {
-        RpcPlayDeadEffect(pos);
-    }
-
+    // 연출용 RPC (당사자에게는 진동을, 모두에게는 파티클을)
     [ClientRpc]
-    void RpcPlayDeadEffect(Vector3 pos)
+    private void RpcPlayDeadEffects(Vector3 pos)
     {
+        // 당사자(로컬 플레이어)만 진동 발생
+        if (isLocalPlayer)
+        {
+            PlayVibration(vpower, duration);
+
+            // 클라이언트 측 물리도 즉시 멈춰서 떨림 방지
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.isKinematic = true;
+            }
+        }
+
+        // 파티클 생성 (모든 클라이언트)
         if (deadparticle != null)
         {
             GameObject effect = Instantiate(deadparticle, pos, Quaternion.identity);
-
-            // 모든 자식 파티클 시스템을 가져옴
-            ParticleSystem[] allParticles = effect.GetComponentsInChildren<ParticleSystem>();
-
-            float maxLifeTime = 0f;
-
-            foreach (ParticleSystem ps in allParticles)
-            {
-                var main = ps.main;
-                // 각 파티클마다 (지속시간 + 생존시간)을 계산해서 가장 긴 시간을 찾음
-                float currentLifeTime = main.duration + main.startLifetime.constantMax;
-                if (currentLifeTime > maxLifeTime)
-                {
-                    maxLifeTime = currentLifeTime;
-                }
-            }
-
-            // 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 삭제 (없으면 기본 3초)
-            Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
+            Destroy(effect, 3.0f); // 수명 계산 로직은 기존 함수 활용 가능
         }
-        //사운드도?
     }
-    #endregion
+#endregion
 
     private void OnDisable()
     {
