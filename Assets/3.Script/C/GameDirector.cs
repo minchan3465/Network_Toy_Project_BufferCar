@@ -12,31 +12,41 @@ public class GameDirector : MonoBehaviour
     {
         if (GameManager.Instance == null) return;
 
-        // [디버깅용 로그] 시간이 잘 흐르는지, 60초가 되었을 때 감지가 되는지 확인
-        // (너무 많이 뜨면 60초 근처일 때만 뜨게 조건 걸기)
-        if (GameManager.Instance.gameTime == 60)
+        // [복구됨] 1. 게임 시작/종료 상태 변화 감지 로직
+        // "어? 방금 전까진 게임이 안 시작됐었는데(false), 지금 보니 시작됐네(true)?" -> 이게 '시작되는 순간'입니다.
+        if (GameManager.Instance.isGameStart != wasGameStarted)
         {
-            Debug.Log($"[GameDirector] 60초 감지됨! (현재 hasTriggeredShrink 상태: {hasTriggeredShrink})");
+            if (GameManager.Instance.isGameStart)
+            {
+                // [게임 시작 순간] -> 초기화 실행!
+                Debug.Log("[GameDirector] 게임 시작 감지! 맵 초기화 및 청소 실행");
+                InitializeRound();
+            }
+            else
+            {
+                // [게임 종료 순간]
+                Debug.Log("[GameDirector] 게임 종료 감지.");
+            }
+
+            // 상태 갱신 (현재 상태를 기억해둠)
+            wasGameStarted = GameManager.Instance.isGameStart;
         }
 
-        // ... (기존 게임 시작/종료 감지 로직) ...
-
-        // 2. 시간 감지 로직
+        // 2. 시간 감지 로직 (맵 축소 타이밍)
         if (GameManager.Instance.isGameStart)
         {
-            if (GameManager.Instance.gameTime == 60 && !hasTriggeredShrink)
+            // 설정된 시간(shrinkStartTime)이 되었고, 아직 축소 명령을 안 내렸다면
+            int triggerTime = 60; // 기본값
+            if (MapShrinker.Instance != null) triggerTime = MapShrinker.Instance.shrinkStartTime;
+
+            if (GameManager.Instance.gameTime == triggerTime && !hasTriggeredShrink)
             {
-                Debug.Log("[GameDirector] 축소 명령 실행 시도..."); // 로그 추가
+                Debug.Log($"[GameDirector] {triggerTime}초 감지! 맵 축소 명령 실행.");
 
                 if (MapShrinker.Instance != null)
                 {
                     MapShrinker.Instance.StartShrinking();
-                    hasTriggeredShrink = true;
-                    Debug.Log("[GameDirector] MapShrinker에게 명령 전달 성공!"); // 로그 추가
-                }
-                else
-                {
-                    Debug.LogError("[GameDirector] 비상! MapShrinker가 없습니다 (Instance is null)"); // 로그 추가
+                    hasTriggeredShrink = true; // 중복 실행 방지
                 }
             }
         }
@@ -45,16 +55,18 @@ public class GameDirector : MonoBehaviour
     [Server]
     private void InitializeRound()
     {
+        Debug.Log("[GameDirector] 라운드 초기화 시작...");
+
         // 1. 맵 크기 원상 복구
         if (MapShrinker.Instance != null)
         {
-            MapShrinker.Instance.ResetMap();
+            MapShrinker.Instance.ResetMap(); //
         }
 
         // 2. 바닥에 떨어진 아이템 삭제
         ClearAllItems();
 
-        // 3. 축소 트리거 초기화 (다음 60초 때 다시 발동하도록)
+        // 3. 축소 트리거 초기화 (다음 판을 위해)
         hasTriggeredShrink = false;
     }
 

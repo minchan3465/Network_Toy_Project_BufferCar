@@ -131,7 +131,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  shrinkDuration: 30
+  shrinkStartTime: 60
+  shrinkDuration: 40
   targetRatio: 0.6
 --- !u!114 &4379160189415399363
 MonoBehaviour:

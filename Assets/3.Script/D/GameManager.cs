@@ -239,6 +239,7 @@ public class GameManager : NetworkBehaviour {
 	//------------ HP 변경
 
 	private void OnHpListChanged(SyncList<int>.Operation op, int playernumber, int newItem) {
+		if (op == SyncList<int>.Operation.OP_CLEAR) return; //지워라~~~
 		UpdateSinglePlayerUI(playernumber, playersHp[playernumber]);
 	}
 

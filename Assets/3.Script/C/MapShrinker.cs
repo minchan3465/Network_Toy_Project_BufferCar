@@ -6,6 +6,9 @@ public class MapShrinker : NetworkBehaviour
     public static MapShrinker Instance;
 
     [Header("줄어들기 설정")]
+    [Tooltip("게임 시작 후 몇 초가 남았을 때 줄어들기 시작할까요?")]
+    public int shrinkStartTime = 60; // [추가됨] 여기서 시간 관리!
+
     [SerializeField] private float shrinkDuration = 30f;
     [SerializeField] private float targetRatio = 0.4f;
 

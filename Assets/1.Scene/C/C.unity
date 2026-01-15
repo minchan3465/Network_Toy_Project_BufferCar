@@ -629,15 +629,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 470261414191995772, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.96276
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 470261414191995772, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.37357
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 470261414191995772, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.53015
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 470261414191995772, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
       propertyPath: m_LocalRotation.w
@@ -674,10 +674,6 @@ PrefabInstance:
     - target: {fileID: 6445028627725848050, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
       propertyPath: m_Name
       value: Map
-      objectReference: {fileID: 0}
-    - target: {fileID: 7416502908675544148, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
-      propertyPath: shrinkDuration
-      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -882,6 +878,7 @@ GameObject:
   m_Component:
   - component: {fileID: 574418524}
   - component: {fileID: 574418523}
+  - component: {fileID: 574418526}
   - component: {fileID: 574418525}
   m_Layer: 0
   m_Name: Network_Start_position
@@ -943,6 +940,20 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &574418526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 574418522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 652544a3caa53ea499ba2c146ace6c21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScaleFollwer
+  shrinkSpeedMultiplier: 1.2
+  minScaleRatio: 0.4
 --- !u!1 &592540689
 GameObject:
   m_ObjectHideFlags: 0
@@ -2400,7 +2411,8 @@ MonoBehaviour:
   playerPrefab: {fileID: 6970800248564378294, guid: 5961d07891f1ddb40a59c76327ec498f, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 4094428297778913346, guid: fdad2ff8f108396438db56e15ed28b65, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
