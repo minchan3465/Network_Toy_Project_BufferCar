@@ -14,6 +14,7 @@ public class PlayerRespawn : NetworkBehaviour
     public bool isKinematicSynced = false;
     private GameObject respawn_ob;
     [SerializeField] private GameObject car;
+    [SerializeField] private NetworkPlayer netplayer;
 
     public int playerNumber = -1;//값 쏴주면 받아주세요
 
@@ -22,6 +23,7 @@ public class PlayerRespawn : NetworkBehaviour
         transform.TryGetComponent(out rb); //player한테 넣어주세요
 
         List<Transform> startPositions = NetworkManager.startPositions;
+        playerNumber = netplayer.playerNumber;
 
         // 이름순 정렬 (순서 꼬임 방지) 0123
         startPositions.Sort((a, b) => string.Compare(a.name, b.name));
