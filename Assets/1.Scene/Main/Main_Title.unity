@@ -830,10 +830,6 @@ PrefabInstance:
       value: Network_Manager
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
-      propertyPath: transport
-      value: 
-      objectReference: {fileID: 920553897}
-    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: onlineScene
       value: Assets/1.Scene/Main/Main_InGame.unity
       objectReference: {fileID: 0}
@@ -847,7 +843,7 @@ PrefabInstance:
       objectReference: {fileID: 6970800248564378294, guid: 33a9a2768db64f843a81afe47d3dde98, type: 3}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: networkAddress
-      value: 52.79.227.146
+      value: localhost
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: editorAutoStart
@@ -863,17 +859,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
---- !u!114 &920553897 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6853478524067311285, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
-  m_PrefabInstance: {fileID: 920553896}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Mirror.Transports::kcp2k.KcpTransport
 --- !u!1 &989307025
 GameObject:
   m_ObjectHideFlags: 0
