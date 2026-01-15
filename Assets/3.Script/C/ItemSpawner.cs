@@ -30,31 +30,33 @@ public class ItemSpawner : NetworkBehaviour
     [Server]
     private IEnumerator SpawnLoop()
     {
-        // 게임 시작 후 첫 대기
         yield return new WaitForSeconds(spawnInterval);
 
         while (true)
         {
-            // 1. 아이템이 생성될 위치를 '미리' 계산
-            Vector3 targetSpawnPos = CalculateSpawnPosition();
-
-            // 2. 경고 단계: 해당 위치에서 소리 재생 (SoundManager 활용)
-            // "ItemDrop"이라는 키워드로 SoundManager에 등록되어 있어야 합니다.
-            if (SoundManager.instance != null)
+            // [추가] GameManager가 존재하고, 게임 시작 상태일 때만 스폰
+            if (GameManager.Instance != null && GameManager.Instance.isGameStart)
             {
-                // 소리는 모든 클라이언트에게 들려야 하므로 SoundManager의 ClientRpc 호출
-                SoundManager.instance.PlaySFXPoint("ItemDropSFX", targetSpawnPos, 1.0f);
+                Vector3 targetSpawnPos = CalculateSpawnPosition();
+
+                if (SoundManager.instance != null)
+                    SoundManager.instance.PlaySFXPoint("ItemDropSFX", targetSpawnPos, 1.0f);
+
+                yield return new WaitForSeconds(warningDelay);
+
+                // 대기하는 동안 게임이 끝났을 수도 있으니 한 번 더 체크
+                if (GameManager.Instance.isGameStart)
+                {
+                    SpawnItem(targetSpawnPos);
+                }
+            }
+            else
+            {
+                // 게임 중이 아니면 잠시 대기 (1초)
+                yield return new WaitForSeconds(1f);
+                continue; // 아래 spawnInterval 대기 건너뛰고 다시 루프 시작
             }
 
-            // [선택 사항] 여기에 "바닥에 빨간 원(Warning Circle)" 같은 시각 효과도 넣을 수 있습니다.
-
-            // 3. 대기 단계: 소리가 들리고 나서 아이템이 떨어질 때까지 기다림
-            yield return new WaitForSeconds(warningDelay);
-
-            // 4. 스폰 단계: 아까 계산해둔 위치에 실제 아이템 생성
-            SpawnItem(targetSpawnPos);
-
-            // 5. 다음 쿨타임 대기
             yield return new WaitForSeconds(spawnInterval);
         }
     }

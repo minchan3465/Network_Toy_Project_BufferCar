@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -3847085644044664459}
   m_Layer: 0
   m_Name: Item
-  m_TagString: Untagged
+  m_TagString: ItemBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -174,6 +174,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  lifeTime: 10
 --- !u!1001 &7078635822155975110
 PrefabInstance:
   m_ObjectHideFlags: 0
