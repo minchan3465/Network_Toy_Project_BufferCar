@@ -11,6 +11,9 @@ GameObject:
   - component: {fileID: 3201484873366136161}
   - component: {fileID: 1683142898129191653}
   - component: {fileID: 1599978573393614531}
+  - component: {fileID: 5058615227066234204}
+  - component: {fileID: 5034788864681787429}
+  - component: {fileID: 3650879468936068763}
   m_Layer: 0
   m_Name: networkManager
   m_TagString: Untagged
@@ -107,3 +110,50 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
+--- !u!114 &5058615227066234204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8523887768883787348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 0
+  _assetId: 1467250177
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &5034788864681787429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8523887768883787348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f404ad1a25a85b44abd8806f5e0b6781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Serverchecker
+  type: 2
+  manager: {fileID: 0}
+  transport: {fileID: 0}
+--- !u!114 &3650879468936068763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8523887768883787348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a60f8c21aa08fd49922c571168895fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameFlowManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
