@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &77885941 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2251107908074387742, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 1414859131}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &86249344
 GameObject:
   m_ObjectHideFlags: 0
@@ -592,7 +603,7 @@ MonoBehaviour:
     Enabled: 0
     DefaultMode: 2
   DefaultBlend:
-    Style: 1
+    Style: 0
     Time: 2
     CustomCurve:
       serializedVersion: 2
@@ -848,9 +859,7 @@ MonoBehaviour:
   syncInterval: 0
   isGameStart: 0
   gameTime: 0
-  middleText: 
-  winnerText: 
-  playerUIs:
+  playerHpUI:
   - hpButtons:
     - {fileID: 1414859144}
     - {fileID: 1414859143}
@@ -867,11 +876,19 @@ MonoBehaviour:
     - {fileID: 1414859135}
     - {fileID: 1414859134}
     - {fileID: 1414859133}
+  playerNameUI:
+  - {fileID: 1851243946}
+  - {fileID: 1851243945}
+  - {fileID: 1851243944}
+  - {fileID: 1851243943}
   gameTimer: {fileID: 1414859132}
   middleTextUI: {fileID: 1321083756}
   winnerTextUI: {fileID: 1370137430}
   winnerCar: {fileID: 889862736552956932}
   winnerCamera: {fileID: 86249344}
+  winnerNumber: 0
+  winnerName: 
+  feverTextUI: {fileID: 77885941}
   _connectedPlayers: []
 --- !u!114 &832760746
 MonoBehaviour:
@@ -1313,6 +1330,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: inGameUI (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6562362952264747834, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1739,6 +1760,50 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!114 &1851243943 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3114179439469148313, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 1414859131}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &1851243944 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5406014203561814597, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 1414859131}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &1851243945 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 92025523344577962, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 1414859131}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &1851243946 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 737785426159859306, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 1414859131}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &1979753577
 GameObject:
   m_ObjectHideFlags: 0
