@@ -56,13 +56,6 @@ public class ItemSpawner : NetworkBehaviour
                 // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
                 SoundManager.instance.PlaySFXPoint("ItemDropSFX", targetSpawnPos, 1.0f, sfxVolume);
             }
-
-            // [선택 사항] 여기에 "바닥에 빨간 원(Warning Circle)" 같은 시각 효과도 넣을 수 있습니다.
-
-            // 3. 대기 단계: 소리가 들리고 나서 아이템이 떨어질 때까지 기다림
-            yield return new WaitForSeconds(warningDelay);
-
-            // 4. 스폰 단계: 아까 계산해둔 위치에 실제 아이템 생성
             // (대기하는 동안 게임이 끝났을 수도 있으니 한 번 더 체크)
             if (GameManager.Instance == null || GameManager.Instance.isGameStart)
             {
