@@ -844,7 +844,7 @@ PrefabInstance:
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: playerPrefab
       value: 
-      objectReference: {fileID: 514292793999585233, guid: 6e63f0a39af5c5f4a9ac1d956f6e2206, type: 3}
+      objectReference: {fileID: 6970800248564378294, guid: c3ef4c2af23b0de4aab93117eb2e8bf8, type: 3}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: networkAddress
       value: localhost
@@ -1627,6 +1627,10 @@ PrefabInstance:
     - target: {fileID: 6570536414923605505, guid: ccc8b693d3ca2b74e919309afa214119, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8879459504596022010, guid: ccc8b693d3ca2b74e919309afa214119, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

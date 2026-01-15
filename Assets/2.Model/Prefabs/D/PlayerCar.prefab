@@ -323,6 +323,7 @@ MonoBehaviour:
   syncInterval: 0
   playernumber: -1
   playerRespawn: {fileID: 0}
+  meshRenderer: {fileID: 856442499066193724}
 --- !u!1 &2111726238738312953
 GameObject:
   m_ObjectHideFlags: 0

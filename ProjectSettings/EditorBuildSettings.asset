@@ -15,32 +15,26 @@ EditorBuildSettings:
     path: Assets/1.Scene/B/B_Main_InGame.unity
     guid: ced5476c287f8b2408bde4b0ae546b14
   - enabled: 0
+    path: Assets/1.Scene/D/Server_Scene.unity
+    guid: bdeda1c98c529924a8de56eee07c92ff
+  - enabled: 0
+    path: Assets/1.Scene/D/Main_Title.unity
+    guid: ef2a93151c6f91049a9fb0d89c345509
+  - enabled: 0
     path: Assets/1.Scene/D/D_Room.unity
     guid: e74ee4ec14b6fbf45a5d76fa1dc09bec
   - enabled: 0
     path: Assets/1.Scene/D/B_Main_InGame.unity
     guid: 863be5316ec27a342b991218c2b021dc
-  - enabled: 0
-    path: Assets/1.Scene/D/Main_Title.unity
-    guid: ef2a93151c6f91049a9fb0d89c345509
-  - enabled: 0
-    path: Assets/1.Scene/D/Server_Scene.unity
-    guid: bdeda1c98c529924a8de56eee07c92ff
-  - enabled: 0
-    path: Assets/1.Scene/E/Server.unity
-    guid: 8ce3059d463063346993e8d78b375db4
   - enabled: 1
-    path: Assets/1.Scene/E/Server_Scene.unity
-    guid: 7ea0c22f0a6cd5d4b8ab37e96fec1c1c
+    path: Assets/1.Scene/Main/Main_ServerScene!.unity
+    guid: 11589c6217a22c34a9511d04c80e0ebc
   - enabled: 0
-    path: Assets/1.Scene/E/B_Main_InGame.unity
-    guid: 0414a790ced7b784895ece1172be9899
-  - enabled: 0
-    path: Assets/1.Scene/E/D_Main.unity
-    guid: 2048f81089dbe6d438832ebb9ccf9d64
+    path: Assets/1.Scene/Main/Main_Title!.unity
+    guid: ec679241f1a6ce44bb60074e5f6e484c
   - enabled: 1
-    path: Assets/1.Scene/E/E_Room.unity
-    guid: 00fe1716dfc8f4047992055ecc259623
+    path: Assets/1.Scene/Main/Main_InGame!.unity
+    guid: 93a57e55977fe304ca996d84cb5130f0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

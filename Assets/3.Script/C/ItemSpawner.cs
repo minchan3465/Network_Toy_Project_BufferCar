@@ -9,56 +9,87 @@ public class ItemSpawner : NetworkBehaviour
     [Tooltip("아이템 박스 프리팹")]
     [SerializeField] private GameObject itemBoxPrefab;
 
+    [Tooltip("아이템 생성 주기 (쿨타임)")]
     [SerializeField] private float spawnInterval = 15f;
-    [SerializeField] private float maxSpawnRadius = 20f; // 최대 반경 20
-    [SerializeField] private float spawnHeight = 15f;    // 생성 높이
 
-    // [핵심 변경] 스포너의 위치(transform) 대신 사용할 맵의 절대 중심점
-    // 맵이 (0,0,0)이 아니라면 이 값을 인스펙터에서 조정하세요.
+    [Tooltip("소리 재생 후 아이템이 나올 때까지의 대기 시간")]
+    [SerializeField] private float warningDelay = 2.0f; // [추가됨] 경고 시간
+
+    [SerializeField] private float maxSpawnRadius = 20f;
+    [SerializeField] private float spawnHeight = 15f;
+
+    [Header("--- 위치 보정 ---")]
     [SerializeField] private Vector3 mapCenterPoint = Vector3.zero;
 
     public override void OnStartServer()
     {
-        InvokeRepeating(nameof(SpawnItem), spawnInterval, spawnInterval);
+        // InvokeRepeating 대신 코루틴 루프 시작
+        StartCoroutine(SpawnLoop());
     }
 
     [Server]
-    protected void SpawnItem()
+    private IEnumerator SpawnLoop()
     {
-        if (itemBoxPrefab == null) return;
+        // 게임 시작 후 첫 대기
+        yield return new WaitForSeconds(spawnInterval);
 
-        // 1. 맵 축소 비율 가져오기
+        while (true)
+        {
+            // 1. 아이템이 생성될 위치를 '미리' 계산
+            Vector3 targetSpawnPos = CalculateSpawnPosition();
+
+            // 2. 경고 단계: 해당 위치에서 소리 재생 (SoundManager 활용)
+            // "ItemDrop"이라는 키워드로 SoundManager에 등록되어 있어야 합니다.
+            if (SoundManager.instance != null)
+            {
+                // 소리는 모든 클라이언트에게 들려야 하므로 SoundManager의 ClientRpc 호출
+                SoundManager.instance.PlaySFXPoint("ItemDropSFX", targetSpawnPos, 1.0f);
+            }
+
+            // [선택 사항] 여기에 "바닥에 빨간 원(Warning Circle)" 같은 시각 효과도 넣을 수 있습니다.
+
+            // 3. 대기 단계: 소리가 들리고 나서 아이템이 떨어질 때까지 기다림
+            yield return new WaitForSeconds(warningDelay);
+
+            // 4. 스폰 단계: 아까 계산해둔 위치에 실제 아이템 생성
+            SpawnItem(targetSpawnPos);
+
+            // 5. 다음 쿨타임 대기
+            yield return new WaitForSeconds(spawnInterval);
+        }
+    }
+
+    // 위치 계산 로직 분리
+    private Vector3 CalculateSpawnPosition()
+    {
         float currentRatio = 1f;
         if (MapShrinker.Instance != null)
         {
             currentRatio = MapShrinker.Instance.CurrentScaleRatio;
         }
 
-        // 2. 동적 반경 계산 (최대 20 * 비율)
         float currentRadius = maxSpawnRadius * currentRatio;
-
-        // 3. 랜덤 좌표 계산
         Vector2 randomCircle = Random.insideUnitCircle * currentRadius;
 
-        // [문제 해결의 핵심]
-        // transform.position(스포너 위치)을 아예 쓰지 않습니다.
-        // 스포너가 떨어지든 말든, 무조건 설정해둔 mapCenterPoint(0,0,0) 기준으로만 계산합니다.
-        Vector3 spawnPos = new Vector3(
+        return new Vector3(
             mapCenterPoint.x + randomCircle.x,
-            mapCenterPoint.y + spawnHeight, // 높이도 고정값 사용
+            mapCenterPoint.y + spawnHeight,
             mapCenterPoint.z + randomCircle.y
         );
+    }
 
-        // 4. 아이템 생성
-        GameObject item = Instantiate(itemBoxPrefab, spawnPos, Quaternion.identity);
+    [Server]
+    private void SpawnItem(Vector3 pos)
+    {
+        if (itemBoxPrefab == null) return;
+
+        GameObject item = Instantiate(itemBoxPrefab, pos, Quaternion.identity);
         NetworkServer.Spawn(item);
     }
 
-    // 기즈모도 스포너 위치가 아니라 맵 중심 기준으로 그립니다.
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
-        // 스포너가 어디 있든 기즈모는 맵 중앙에 표시됨
         Vector3 center = mapCenterPoint + Vector3.up * spawnHeight;
         Gizmos.DrawWireSphere(center, maxSpawnRadius);
 
