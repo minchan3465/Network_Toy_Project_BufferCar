@@ -1072,7 +1072,7 @@ GameObject:
   - component: {fileID: 944507653}
   - component: {fileID: 944507652}
   - component: {fileID: 944507654}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2591,7 +2591,7 @@ GameObject:
   - component: {fileID: 7659447669981570521}
   - component: {fileID: 6101297797514092799}
   - component: {fileID: 504521970550373417}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
