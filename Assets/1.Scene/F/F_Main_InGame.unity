@@ -791,7 +791,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 6442748900738374128, guid: 01cadd193d3453a49892d43061378cc7, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 6375da362316bf24db6a73e5b0c60458, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -888,7 +888,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 6442748900738374128, guid: 01cadd193d3453a49892d43061378cc7, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 240191053e5c40a46803f87b3e95e626, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -7368,6 +7368,10 @@ PrefabInstance:
       propertyPath: m_Resource
       value: 
       objectReference: {fileID: 8300000, guid: 08d447991d1aad8408fc87955ad82ae2, type: 3}
+    - target: {fileID: 3674788909303889778, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3674788909303889778, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 

@@ -51,6 +51,7 @@ public class SoundManager : NetworkBehaviour
             Destroy(gameObject); 
         }
     }
+    
 
     private void OnEnable()
     {
@@ -63,13 +64,16 @@ public class SoundManager : NetworkBehaviour
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if(scene.name == "Main_Title!" || scene.name == "Room!")
+        //StopAllCoroutines();
+
+        if (scene.name == "Main_Title!" || scene.name == "Room!")
         {
             PlayBGM(BGM.TitleBGM);
         }
-        else if(scene.name == "Main_InGame!")
+        else if(scene.name == "F_Main_InGame")
         {
-            PlayBGM(BGM.MainGameBGM);
+            //PlayBGM(BGM.MainGameBGM);
+            StartCoroutine(StartGameSoundSequence());
         }
     }
 
@@ -90,16 +94,33 @@ public class SoundManager : NetworkBehaviour
             sfxSources[0].PlayOneShot(data.clip,data.volum* volumeMultiplier);
         }
     }
+
+    // 특정 효과음을 루프(반복)로 재생할지 선택하는 기능
+    public void PlayLoopSFX(string clipName, int sourceIndex = 0)
+    {
+        SoundData data = sfxClips.Find(x => x.name == clipName);
+        if (data != null && sourceIndex < sfxSources.Length)
+        {
+            sfxSources[sourceIndex].clip = data.clip;
+            sfxSources[sourceIndex].loop = true;
+            sfxSources[sourceIndex].volume = data.volum;
+            sfxSources[sourceIndex].Play();
+        }
+    }
+
     //실제 재생하는 곳
     private void PlaySFXInternal(string clipName)
     {
         SoundData data = sfxClips.Find(x => x.name == clipName);
-        if (data != null)
+        if (data != null&&sfxSources.Length > 1)
         {
 
-            sfxSources[0].PlayOneShot(data.clip,data.volum);
+            sfxSources[1].PlayOneShot(data.clip,data.volum);
         }
     }
+
+    
+
 
     // BGM 재생 함수
     public void PlayBGM(BGM type)
@@ -115,11 +136,34 @@ public class SoundManager : NetworkBehaviour
                 target = MainBGM;
                 break;
         }
+        if (bgmSource.clip == target && bgmSource.isPlaying) return;
 
         bgmSource.Stop();
         bgmSource.clip = target;
         bgmSource.loop = true;
         bgmSource.Play();
+    }
+
+    IEnumerator StartGameSoundSequence()
+    {
+
+        //yield return null;
+
+        // 1. 메인 BGM 시작
+        PlayBGM(BGM.MainGameBGM);
+        Debug.Log("브금 시작");
+
+        // 2. 잠시 후 시동 소리 "부릉" 시작 (루프 재생)
+        yield return new WaitForSeconds(1.0f); // 1초 대기
+        PlayLoopSFX("Engine_IdleSFX", 0);
+        Debug.Log("부릉 소리 시작");
+
+
+        // 3. 잠시 후 "삐삐" 소리 재생 (단발성)
+        yield return new WaitForSeconds(0.5f);
+        RpcPlaySFX("GameStartSFX"); // sfxSources[1]에서 재생됨
+        Debug.Log("경적 소리 시작");
+
     }
 
 }
