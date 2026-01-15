@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 6918037111152811518}
   - component: {fileID: -5221784473865349485}
   - component: {fileID: 8136635153530835336}
+  - component: {fileID: -2177041878565068955}
   m_Layer: 0
   m_Name: PlayerCar
   m_TagString: Player
@@ -170,6 +171,8 @@ MonoBehaviour:
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
+  moveParticle: {fileID: 0}
+  particleThreshold: 2
 --- !u!114 &2002319848022054986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -187,8 +190,10 @@ MonoBehaviour:
   syncInterval: 0
   pushForce: 38
   pushCooldown: 0.2
+  collisionParticlePrefab: {fileID: 0}
   vpower: 0.7
   duration: 0.3
+  deadparticle: {fileID: 0}
 --- !u!114 &1974450758930867227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -304,7 +309,27 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  isRespawning: 0
   playerNumber: 2
+  appearParticlePrefab: {fileID: 0}
+--- !u!114 &-2177041878565068955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 514292793999585233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8806241a8bf114844911be714f6a80e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkPlayer
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  playerNumber: 0
+  nickname: 
+  isReady: 0
 --- !u!1 &2111726238738312953
 GameObject:
   m_ObjectHideFlags: 0

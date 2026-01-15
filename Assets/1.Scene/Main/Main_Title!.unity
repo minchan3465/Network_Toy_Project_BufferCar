@@ -830,17 +830,25 @@ PrefabInstance:
       value: Network_Manager
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: transport
+      value: 
+      objectReference: {fileID: 920553897}
+    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: onlineScene
-      value: Assets/1.Scene/Main/Main_InGame.unity
+      value: Assets/1.Scene/Main/Main_InGame!.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: offlineScene
-      value: Assets/1.Scene/Main/Main_Title.unity
+      value: Assets/1.Scene/Main/Main_Title!.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: playerPrefab
       value: 
-      objectReference: {fileID: 514292793999585233, guid: 655a8ca020730324a871874d79471c5f, type: 3}
+      objectReference: {fileID: 6970800248564378294, guid: 33a9a2768db64f843a81afe47d3dde98, type: 3}
+    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: networkAddress
+      value: 52.79.227.146
+      objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: editorAutoStart
       value: 0
@@ -855,6 +863,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+--- !u!114 &920553897 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6853478524067311285, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+  m_PrefabInstance: {fileID: 920553896}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror.Transports::kcp2k.KcpTransport
 --- !u!1 &989307025
 GameObject:
   m_ObjectHideFlags: 0
@@ -1608,6 +1627,10 @@ PrefabInstance:
     - target: {fileID: 6570536414923605505, guid: ccc8b693d3ca2b74e919309afa214119, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 8879459504596022010, guid: ccc8b693d3ca2b74e919309afa214119, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

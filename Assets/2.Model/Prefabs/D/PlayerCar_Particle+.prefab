@@ -5404,7 +5404,7 @@ GameObject:
   - component: {fileID: 7517677244894276996}
   - component: {fileID: 7201062563975725197}
   - component: {fileID: 721332033141467808}
-  - component: {fileID: 6335605045263851355}
+  - component: {fileID: -3160357476037317387}
   m_Layer: 0
   m_Name: PlayerCar_Particle+
   m_TagString: Player
@@ -5556,7 +5556,7 @@ MonoBehaviour:
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
-  moveParticleSystem: {fileID: 0}
+  moveParticle: {fileID: 3251336972168468041}
   particleThreshold: 1
   groundCheckDistance: 1
   groundLayer:
@@ -5596,7 +5596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
   sceneId: 0
-  _assetId: 1750856868
+  _assetId: 565258576
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -5716,7 +5716,7 @@ MonoBehaviour:
   car: {fileID: 681800734350143724}
   playerNumber: 2
   appearParticlePrefab: {fileID: 0}
---- !u!114 &6335605045263851355
+--- !u!114 &-3160357476037317387
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5725,15 +5725,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 6970800248564378294}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8806241a8bf114844911be714f6a80e3, type: 3}
+  m_Script: {fileID: 11500000, guid: 67d1dd55bd809f84babebf21856fe573, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NetworkPlayer
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  playerNumber: 0
-  nickname: 
-  isReady: 0
+  playerNumber: -1
+  playerHp: -1
+  playerRespawn: {fileID: 0}
+  meshRenderer: {fileID: 8175656362519344762}
 --- !u!1 &8588997018763582332
 GameObject:
   m_ObjectHideFlags: 0
