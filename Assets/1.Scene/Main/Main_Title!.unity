@@ -744,6 +744,14 @@ PrefabInstance:
       propertyPath: offlineScene
       value: Assets/1.Scene/Main/Main_InGame!.unity
       objectReference: {fileID: 0}
+    - target: {fileID: 1683142898129191653, guid: 167a73f7335665d4e9a53e444993e460, type: 3}
+      propertyPath: playerPrefab
+      value: 
+      objectReference: {fileID: 6970800248564378294, guid: 33a9a2768db64f843a81afe47d3dde98, type: 3}
+    - target: {fileID: 1683142898129191653, guid: 167a73f7335665d4e9a53e444993e460, type: 3}
+      propertyPath: maxConnections
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 3201484873366136161, guid: 167a73f7335665d4e9a53e444993e460, type: 3}
       propertyPath: m_LocalPosition.x
       value: 251.56451
@@ -783,6 +791,14 @@ PrefabInstance:
     - target: {fileID: 3201484873366136161, guid: 167a73f7335665d4e9a53e444993e460, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3650879468936068763, guid: 167a73f7335665d4e9a53e444993e460, type: 3}
+      propertyPath: syncDirection
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5034788864681787429, guid: 167a73f7335665d4e9a53e444993e460, type: 3}
+      propertyPath: type
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5058615227066234204, guid: 167a73f7335665d4e9a53e444993e460, type: 3}
       propertyPath: sceneId
