@@ -138,14 +138,14 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 5
   simulationSpeed: 1
-  stopAction: 3
+  stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -5405,7 +5405,7 @@ GameObject:
   - component: {fileID: 7201062563975725197}
   - component: {fileID: 721332033141467808}
   - component: {fileID: -3160357476037317387}
-  - component: {fileID: 275853149367570243}
+  - component: {fileID: 5641249817105288841}
   m_Layer: 0
   m_Name: PlayerCar_0114_1808
   m_TagString: Player
@@ -5689,6 +5689,7 @@ MonoBehaviour:
   - {fileID: 6244597109234425346}
   - {fileID: 0}
   - {fileID: 8588997018763582332}
+  sfxVolume: 1
   ironDuration: 5
   ironMassMultiplier: 5
   ironScaleMultiplier: 1.5
@@ -5715,7 +5716,7 @@ MonoBehaviour:
   isRespawning: 0
   isKinematicSynced: 0
   car: {fileID: 681800734350143724}
-  netplayer: {fileID: 275853149367570243}
+  nplayer: {fileID: 5641249817105288841}
   playerNumber: 2
   appearParticlePrefab: {fileID: 4143439122255155475, guid: d75f41abb5a1fa840adc3bcef1d89353, type: 3}
 --- !u!114 &-3160357476037317387
@@ -5737,7 +5738,7 @@ MonoBehaviour:
   playerHp: -1
   playerRespawn: {fileID: 0}
   meshRenderer: {fileID: 8175656362519344762}
---- !u!114 &275853149367570243
+--- !u!114 &5641249817105288841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

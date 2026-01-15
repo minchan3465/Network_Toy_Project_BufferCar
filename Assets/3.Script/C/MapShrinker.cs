@@ -14,7 +14,7 @@ public class MapShrinker : NetworkBehaviour
     public int shrinkStartTime = 60; // [추가됨] 여기서 시간 관리!
 
     [SerializeField] private float shrinkDuration = 30f;
-    [SerializeField] private float targetRatio = 0.4f;
+    [SerializeField] private Vector3 targetRatio = new Vector3(0.6f, 0.6f, 1.0f);
 
     public float CurrentScaleRatio { get; private set; } = 1f;
 
@@ -29,7 +29,8 @@ public class MapShrinker : NetworkBehaviour
     {
         Instance = this;
         initialScale = transform.localScale;
-        targetScale = initialScale * targetRatio;
+        // Vector3.Scale을 쓰면 한 줄로 끝나서 훨씬 간결해!
+        targetScale = Vector3.Scale(initialScale, targetRatio);
     }
 
     private void OnShrinkStateChange(bool oldState, bool newState)
@@ -83,22 +84,23 @@ public class MapShrinker : NetworkBehaviour
         if (!isShrinking) return;
 
         elapsedTime += Time.deltaTime;
-        float progress = elapsedTime / shrinkDuration;
+        float progress = Mathf.Min(elapsedTime / shrinkDuration, 1f);
 
-        CurrentScaleRatio = Mathf.Lerp(1f, targetRatio, progress);
+        // 전체적인 진행률 파악을 위해 x축 비율을 대표로 저장
+        CurrentScaleRatio = Mathf.Lerp(1f, targetRatio.x, progress);
+
+        // 부드럽게 크기 변경
         transform.localScale = Vector3.Lerp(initialScale, targetScale, progress);
 
-        if (progress >= 1f)
-        {
-            FinishShrinking();
-        }
+        if (progress >= 1f) FinishShrinking();
     }
 
     [Server]
     private void FinishShrinking()
     {
         isShrinking = false;
-        CurrentScaleRatio = targetRatio;
+        // targetRatio.x를 대입해서 float 타입을 맞춰줌
+        CurrentScaleRatio = targetRatio.x;
         transform.localScale = targetScale;
         RpcStopShrinking(targetScale);
     }
