@@ -159,10 +159,19 @@ public class SoundManager : NetworkBehaviour
         Debug.Log("부릉 소리 시작");
 
 
-        // 3. 잠시 후 "삐삐" 소리 재생 (단발성)
+        // 3. 경적 소리 재생 (서버일 때만 RPC 호출)
         yield return new WaitForSeconds(0.5f);
-        RpcPlaySFX("GameStartSFX"); // sfxSources[1]에서 재생됨
-        Debug.Log("경적 소리 시작");
+
+        if (isServer)
+        {
+            RpcPlaySFX("GameStartSFX");
+        }
+        else
+        {
+            // 서버가 없는 로컬 테스트 환경이라면 직접 재생 함수 호출
+            PlaySFXInternal("GameStartSFX");
+        }
+        Debug.Log("경적 소리 로직 실행");
 
     }
 
