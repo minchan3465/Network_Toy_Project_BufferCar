@@ -24,7 +24,7 @@ public class PlayerRespawn : NetworkBehaviour
         transform.TryGetComponent(out rb);
 
         List<Transform> startPositions = NetworkManager.startPositions;
-        //playerNumber = netplayer.playerNumber;
+        playerNumber = netplayer.playerNumber;
 
         startPositions.Sort((a, b) => string.Compare(a.name, b.name));
 
