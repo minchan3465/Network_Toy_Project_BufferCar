@@ -5405,6 +5405,7 @@ GameObject:
   - component: {fileID: 7201062563975725197}
   - component: {fileID: 721332033141467808}
   - component: {fileID: -3160357476037317387}
+  - component: {fileID: 3395608283781625710}
   m_Layer: 0
   m_Name: PlayerCar_Particle+
   m_TagString: Player
@@ -5556,7 +5557,7 @@ MonoBehaviour:
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
-  moveParticle: {fileID: 3251336972168468041}
+  moveParticleSystem: {fileID: 0}
   particleThreshold: 1
   groundCheckDistance: 1
   groundLayer:
@@ -5579,10 +5580,10 @@ MonoBehaviour:
   syncInterval: 0
   pushForce: 38
   pushCooldown: 0.2
-  collisionParticlePrefab: {fileID: 8167223647308766477, guid: 80c7b38efb55bf5438f95f9010475660, type: 3}
+  deadparticle: {fileID: 6227736869750367948, guid: f975ba349939234448b941615029ce7f, type: 3}
   vpower: 0.7
   duration: 0.3
-  deadparticle: {fileID: 6227736869750367948, guid: f975ba349939234448b941615029ce7f, type: 3}
+  collisionParticlePrefab: {fileID: 8167223647308766477, guid: 80c7b38efb55bf5438f95f9010475660, type: 3}
 --- !u!114 &2019117917935106874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5688,6 +5689,7 @@ MonoBehaviour:
   - {fileID: 6244597109234425346}
   - {fileID: 0}
   - {fileID: 8588997018763582332}
+  sfxVolume: 1
   ironDuration: 5
   ironMassMultiplier: 5
   ironScaleMultiplier: 1.5
@@ -5714,6 +5716,7 @@ MonoBehaviour:
   isRespawning: 0
   isKinematicSynced: 0
   car: {fileID: 681800734350143724}
+  netplayer: {fileID: 3395608283781625710}
   playerNumber: 2
   appearParticlePrefab: {fileID: 0}
 --- !u!114 &-3160357476037317387
@@ -5731,10 +5734,27 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  playerNumber: -1
-  playerHp: -1
-  playerRespawn: {fileID: 0}
+  playerIndex: -1
   meshRenderer: {fileID: 8175656362519344762}
+  networkPlayer: {fileID: 0}
+--- !u!114 &3395608283781625710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6970800248564378294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8806241a8bf114844911be714f6a80e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkPlayer
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  playerNumber: 0
+  nickname: 
+  isReady: 0
 --- !u!1 &8588997018763582332
 GameObject:
   m_ObjectHideFlags: 0
