@@ -103,11 +103,11 @@ public class ItemEffectHandler : NetworkBehaviour
         RpcControlEffect(2, true);
         StartCoroutine(StopParticleDelay(2, empBlastVfxDuration));
 
-        // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
+        
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
 
-        // Unity 2023+ (Unity 6) 기준: FindObjectsByType
+        
         PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
 
         foreach (PlayerController target in allPlayers)
@@ -146,12 +146,17 @@ public class ItemEffectHandler : NetworkBehaviour
         Debug.Log($"<color=red>[EMP] 스턴 시작! 유지 시간: {time}초</color>");
 
         controller.IsStunned = true;
+
+        // [서버용] 서버에서도 꺼줍니다.
         controller.enabled = false;
+
+        // [추가] 클라이언트들에게도 "컨트롤러 꺼!"라고 명령합니다.
+        // 이것이 PlayerController.cs를 건드리지 않고 해결하는 핵심입니다.
+        RpcSetControllerState(false);
 
         float originalDrag = rb.linearDamping;
         rb.linearDamping = 2.0f;
 
-        // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
 
@@ -162,11 +167,29 @@ public class ItemEffectHandler : NetworkBehaviour
         if (effectRoots.Length > 3) RpcControlEffect(3, false);
 
         controller.IsStunned = false;
+
+        // [서버용] 다시 켭니다.
         controller.enabled = true;
+
+        // [추가] 클라이언트들에게도 "이제 다시 켜!"라고 명령합니다.
+        RpcSetControllerState(true);
+
         rb.linearDamping = originalDrag;
 
         currentStunCoroutine = null;
         Debug.Log($"<color=green>[EMP] 스턴 해제 완료</color>");
+    }
+
+    // [신규 추가] 클라이언트의 컴포넌트를 제어하는 RPC 함수
+    [ClientRpc]
+    private void RpcSetControllerState(bool isEnabled)
+    {
+        if (controller != null)
+        {
+            // 컨트롤러가 꺼지면 FixedUpdate가 멈추므로
+            // 속도 0 고정 로직도 실행되지 않아, 밀리는 힘이 정상 적용됩니다.
+            controller.enabled = isEnabled;
+        }
     }
 
     #endregion
