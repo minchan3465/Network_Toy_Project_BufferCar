@@ -5556,7 +5556,7 @@ MonoBehaviour:
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
-  moveParticleSystem: {fileID: 0}
+  moveParticleSystem: {fileID: 8612059781073760455}
   particleThreshold: 1
   groundCheckDistance: 1
   groundLayer:
