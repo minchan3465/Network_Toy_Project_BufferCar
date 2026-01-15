@@ -7,20 +7,19 @@ public class PlayerManager : NetworkBehaviour {
     // 서버가 정해주는 순번 (모든 클라이언트에게 동기화)
     [SyncVar(hook = nameof(OnIndexChanged))]
     public int playerNumber = -1;
-    [SyncVar(hook = nameof(OnHpChanged))]
-    public int playerHp = -1;
+	[SyncVar(hook = nameof(OnHpChanged))]
+	public int playerHp = -1;
 
-    public PlayerRespawn playerRespawn;
+	public PlayerRespawn playerRespawn;
     public MeshRenderer meshRenderer;
-
-	// 서버에서 이 객체가 생성(Spawn)될 때 실행됨
-	// GameManager에게 이 플레이어를 등록해달라고 요청
-	// 근데 내 플레이어가 아니면 꺼지쇼
 
 	private void Awake() {
         TryGetComponent(out playerRespawn);
     }
 
+
+	// 서버에서 이 객체가 생성(Spawn)될 때 실행됨
+	// GameManager에게 이 플레이어를 등록해달라고 요청
     // 서버 접속했을 경우, 번호 정해주쇼~
 	public override void OnStartServer() {
         base.OnStartServer();
@@ -34,12 +33,13 @@ public class PlayerManager : NetworkBehaviour {
 		playerRespawn.playerNumber = playerNumber;
         meshRenderer.materials[0].color = setCarBodyColor(playerNumber);
     }
-    private void OnHpChanged(int oldHp, int newHp) {
-        if (playerHp > 0) return;
-        //playerRespawn.isAlive = false;
-    }
-    //번호 바뀐김에 색도 바꿉시다~
-    private Color setCarBodyColor(int index) {
+	private void OnHpChanged(int oldHp, int newHp) {
+		Debug.Log("내 체력은 : " + playerHp);
+		if (playerHp > 0) return;
+		//playerRespawn.isAlive = false;
+	}
+	//번호 바뀐김에 색도 바꿉시다~
+	private Color setCarBodyColor(int index) {
         Color color;
         switch(index) {
             case 0:
@@ -64,13 +64,12 @@ public class PlayerManager : NetworkBehaviour {
 	//-----------추락
 	private void OnTriggerEnter(Collider other) {
 		if (other.CompareTag("Deadzone")) {
-			OnFall();
+            OnFall();
 		}
 	}
 
 	public void OnFall() {
         if (isLocalPlayer) {
-            //Debug.Log("응애 나 떨어짐");
             CmdRequestFell();
         }
     }

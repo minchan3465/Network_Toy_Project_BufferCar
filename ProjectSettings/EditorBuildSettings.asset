@@ -17,13 +17,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/1.Scene/D/Server_Scene.unity
     guid: bdeda1c98c529924a8de56eee07c92ff
-  - enabled: 0
+  - enabled: 1
     path: Assets/1.Scene/D/Main_Title.unity
     guid: ef2a93151c6f91049a9fb0d89c345509
   - enabled: 0
     path: Assets/1.Scene/D/D_Room.unity
     guid: e74ee4ec14b6fbf45a5d76fa1dc09bec
-  - enabled: 0
+  - enabled: 1
     path: Assets/1.Scene/D/B_Main_InGame.unity
     guid: 863be5316ec27a342b991218c2b021dc
   - enabled: 0

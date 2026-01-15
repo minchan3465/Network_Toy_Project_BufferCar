@@ -20,9 +20,6 @@ public class GameManager : NetworkBehaviour {
 
 	public readonly SyncList<int> playersHp = new SyncList<int>();
 
-	[SyncVar(hook = nameof(OnMiddleTextChanged))] public string middleText;
-	[SyncVar(hook = nameof(OnWinTextChanged))] public string winnerText;
-
 	[SyncVar] public int winnerNumber;
 
 	//모두가 개인적으로 간직하는거
@@ -32,6 +29,9 @@ public class GameManager : NetworkBehaviour {
 	public TMP_Text winnerTextUI;
 	public MeshRenderer winnerCar;
 	public GameObject winnerCamera;
+
+	public TMP_Text feverTextUI;
+	private bool isFever = false;
 
 	//Server가 관리할거
 	public List<PlayerManager> _connectedPlayers = new List<PlayerManager>();
@@ -60,8 +60,9 @@ public class GameManager : NetworkBehaviour {
 		_connectedPlayers.Clear();
 		gameTime = 99;
 		winnerNumber = -1;
-		middleText = string.Empty;
-		winnerText = string.Empty;
+
+		UpdateMiddleTextUI(string.Empty);
+		UpdateWinTextUI(string.Empty);
 
 		// 2. 현재 씬에 있는 모든 PlayerIdentity 객체를 찾음
 		// (실제 서비스에서는 NetworkManager에서 생성될 때 리스트에 추가하는 방식이 더 정확합니다)
@@ -101,8 +102,8 @@ public class GameManager : NetworkBehaviour {
 	//------------ 추락시
 	[Server]
 	public void ProcessPlayerFell(int playerNum) {
-		if (playerNum < 0 || playerNum >= playersHp.Count) return;
 		playersHp[playerNum] -= 1;
+		Debug.Log(playerNum + "떨어짐! 남은 HP : " + playersHp[playerNum]);
 		_connectedPlayers[playerNum].playerHp = playersHp[playerNum];
 
 		//플레이어 목숨 체크
@@ -144,17 +145,17 @@ public class GameManager : NetworkBehaviour {
 		isGameStart = false;
 		this.winnerNumber = winnerNumber;
 		StopCoroutine("timer_countdown");
-		middleText = "GAME SET!";
+		OffFeverTime();
+		UpdateMiddleTextUI("GAME SET!");
 		StartCoroutine("Game_Result");
 	}
 	[Server]
 	public IEnumerator Game_Result() {
 		yield return new WaitForSeconds(3f);
-		middleText = string.Empty;
 
-		onWinnerCamera();
+		string str = string.Empty;
 		if (winnerNumber.Equals(-1)) {
-			winnerText = "NO ONE\nDRAW!";
+			str = "no one\ndraw";
 		} else {
 			string color;
 			switch (winnerNumber) {
@@ -174,8 +175,12 @@ public class GameManager : NetworkBehaviour {
 					color = string.Empty;
 					break;
 			}
-			winnerText = $"<color={color}>playername</color>\n{winnerNumber + 1}P Win!";
+			str = $"<color={color}>playername</color>\n{winnerNumber + 1}P Win!";
 		}
+
+		UpdateMiddleTextUI(string.Empty);
+		onWinnerCamera();
+		UpdateWinTextUI(str);
 
 		//임시 재시작
 		yield return new WaitForSeconds(5f);
@@ -184,22 +189,15 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	//중간 텍스트 변경시
-	private void OnMiddleTextChanged(string oldText, string newText) {
-		UpdateMiddleTextUI();
+	[ClientRpc]
+	private void UpdateMiddleTextUI(string str) {
+		middleTextUI.text = str;
 	}
 
-	private void UpdateMiddleTextUI() {
-		middleTextUI.text = middleText;
-	}
-
-	//승리 텍스트 변경시
-	private void OnWinTextChanged(string oldText, string newText) {
-		UpdateWinTextUI();
-	}
-
+	[ClientRpc]
 	//승리 텍스트 UI에 text값 입력, 화면 끄기
-	private void UpdateWinTextUI() {
-		winnerTextUI.text = winnerText;
+	private void UpdateWinTextUI(string str) {
+		winnerTextUI.text = str;
 	}
 
 	//승리 시, 카메라 활성화. 시간 후에 종료할거임.
@@ -208,12 +206,10 @@ public class GameManager : NetworkBehaviour {
 		winnerCar.materials[0].color = setCarBodyColor(winnerNumber);
 		winnerCamera.SetActive(true);
 	}
-
 	[ClientRpc]
 	private void offWinnerCamera() {
 		winnerCamera.SetActive(false);
 	}
-
 	private Color setCarBodyColor(int index) {
 		Color color;
 		switch (index) {
@@ -267,15 +263,53 @@ public class GameManager : NetworkBehaviour {
 			yield return wfs;
 			gameTime -= 1;
 		}
-		Game_Set(-1);
+		//피버타임!!!!
+		OnFeverTime();
 	}
 
 	private void OnTimerChanged(int oldTime, int newTime) {
 		UpdateGameTimer();
 	}
-
 	private void UpdateGameTimer() {
 		if (gameTime < 0) return;
 		gameTimer.text = gameTime.ToString();
+	}
+
+
+	[ClientRpc]
+	private void OnFeverTime() {
+		isFever = true;
+		feverTextUI.text = "FEVER!";
+		StartCoroutine("feverTextColorChange");
+	}
+	private IEnumerator feverTextColorChange() {
+		WaitForSeconds wfs = new WaitForSeconds(0.01f);
+		float color_index = 0;
+		bool isMaxColor = false;
+		while(true) {
+			if(!isMaxColor) {
+				color_index += 0.01f;
+				if(color_index > 1f) {
+					color_index = 1;
+					isMaxColor = true;
+				}
+			} else {
+				color_index -= 0.01f;
+				if (color_index < 0f) {
+					color_index = 0;
+					isMaxColor = false;
+				}
+			}
+			feverTextUI.color = new Color(1, color_index, color_index);
+			yield return wfs;
+		}
+	}
+
+	[ClientRpc]
+	private void OffFeverTime() {
+		if (!isFever) return;
+		isFever = false;
+		feverTextUI.text = string.Empty;
+		StopCoroutine("feverTextColorChange");
 	}
 }
