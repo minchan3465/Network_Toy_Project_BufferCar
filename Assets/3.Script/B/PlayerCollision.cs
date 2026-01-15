@@ -102,7 +102,7 @@ public class PlayerCollision : NetworkBehaviour
 
             RPCSoundandParticle(contactPoint, contactNormal); // 닿은 위치에서 파티클 넣어주시면 됩니다.
             //사운드의 경우 이번에 3D사운드를 사용하지 않을 것 같습니다.(모노 정도면 OK)
-            //(카메라 시점이 멀리 있어서 포인트에서 사운드를 줘도 입체감 살리는게 불가능함) 
+            //(카메라 시점이 멀리 있어서 포인트에서 사운드를 줘도 입체감 살리는게 불가능함)
 
             // 일정 시간 후 서버에서 변수만 false로 돌려줌
             Invoke(nameof(ServerResetPushStatus), (float)pushCooldown);
