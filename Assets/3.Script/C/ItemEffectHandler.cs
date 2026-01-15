@@ -63,18 +63,30 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     private IEnumerator IronBodyRoutine()
     {
-        // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("Power UpSFX", transform.position, 1.0f, sfxVolume);
 
-        rb.mass = defaultMass * ironMassMultiplier;
+        float heavyMass = defaultMass * ironMassMultiplier;
+
+        // 1. 서버에서의 질량 변경
+        rb.mass = heavyMass;
+
+        // 2. [추가] 클라이언트에게도 질량 바꾸라고 명령
+        RpcSetMass(heavyMass);
+
         RpcSetScale(defaultScale * ironScaleMultiplier);
 
         yield return new WaitForSeconds(ironDuration);
 
+        // 3. 서버 질량 원상복구
         rb.mass = defaultMass;
+
+        // 4. [추가] 클라이언트 질량 원상복구
+        RpcSetMass(defaultMass);
+
         RpcSetScale(defaultScale);
     }
+
 
     [Server]
     private IEnumerator NitroChargeRoutine()
@@ -197,6 +209,15 @@ public class ItemEffectHandler : NetworkBehaviour
     #region 클라이언트 시각 처리
 
     [ClientRpc] private void RpcSetScale(Vector3 s) => transform.localScale = s;
+
+    [ClientRpc]
+    private void RpcSetMass(float newMass)
+    {
+        if (rb == null) rb = GetComponent<Rigidbody>();
+        rb.mass = newMass;
+        // 디버깅용 (테스트 후 삭제 가능)
+        // Debug.Log($"[IronBody] 질량 변경됨: {rb.mass}");
+    }
 
     [ClientRpc]
     private void RpcControlEffect(int index, bool isPlaying)
