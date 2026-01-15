@@ -12,6 +12,11 @@ public class ItemEffectHandler : NetworkBehaviour
     [Tooltip("[0]:Empty, [1]:Nitro, [2]:EMP_Cast, [3]:Stun_Hit")]
     [SerializeField] private GameObject[] effectRoots;
 
+    [Header("--- 사운드 설정 ---")]
+    [Tooltip("아이템 효과음 볼륨 (0.0 ~ 1.0)")]
+    [Range(0f, 1f)]
+    [SerializeField] private float sfxVolume = 1.0f; // [추가됨] 인스펙터 제어용
+
     [Header("--- 밸런스 설정 (Iron Body) ---")]
     [SerializeField] private float ironDuration = 5f;
     [SerializeField] private float ironMassMultiplier = 5f;
@@ -33,7 +38,7 @@ public class ItemEffectHandler : NetworkBehaviour
     void Start()
     {
         controller = GetComponent<PlayerController>();
-        rb = controller.Rb; //
+        rb = controller.Rb;
 
         defaultMass = rb.mass;
         defaultSpeed = controller.Speed;
@@ -58,8 +63,9 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     private IEnumerator IronBodyRoutine()
     {
+        // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
         if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("PowerUpSFX", transform.position, 1.0f);
+            SoundManager.instance.PlaySFXPoint("Power UpSFX", transform.position, 1.0f, sfxVolume);
 
         rb.mass = defaultMass * ironMassMultiplier;
         RpcSetScale(defaultScale * ironScaleMultiplier);
@@ -75,8 +81,9 @@ public class ItemEffectHandler : NetworkBehaviour
     {
         RpcControlEffect(1, true);
 
+        // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
         if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("Burst_ImpactSFX", transform.position, 1.0f);
+            SoundManager.instance.PlaySFXPoint("Burst_ImpactSFX", transform.position, 1.0f, sfxVolume);
 
         controller.Speed = defaultSpeed * nitroSpeedMultiplier;
         rb.AddForce(transform.forward * nitroImpulseForce, ForceMode.Impulse);
@@ -88,33 +95,29 @@ public class ItemEffectHandler : NetworkBehaviour
         controller.Speed = defaultSpeed;
     }
 
-    // [핵심 수정] EMP 로직 변경: 모든 PlayerController를 직접 찾습니다.
     [Server]
     private void Svr_UseEMP()
     {
-        Debug.Log($"[EMP] {name}가 EMP 발동!"); // 디버그 로그 1
+        Debug.Log($"[EMP] {name}가 EMP 발동!");
 
         RpcControlEffect(2, true);
         StartCoroutine(StopParticleDelay(2, empBlastVfxDuration));
 
+        
         if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f);
+            SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
 
-        // 1. 씬에 있는 모든 PlayerController를 찾습니다. (연결 루프보다 확실함)
-        // Unity 2023+ (Unity 6) 기준: FindObjectsByType
-        // 이전 버전이라면: FindObjectsOfType<PlayerController>()
+        
         PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
 
         foreach (PlayerController target in allPlayers)
         {
-            // 2. 나 자신은 제외
             if (target.gameObject == gameObject) continue;
 
-            // 3. 대상의 핸들러 가져오기
             var targetHandler = target.GetComponent<ItemEffectHandler>();
             if (targetHandler != null)
             {
-                Debug.Log($"[EMP] 타겟 발견: {target.name} -> 스턴 적용 시도"); // 디버그 로그 2
+                Debug.Log($"[EMP] 타겟 발견: {target.name} -> 스턴 적용 시도");
                 targetHandler.Svr_ApplyStun(empStunDuration);
             }
         }
@@ -131,14 +134,10 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     public void Svr_ApplyStun(float time)
     {
-        // 1. 이미 스턴 타이머가 돌고 있다면? -> 강제 종료! (초기화)
-        // 이걸 안 하면 "1초 남은 이전 타이머"가 방금 건 20초짜리 스턴을 1초 뒤에 풀어버립니다.
         if (currentStunCoroutine != null)
         {
             StopCoroutine(currentStunCoroutine);
         }
-
-        // 2. 새로운 타이머 시작
         currentStunCoroutine = StartCoroutine(StunRoutine(time));
     }
 
@@ -146,35 +145,51 @@ public class ItemEffectHandler : NetworkBehaviour
     {
         Debug.Log($"<color=red>[EMP] 스턴 시작! 유지 시간: {time}초</color>");
 
-        // [핵심 변경] IsStunned만 켜는 게 아니라, 컨트롤러 자체를 잠시 끕니다.
-        // 이렇게 하면 PlayerController의 FixedUpdate가 안 돌아가서 속도 0 고정이 발생하지 않습니다.
-        controller.IsStunned = true; // 상태 표시는 유지 (애니메이션 등을 위해)
-        controller.enabled = false;  // <--- 이것이 마법의 코드입니다.
+        controller.IsStunned = true;
 
-        // [디테일] 조종이 꺼지면 얼음판처럼 미끄러지므로, 저항을 높여서 엔진 꺼진 차처럼 만듭니다.
-        float originalDrag = rb.linearDamping; // (Unity 6 기준, 구버전은 drag)
+        // [서버용] 서버에서도 꺼줍니다.
+        controller.enabled = false;
+
+        // [추가] 클라이언트들에게도 "컨트롤러 꺼!"라고 명령합니다.
+        // 이것이 PlayerController.cs를 건드리지 않고 해결하는 핵심입니다.
+        RpcSetControllerState(false);
+
+        float originalDrag = rb.linearDamping;
         rb.linearDamping = 2.0f;
 
-        // 피격 효과음 및 이펙트
         if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f);
+            SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
 
         if (effectRoots.Length > 3) RpcControlEffect(3, true);
 
-        // --- 대기 ---
         yield return new WaitForSeconds(time);
-        // -----------
 
-        // 해제 로직
         if (effectRoots.Length > 3) RpcControlEffect(3, false);
 
-        // [원상 복구]
         controller.IsStunned = false;
-        controller.enabled = true; // 다시 켜서 조종 가능하게 함
-        rb.linearDamping = originalDrag; // 저항 복구
+
+        // [서버용] 다시 켭니다.
+        controller.enabled = true;
+
+        // [추가] 클라이언트들에게도 "이제 다시 켜!"라고 명령합니다.
+        RpcSetControllerState(true);
+
+        rb.linearDamping = originalDrag;
 
         currentStunCoroutine = null;
         Debug.Log($"<color=green>[EMP] 스턴 해제 완료</color>");
+    }
+
+    // [신규 추가] 클라이언트의 컴포넌트를 제어하는 RPC 함수
+    [ClientRpc]
+    private void RpcSetControllerState(bool isEnabled)
+    {
+        if (controller != null)
+        {
+            // 컨트롤러가 꺼지면 FixedUpdate가 멈추므로
+            // 속도 0 고정 로직도 실행되지 않아, 밀리는 힘이 정상 적용됩니다.
+            controller.enabled = isEnabled;
+        }
     }
 
     #endregion
@@ -212,6 +227,4 @@ public class ItemEffectHandler : NetworkBehaviour
     }
 
     #endregion
-
-
 }
