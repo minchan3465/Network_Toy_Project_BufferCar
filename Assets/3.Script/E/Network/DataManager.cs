@@ -164,7 +164,7 @@ public class DataManager : MonoBehaviour
             {
                 return false;
             }
-            string sqlCommand = string.Format(@"SELECT User_Name, User_Password FROM userinfo WHERE User_Name='{0}' AND User_Password = '{1}';", _name, _paasword);
+            string sqlCommand = string.Format(@"SELECT User_Name, User_Password, User_Nic, User_Rate FROM userinfo WHERE User_Name='{0}' AND User_Password = '{1}';", _name, _paasword);
 
             MySqlCommand command = new MySqlCommand(sqlCommand, connection);
             reader = command.ExecuteReader();
@@ -174,8 +174,52 @@ public class DataManager : MonoBehaviour
                 {
                     string name = (reader.IsDBNull(0) ? string.Empty : reader["User_Name"].ToString());
                     string pwd = (reader.IsDBNull(1) ? string.Empty : reader["User_Password"].ToString());
+                    string nic = (reader.IsDBNull(2) ? string.Empty : reader["User_Nic"].ToString());
+                    int rate = (reader.IsDBNull(3) ? 0 : int.Parse(reader["User_Rate"].ToString()));
                     //string num = (reader.IsDBNull(2) ? string.Empty : reader["User_Rate"].ToString());
                     if (!name.Equals(string.Empty) || !pwd.Equals(string.Empty)/* || !num.Equals(string.Empty)*/)
+                    {//데이터 정상
+                        playerInfo = new PlayerInfo(name, nic, rate);
+                        if (!reader.IsClosed) reader.Close();
+                        return true;
+                    }
+                    else
+                    {
+                        if (!reader.IsClosed) reader.Close();
+                        return false;
+                    }
+                }
+            }
+            if (!reader.IsClosed) reader.Close();
+            return false;
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            if (!reader.IsClosed) reader.Close();
+            return false;
+        }
+    }
+    public bool SignupIDCheck(string _name)
+    {
+        try
+        {
+            if (!Connection_Check(connection))
+            {
+                return false;
+            }
+            //SELECT User_Name FROM userinfo WHERE User_Name = 'lwj';
+            string sqlCommand = string.Format(@"SELECT User_Name FROM userinfo WHERE User_Name='{0}';", _name);
+
+            MySqlCommand command = new MySqlCommand(sqlCommand, connection);
+            reader = command.ExecuteReader();
+            if (reader.HasRows)
+            {// 조회된 데이터가 있는지 확인
+                while (reader.Read())
+                {
+                    string name = (reader.IsDBNull(0) ? string.Empty : reader["User_Name"].ToString());
+                    //string num = (reader.IsDBNull(2) ? string.Empty : reader["User_Rate"].ToString());
+                    if (!name.Equals(string.Empty))
                     {//데이터 정상
                         if (!reader.IsClosed) reader.Close();
                         return true;
@@ -197,7 +241,7 @@ public class DataManager : MonoBehaviour
             return false;
         }
     }
-    public bool SignupCheck(string _name)
+    public bool SignupNicCheck(string _nic)
     {
         try
         {
@@ -206,7 +250,7 @@ public class DataManager : MonoBehaviour
                 return false;
             }
             //SELECT User_Name FROM userinfo WHERE User_Name = 'lwj';
-            string sqlCommand = string.Format(@"SELECT User_Name FROM userinfo WHERE User_Name='{0}';", _name);
+            string sqlCommand = string.Format(@"SELECT User_Nic FROM userinfo WHERE User_Nic='{0}';", _nic);
 
             MySqlCommand command = new MySqlCommand(sqlCommand, connection);
             reader = command.ExecuteReader();
@@ -214,9 +258,9 @@ public class DataManager : MonoBehaviour
             {// 조회된 데이터가 있는지 확인
                 while (reader.Read())
                 {
-                    string name = (reader.IsDBNull(0) ? string.Empty : reader["User_Name"].ToString());
+                    string Nic = (reader.IsDBNull(0) ? string.Empty : reader["User_Nic"].ToString());
                     //string num = (reader.IsDBNull(2) ? string.Empty : reader["User_Rate"].ToString());
-                    if (!name.Equals(string.Empty))
+                    if (!Nic.Equals(string.Empty))
                     {//데이터 정상
                         if (!reader.IsClosed) reader.Close();
                         return true;

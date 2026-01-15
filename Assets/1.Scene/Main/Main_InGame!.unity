@@ -637,7 +637,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.522
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1890,9 +1890,25 @@ PrefabInstance:
       propertyPath: sfxClips.Array.data[2].clip
       value: 
       objectReference: {fileID: 8300000, guid: f00ea0779a98b5c40bb8405af81161ac, type: 3}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[7].volum
+      value: 0.567
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[8].volum
+      value: 0.425
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[9].volum
+      value: 0.299
+      objectReference: {fileID: 0}
+    - target: {fileID: 3674788909303889778, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3674788909303889778, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
       propertyPath: m_Volume
-      value: 0.11
+      value: 0.169
       objectReference: {fileID: 0}
     - target: {fileID: 6183502103403531386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2405,7 +2421,8 @@ MonoBehaviour:
   playerPrefab: {fileID: 6970800248564378294, guid: 33a9a2768db64f843a81afe47d3dde98, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 4094428297778913346, guid: fdad2ff8f108396438db56e15ed28b65, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2

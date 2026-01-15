@@ -9,25 +9,27 @@ public class PlayerRespawn : NetworkBehaviour
     private Rigidbody rb;
     [SyncVar(hook = nameof(OnRespawnStateChanged))]
     public bool isRespawning = false;
-
+    // 물리 고정 상태 동기화 (상대방 화면에서도 Kinematic이 되도록)
     [SyncVar(hook = nameof(OnKinematicChanged))]
     public bool isKinematicSynced = false;
-
     private GameObject respawn_ob;
     [SerializeField] private GameObject car;
-    [SerializeField] private NetworkPlayer netplayer;
+    [SerializeField] private NetworkPlayer nplayer;
 
-    public int playerNumber = -1;
+    public int playerNumber = -1;//값 쏴주면 받아주세요
 
     public override void OnStartLocalPlayer()
     {
-        transform.TryGetComponent(out rb);
+        transform.TryGetComponent(out rb); //player한테 넣어주세요
+
+        playerNumber = nplayer.playerNumber;
 
         List<Transform> startPositions = NetworkManager.startPositions;
-        playerNumber = netplayer.playerNumber;
 
+        // 이름순 정렬 (순서 꼬임 방지) 0123
         startPositions.Sort((a, b) => string.Compare(a.name, b.name));
 
+        // 부여받은 번호가 있고, 리스트 범위 내에 있다면 해당 위치 사용
         if (playerNumber != -1 && playerNumber < startPositions.Count)
         {
             Transform targetPos = startPositions[playerNumber];
@@ -44,37 +46,16 @@ public class PlayerRespawn : NetworkBehaviour
 
     #region 리스폰 로직
 
-    //서버에서 리스폰을 시작하는 함수 (Collision에서 호출용)
-    [Server]
-    public void ServerStartRespawn()
-    {
-        if (isRespawning) return;
-
-        isRespawning = true;
-        isKinematicSynced = true;
-
-        TargetRpcRespawn(connectionToClient);
-        Invoke(nameof(ResetRespawnFlag), 3.0f);
-    }
-
-    [Command]
-    public void CmdRequestRespawn()
-    {
-        ServerStartRespawn(); // 로직 통합
-    }
-
-    [Server]
-    private void ResetRespawnFlag() => isRespawning = false;
-
+    // 변수 값이 변할 때마다 모든 클라이언트에서 실행 (동기화 핵심)
     private void OnRespawnStateChanged(bool oldVal, bool newVal)
     {
         if (car == null) return;
 
-        if (newVal == true)
+        if (newVal == true) // 리스폰 시작: 차 숨김
         {
             car.SetActive(false);
         }
-        else
+        else // 리스폰 위치 이동 완료: 깜빡임 시작
         {
             StartCoroutine(BlinkVisuals());
         }
@@ -88,7 +69,6 @@ public class PlayerRespawn : NetworkBehaviour
             rb.isKinematic = newVal;
         }
     }
-
     private IEnumerator BlinkVisuals()
     {
         float duration = 2.0f;
@@ -103,9 +83,12 @@ public class PlayerRespawn : NetworkBehaviour
         }
         car.SetActive(true);
 
+        // 깜빡임이 끝난 "이 시점"에 모든 클라이언트의 물리 엔진을 켭니다.
         if (isLocalPlayer)
         {
             CmdSetKinematic(false);
+
+            // 물리 해제 직후 속도 확실히 초기화 (버그 방지)
             if (rb != null)
             {
                 rb.linearVelocity = Vector3.zero;
@@ -116,6 +99,22 @@ public class PlayerRespawn : NetworkBehaviour
 
     [Command]
     private void CmdSetKinematic(bool state) => isKinematicSynced = state;
+
+    [Command]
+    public void CmdRequestRespawn()
+    {
+        if (isRespawning) return;
+
+        isRespawning = true;
+        isKinematicSynced = true; // 서버에서 물리 고정 시작
+
+        TargetRpcRespawn(connectionToClient);
+        Invoke(nameof(ResetRespawnFlag), 3.0f);
+    }
+
+    [Server]
+    private void ResetRespawnFlag() => isRespawning = false;
+
 
     private Coroutine respawnRoutine;
     [TargetRpc]
@@ -133,15 +132,15 @@ public class PlayerRespawn : NetworkBehaviour
 
     private IEnumerator RespawnSequence()
     {
+        // 1초 대기 (추락한 곳에서 잠시 멈춤), 파티클 시간에 따라 시간 바꿔야됌
         yield return new WaitForSeconds(1f);
-
-        if (respawn_ob != null)
-        {
-            transform.position = respawn_ob.transform.position;
-            transform.rotation = respawn_ob.transform.rotation;
-        }
+        // 리스폰 위치로 이동
+        transform.position = respawn_ob.transform.position;
+        transform.rotation = respawn_ob.transform.rotation;
 
         CmdRequestAppearEffect(transform.position);
+        //공중에서 잠시 대기 여기서도 부활 파티클 같은거 있으면 좋을 것 같습니다.(공중에 그냥 가만히 있음)
+
         respawnRoutine = null;
     }
     #endregion
@@ -150,29 +149,51 @@ public class PlayerRespawn : NetworkBehaviour
     [SerializeField] private GameObject appearParticlePrefab;
 
     [Command]
-    void CmdRequestAppearEffect(Vector3 pos) => RpcPlayAppearEffect(pos);
+    void CmdRequestAppearEffect(Vector3 pos)
+    {
+        RpcPlayAppearEffect(pos); // 서버가 모든 클라이언트에게 실행 명령을 내림
+    }
 
     [ClientRpc]
     void RpcPlayAppearEffect(Vector3 pos)
     {
+        // 모든 플레이어의 화면에서 실행됨
         if (appearParticlePrefab != null)
         {
+            // 1. 지정된 위치에 파티클 생성 (회전은 기본값)
             GameObject effect = Instantiate(appearParticlePrefab, pos, Quaternion.identity);
+
+            // 2. 여러 개의 자식 파티클 시스템 중 가장 긴 시간을 찾음 (배열 처리)
             ParticleSystem[] allParticles = effect.GetComponentsInChildren<ParticleSystem>();
+
             float maxLifeTime = 0f;
+
             foreach (ParticleSystem ps in allParticles)
             {
                 var main = ps.main;
+                // 지속 시간 + 생존 시간 계산
                 float currentLifeTime = main.duration + main.startLifetime.constantMax;
-                if (currentLifeTime > maxLifeTime) maxLifeTime = currentLifeTime;
+                if (currentLifeTime > maxLifeTime)
+                {
+                    maxLifeTime = currentLifeTime;
+                }
             }
+
+            // 3. 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 통째로 삭제
+            // 계산된 시간이 없으면 기본 3초 후 삭제
             Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
         }
     }
     #endregion
+
     private void OnDisable()
     {
-        if (respawnRoutine != null) StopCoroutine(respawnRoutine);
+        if (respawnRoutine != null)
+        {
+            StopCoroutine(respawnRoutine);
+            respawnRoutine = null;
+        }
+        // 리스폰 도중 오브젝트가 꺼지면 상태를 초기화
         isRespawning = false;
     }
 }

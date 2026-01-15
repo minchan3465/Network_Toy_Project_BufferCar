@@ -1024,7 +1024,7 @@ MonoBehaviour:
   Pwd_input: {fileID: 1210469244849937406}
   logText: {fileID: 2413551808533308131}
   Login_btn: {fileID: 6570536414923605505}
-  Signup_btn: {fileID: 0}
+  Signup_btn: {fileID: 937772722474890315}
   signupController: {fileID: 0}
 --- !u!1 &5137061416887623845
 GameObject:
@@ -1225,7 +1225,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 821161052408516575}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: GameEnter, Assembly-CSharp
+        m_MethodName: GameEnter_Btn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5649596255063405156
 GameObject:
   m_ObjectHideFlags: 0

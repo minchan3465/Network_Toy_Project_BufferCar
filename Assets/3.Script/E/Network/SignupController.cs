@@ -29,17 +29,20 @@ public class SignupController : MonoBehaviour
     }
     public void SignupEvent()
     {
-        if (Name_input.text.Equals(string.Empty) || Pwd_input.text.Equals(string.Empty))
+        if (Name_input.text.Equals(string.Empty) || Pwd_input.text.Equals(string.Empty) || Nic_input.text.Equals(string.Empty))
         {
-            LogText_viewing("이름 또는 비밀번호를 입력 해주세요");
-            LogText_viewing("Name or PassWord check Please");
+            LogText_viewing("Name, Nic or PassWord check Please");
             return;
         }
 
-        if (DataManager.instance.SignupCheck(Name_input.text))
+        if (DataManager.instance.SignupIDCheck(Name_input.text))
         {
-            LogText_viewing("해당 이름과 비밀번호가 사용하는 사용자가 있습니다.");
             LogText_viewing("THis Name is already uesed");
+            return;
+        }
+        if (DataManager.instance.SignupNicCheck(Nic_input.text))
+        {
+            LogText_viewing("THis Nic is already uesed");
             return;
         }
         if (DataManager.instance.Signup(Name_input.text, Nic_input.text, Pwd_input.text))
@@ -57,9 +60,9 @@ public class SignupController : MonoBehaviour
             Debug.Log(LoginController.gameObject.activeSelf);
             Login.gameObject.SetActive(true);
             Debug.Log(LoginController.gameObject.activeSelf);
-            Signup_ob.SetActive(false);
             LoginController.LogText_viewing("생성되었습니다.");
             LoginController.LogText_viewing("Success Sign UP.");
+            Signup_ob.SetActive(false);
         }
         else
         {

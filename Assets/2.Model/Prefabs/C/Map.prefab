@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7416502908675544148}
   - component: {fileID: 4379160189415399363}
   - component: {fileID: 1404049621062433535}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,6 +131,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  warningUI: {fileID: 0}
   shrinkStartTime: 60
   shrinkDuration: 5
   targetRatio: 0.6
