@@ -5556,7 +5556,7 @@ MonoBehaviour:
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
-  moveParticleSystem: {fileID: 0}
+  moveParticleSystem: {fileID: 8612059781073760455}
   particleThreshold: 1
   groundCheckDistance: 1
   groundLayer:
@@ -5579,10 +5579,10 @@ MonoBehaviour:
   syncInterval: 0
   pushForce: 38
   pushCooldown: 0.2
-  collisionParticlePrefab: {fileID: 8167223647308766477, guid: 80c7b38efb55bf5438f95f9010475660, type: 3}
+  deadparticle: {fileID: 6227736869750367948, guid: f975ba349939234448b941615029ce7f, type: 3}
   vpower: 0.7
   duration: 0.3
-  deadparticle: {fileID: 6227736869750367948, guid: f975ba349939234448b941615029ce7f, type: 3}
+  collisionParticlePrefab: {fileID: 8167223647308766477, guid: 80c7b38efb55bf5438f95f9010475660, type: 3}
 --- !u!114 &2019117917935106874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5688,14 +5688,15 @@ MonoBehaviour:
   - {fileID: 6244597109234425346}
   - {fileID: 0}
   - {fileID: 8588997018763582332}
+  sfxVolume: 1
   ironDuration: 5
   ironMassMultiplier: 5
   ironScaleMultiplier: 1.5
   nitroDuration: 3
   nitroSpeedMultiplier: 2.5
   nitroImpulseForce: 50
-  empStunDuration: 2
-  empBlastVfxDuration: 2
+  empStunDuration: 20
+  empBlastVfxDuration: 20
 --- !u!114 &721332033141467808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5714,6 +5715,7 @@ MonoBehaviour:
   isRespawning: 0
   isKinematicSynced: 0
   car: {fileID: 681800734350143724}
+  netplayer: {fileID: 6335605045263851355}
   playerNumber: 2
   appearParticlePrefab: {fileID: 0}
 --- !u!114 &6335605045263851355
