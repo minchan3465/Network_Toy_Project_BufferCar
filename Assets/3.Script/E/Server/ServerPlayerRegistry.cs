@@ -1,10 +1,13 @@
 using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ServerPlayerRegistry : MonoBehaviour
 {
+    [SerializeField] private NetworkManager manager;
     public static ServerPlayerRegistry instance;
+    private readonly Dictionary<NetworkConnectionToClient, NetworkPlayer> connToPlayer = new();
     private readonly Dictionary<int, NetworkPlayer> players = new();
     private readonly SortedSet<int> availableNumbers = new();
     private int nextPlayerNumber = 1;
@@ -16,9 +19,48 @@ public class ServerPlayerRegistry : MonoBehaviour
         else
             Destroy(gameObject);
     }
+    private void OnEnable()
+    {
+        //Debug.Log($"[Registry] OnEnable | active={gameObject.activeInHierarchy} | server={NetworkServer.active}");
+        StartCoroutine(WaitForServer());
+    }
+    private IEnumerator WaitForServer()
+    {
+        while (!NetworkServer.active)
+            yield return null;
+
+        Debug.Log("[Registry] Server active, subscribe disconnect");
+        NetworkServer.OnDisconnectedEvent += OnClientDisconnected;
+    }
+    private void OnDisable()
+    {
+        NetworkServer.OnDisconnectedEvent -= OnClientDisconnected;
+    }
+    private void OnClientDisconnected(NetworkConnectionToClient conn)
+    {
+        Debug.Log("is starttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
+        if (!NetworkServer.active)
+            return;
+        //if (conn.identity == null)
+        //{
+        //    Debug.Log("is starrrrrrrrrrrrrrrrrrrrrrrrrrr");
+        //    return;
+        //}
+
+        //NetworkPlayer player = conn.identity.GetComponent<NetworkPlayer>();
+        if (!connToPlayer.TryGetValue(conn, out var player))
+            return;
+
+        //if (player == null)
+        //    return;
+
+        UnregisterPlayer(player);
+    }
     [Server]
     public void RegisterPlayer(NetworkPlayer player)
     {
+        NetworkConnectionToClient conn = player.connectionToClient;
+        connToPlayer[conn] = player;
         int assignedNumber;
         if (availableNumbers.Count > 0)
         {
@@ -34,9 +76,10 @@ public class ServerPlayerRegistry : MonoBehaviour
 
         Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
     }
-    [Server]
+
     public void UnregisterPlayer(NetworkPlayer player)
     {
+        Debug.Log("½ÇÇàµÊ3");
         int removeKey = -1;
         foreach (var kv in players)
         {
@@ -46,7 +89,8 @@ public class ServerPlayerRegistry : MonoBehaviour
                 break;
             }
         }
-        if (removeKey != -1)
+        Debug.Log(removeKey);
+        if (removeKey == -1)
         {
             return;
         }
