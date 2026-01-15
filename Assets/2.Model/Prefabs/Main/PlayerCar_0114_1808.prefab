@@ -5556,7 +5556,7 @@ MonoBehaviour:
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
-  moveParticle: {fileID: 3251336972168468041}
+  moveParticleSystem: {fileID: 8612059781073760455}
   particleThreshold: 1
   groundCheckDistance: 1
   groundLayer:
@@ -5715,7 +5715,7 @@ MonoBehaviour:
   isKinematicSynced: 0
   car: {fileID: 681800734350143724}
   playerNumber: 2
-  appearParticlePrefab: {fileID: 0}
+  appearParticlePrefab: {fileID: 4143439122255155475, guid: d75f41abb5a1fa840adc3bcef1d89353, type: 3}
 --- !u!114 &-3160357476037317387
 MonoBehaviour:
   m_ObjectHideFlags: 0
