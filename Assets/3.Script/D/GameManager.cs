@@ -75,7 +75,7 @@ public class GameManager : NetworkBehaviour {
 				playersName.Add(manager.nickname);
 			}
 		}
-		Debug.Log($"게임 셋업 완료: {_connectedPlayers.Count}명의 플레이어 준비됨.");
+		//Debug.Log($"게임 셋업 완료: {_connectedPlayers.Count}명의 플레이어 준비됨.");
 		/////////////////////////////////////////////////////////////////////////////
 	}
 
@@ -101,7 +101,7 @@ public class GameManager : NetworkBehaviour {
 	[Server]
 	public void ProcessPlayerFell(int playerNum) {
 		playersHp[playerNum] -= 1;
-		Debug.Log(playerNum + "떨어짐! 남은 HP : " + playersHp[playerNum]);
+		//Debug.Log(playerNum + "떨어짐! 남은 HP : " + playersHp[playerNum]);
 
 		//플레이어 목숨 체크
 		if (isGameStart) {
@@ -214,7 +214,6 @@ public class GameManager : NetworkBehaviour {
 		} else { 
 			str = $"<color={color}>{name}</color> {playernumber + 1}P"; 
 		}
-		Debug.Log(str);
 		playerNameUI[playernumber].text = str;
 	}
 

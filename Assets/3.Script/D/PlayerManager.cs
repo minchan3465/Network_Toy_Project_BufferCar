@@ -39,7 +39,6 @@ public class PlayerManager : NetworkBehaviour {
                 color = Color.white;
                 break;
         }
-        Debug.Log("자 너의 색 번호는 " + index);
         meshRenderer.materials[0].color = color;
     }
 
