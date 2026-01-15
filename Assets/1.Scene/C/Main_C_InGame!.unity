@@ -131,6 +131,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WarningText
       objectReference: {fileID: 0}
+    - target: {fileID: 636246565964162780, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2956057618133492042, guid: 77777430e7673704494e10e904e4f09c, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -678,10 +682,6 @@ PrefabInstance:
     - target: {fileID: 6445028627725848050, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
       propertyPath: m_Name
       value: Map
-      objectReference: {fileID: 0}
-    - target: {fileID: 6445028627725848050, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
-      propertyPath: m_Layer
-      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7416502908675544148, guid: 0d84d1cb52203d7459fe49694fd56898, type: 3}
       propertyPath: warningUI
