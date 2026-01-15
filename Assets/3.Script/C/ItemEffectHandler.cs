@@ -158,16 +158,16 @@ public class ItemEffectHandler : NetworkBehaviour
         Debug.Log($"<color=red>[EMP] 스턴 시작! 유지 시간: {time}초</color>");
 
         controller.IsStunned = true;
-
-        // [서버용] 서버에서도 꺼줍니다.
         controller.enabled = false;
-
-        // [추가] 클라이언트들에게도 "컨트롤러 꺼!"라고 명령합니다.
-        // 이것이 PlayerController.cs를 건드리지 않고 해결하는 핵심입니다.
         RpcSetControllerState(false);
 
         float originalDrag = rb.linearDamping;
+
+        // [수정 1] 서버 마찰력 변경
         rb.linearDamping = 2.0f;
+
+        // [수정 2] 클라이언트에게도 마찰력 2.0으로 바꾸라고 명령!
+        RpcSetDrag(2.0f);
 
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
@@ -179,14 +179,14 @@ public class ItemEffectHandler : NetworkBehaviour
         if (effectRoots.Length > 3) RpcControlEffect(3, false);
 
         controller.IsStunned = false;
-
-        // [서버용] 다시 켭니다.
         controller.enabled = true;
-
-        // [추가] 클라이언트들에게도 "이제 다시 켜!"라고 명령합니다.
         RpcSetControllerState(true);
 
+        // [수정 3] 서버 마찰력 복구
         rb.linearDamping = originalDrag;
+
+        // [수정 4] 클라이언트에게도 원래대로 돌려놓으라고 명령!
+        RpcSetDrag(originalDrag);
 
         currentStunCoroutine = null;
         Debug.Log($"<color=green>[EMP] 스턴 해제 완료</color>");
@@ -236,6 +236,21 @@ public class ItemEffectHandler : NetworkBehaviour
         {
             var childParticles = rootObj.GetComponentsInChildren<ParticleSystem>();
             foreach (var ps in childParticles) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcSetDrag(float newDrag)
+    {
+        // 혹시 rb가 없으면 찾기
+        if (rb == null && transform.TryGetComponent(out PlayerController pc))
+            rb = pc.Rb;
+
+        if (rb == null) rb = GetComponent<Rigidbody>();
+
+        if (rb != null)
+        {
+            rb.linearDamping = newDrag;
         }
     }
 
