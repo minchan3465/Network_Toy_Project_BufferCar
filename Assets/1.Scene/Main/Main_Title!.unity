@@ -835,11 +835,11 @@ PrefabInstance:
       objectReference: {fileID: 920553897}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: onlineScene
-      value: Assets/1.Scene/Main/Main_InGame.unity
+      value: Assets/1.Scene/Main/Main_InGame!.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: offlineScene
-      value: Assets/1.Scene/Main/Main_Title.unity
+      value: Assets/1.Scene/Main/Main_Title!.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: playerPrefab

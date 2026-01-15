@@ -955,14 +955,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
   ImpulseDefinition:
     ImpulseChannel: 1
-    ImpulseShape: 2
+    ImpulseShape: 3
     CustomImpulseShape:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    ImpulseDuration: 0.3
+    ImpulseDuration: 0.2
     ImpulseType: 0
     DissipationRate: 0.25
     RawSignal: {fileID: 0}
@@ -1559,6 +1559,88 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 252dab8b309c356489a52f2ca1d2bcdf, type: 3}
+--- !u!1 &832760744
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 832760747}
+  - component: {fileID: 832760746}
+  - component: {fileID: 832760745}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &832760745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832760744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3ae033d37a688249a892c36b6087179, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  playerUIs:
+  - hpButtons:
+    - {fileID: 15732771}
+    - {fileID: 150604450}
+    - {fileID: 1272195949}
+  - hpButtons:
+    - {fileID: 704537418}
+    - {fileID: 988061200}
+    - {fileID: 1810409313}
+  - hpButtons:
+    - {fileID: 1682407483}
+    - {fileID: 1681536376}
+    - {fileID: 1526096735}
+  - hpButtons:
+    - {fileID: 1001589021}
+    - {fileID: 803692559}
+    - {fileID: 1760231752}
+--- !u!114 &832760746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832760744}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 2436442343
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!4 &832760747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832760744}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 99.81797, y: 0, z: 5211.3867}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &871808848
 GameObject:
   m_ObjectHideFlags: 0
@@ -3411,13 +3493,26 @@ GameObject:
   m_Component:
   - component: {fileID: 1893798912}
   - component: {fileID: 1893798911}
+  - component: {fileID: 1893798910}
   m_Layer: 0
   m_Name: Deadzone
-  m_TagString: Deadzone
+  m_TagString: DeadZone
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1893798910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893798909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8933526d334216408ed358146c71e6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeadZone
 --- !u!65 &1893798911
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3732,7 +3827,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &6101297797514092799
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3827,8 +3922,8 @@ MonoBehaviour:
   headlessStartMode: 2
   editorAutoStart: 1
   sendRate: 60
-  offlineScene: Assets/1.Scene/B/B_Main_Title.unity
-  onlineScene: Assets/1.Scene/B/B_Main_InGame.unity
+  offlineScene: 
+  onlineScene: 
   offlineSceneLoadDelay: 0
   transport: {fileID: 6621241228613974925}
   networkAddress: 52.79.227.146
@@ -3836,7 +3931,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 6970800248564378294, guid: 5961d07891f1ddb40a59c76327ec498f, type: 3}
+  playerPrefab: {fileID: 514292793999585233, guid: 655a8ca020730324a871874d79471c5f, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs: []
@@ -3894,7 +3989,7 @@ GameObject:
   - component: {fileID: 7659447669981570521}
   - component: {fileID: 6101297797514092799}
   - component: {fileID: 504521970550373417}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3922,3 +4017,4 @@ SceneRoots:
   - {fileID: 80647274}
   - {fileID: 1266794798}
   - {fileID: 822646286}
+  - {fileID: 832760747}
