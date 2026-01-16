@@ -13,8 +13,9 @@ public class Inputsystem : MonoBehaviour
 
     private void Awake()
     {
-        _controls = new @Player_Input();// 인스턴스화
-        _controls.Player.ESC.performed += ctx => ESCEvent?.Invoke();// 버튼 액션 구독 (performed 시점에 이벤트 발생)
+        _controls = new @Player_Input();
+        _controls.Player.ESC.performed += ctx => ESCEvent?.Invoke();
+        // 버튼 액션 구독 (performed 시점에 이벤트 발생)
     }
 
     private void Update()
@@ -23,10 +24,11 @@ public class Inputsystem : MonoBehaviour
             move_input = Vector2.zero;
             return;
         }
-        move_input = _controls.Player.Move.ReadValue<Vector2>(); // 이동 값 매 프레임 읽기
+        move_input = _controls.Player.Move.ReadValue<Vector2>();
+        // 이동 값 매 프레임 읽기
     }
 
-    public void Enter()
+    public void Enter()//충돌시 밀리면서(PlayerCollision) 잠깐 이동이 불가능해집니다
     {
         if (!canmove) return;
         StartCoroutine(cantmove());

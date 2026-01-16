@@ -17,7 +17,7 @@ public class Camera_manager : MonoBehaviour
         TryGetComponent<CinemachineImpulseSource>(out impulseSource);
     }
 
-    public void ShakeCamera()
+    public void ShakeCamera()//카메라 진동효과
     {
         if (impulseSource != null)
         {
@@ -25,7 +25,7 @@ public class Camera_manager : MonoBehaviour
         }
     }
 
-    public void SetCamera(Transform playertransform)
+    public void SetCamera(Transform playertransform)//follow설정
     // playercontroller에서 실행 islocalPlayer
     {
         if (cam != null)
