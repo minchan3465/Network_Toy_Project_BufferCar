@@ -145,7 +145,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -5404,9 +5404,10 @@ GameObject:
   - component: {fileID: 7517677244894276996}
   - component: {fileID: 7201062563975725197}
   - component: {fileID: 721332033141467808}
-  - component: {fileID: 6335605045263851355}
+  - component: {fileID: -3160357476037317387}
+  - component: {fileID: 5641249817105288841}
   m_Layer: 0
-  m_Name: PlayerCar_Particle+
+  m_Name: PlayerCar_0115_1900
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5579,10 +5580,10 @@ MonoBehaviour:
   syncInterval: 0
   pushForce: 38
   pushCooldown: 0.2
-  deadparticle: {fileID: 6227736869750367948, guid: f975ba349939234448b941615029ce7f, type: 3}
+  collisionParticlePrefab: {fileID: 8167223647308766477, guid: 80c7b38efb55bf5438f95f9010475660, type: 3}
   vpower: 0.7
   duration: 0.3
-  collisionParticlePrefab: {fileID: 8167223647308766477, guid: 80c7b38efb55bf5438f95f9010475660, type: 3}
+  deadparticle: {fileID: 6227736869750367948, guid: f975ba349939234448b941615029ce7f, type: 3}
 --- !u!114 &2019117917935106874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5596,7 +5597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
   sceneId: 0
-  _assetId: 1750856868
+  _assetId: 2359044697
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -5695,8 +5696,8 @@ MonoBehaviour:
   nitroDuration: 3
   nitroSpeedMultiplier: 2.5
   nitroImpulseForce: 50
-  empStunDuration: 20
-  empBlastVfxDuration: 20
+  empStunDuration: 2
+  empBlastVfxDuration: 2
 --- !u!114 &721332033141467808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5715,10 +5716,30 @@ MonoBehaviour:
   isRespawning: 0
   isKinematicSynced: 0
   car: {fileID: 681800734350143724}
-  netplayer: {fileID: 6335605045263851355}
+  nplayer: {fileID: 5641249817105288841}
   playerNumber: 2
-  appearParticlePrefab: {fileID: 0}
---- !u!114 &6335605045263851355
+  appearParticlePrefab: {fileID: 4143439122255155475, guid: d75f41abb5a1fa840adc3bcef1d89353, type: 3}
+--- !u!114 &-3160357476037317387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6970800248564378294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67d1dd55bd809f84babebf21856fe573, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  playerIndex: -1
+  playerNickname: 
+  playerRating: 2000
+  meshRenderer: {fileID: 8175656362519344762}
+  networkPlayer: {fileID: 0}
+--- !u!114 &5641249817105288841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

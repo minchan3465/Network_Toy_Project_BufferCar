@@ -835,19 +835,19 @@ PrefabInstance:
       objectReference: {fileID: 920553897}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: onlineScene
-      value: Assets/1.Scene/D/B_Main_InGame.unity
+      value: Assets/1.Scene/Main/Main_InGame!.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: offlineScene
-      value: Assets/1.Scene/D/Main_Title.unity
+      value: Assets/1.Scene/Main/Main_Title!.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: playerPrefab
       value: 
-      objectReference: {fileID: 6970800248564378294, guid: 3f8d9363db7f4084b881df8ffde34a7c, type: 3}
+      objectReference: {fileID: 6970800248564378294, guid: 33a9a2768db64f843a81afe47d3dde98, type: 3}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: networkAddress
-      value: localhost
+      value: 52.79.227.146
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: editorAutoStart
