@@ -211,30 +211,29 @@ public class PlayerCollision : NetworkBehaviour
     #region 충돌로직2 OnTriggerEnter_Deadzone & Respawn
     private void OnTriggerEnter(Collider other)
     {
+        if (!isLocalPlayer) return;
+
         if (other.CompareTag("Deadzone"))
         {
             Debug.Log("Deadzone Tag Detected!");
 
             if (res != null)
             {
-                if (res.isLocalPlayer)
-                {
-                    //체력이 남아있다면 리스폰 호출, 그렇지 않으면 실격처리 들어가야됩니다.
-                    if (res.isRespawning || !res.canRespawn) { return; }
-                    PlayVibration(vpower, duration);//진동호출!
-
-                    //여기 사운드호출!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-                    if (rb != null)
-                    {
-                        rb.linearVelocity = Vector3.zero;
-                        rb.angularVelocity = Vector3.zero;
-                        rb.isKinematic = true;
-                    }
-                    res.CmdRequestRespawn();//리스폰 요청
-                    CmdRpcDeadEffect(transform.position);//현재 죽은 위치에 폭발 효과
-                    Debug.Log("My car fell! Requesting Respawn to Server...");
-                }
+                 //체력이 남아있다면 리스폰 호출, 그렇지 않으면 실격처리 들어가야됩니다.
+                 if (res.isRespawning || !res.canRespawn) { return; }
+                 
+                 PlayVibration(vpower, duration);//진동호출!
+                 //여기 사운드호출!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                 
+                 if (rb != null)
+                 {
+                     rb.linearVelocity = Vector3.zero;
+                     rb.angularVelocity = Vector3.zero;
+                     rb.isKinematic = true;
+                 }
+                 res.CmdRequestRespawn();//리스폰 요청
+                 CmdRpcDeadEffect(transform.position);//현재 죽은 위치에 폭발 효과
+                 Debug.Log("My car fell! Requesting Respawn to Server...");
             }
         }
     }

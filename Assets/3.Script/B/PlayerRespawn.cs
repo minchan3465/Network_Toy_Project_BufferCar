@@ -27,7 +27,7 @@ public class PlayerRespawn : NetworkBehaviour
     {
         transform.TryGetComponent(out rb); //player한테 넣어주세요
 
-        playerNumber = nplayer.playerNumber - 1;
+        playerNumber = nplayer.playerNumber - 1; //NetworkPlayer 안쓰면 제외
 
         List<Transform> startPositions = NetworkManager.startPositions;
 
@@ -76,7 +76,7 @@ public class PlayerRespawn : NetworkBehaviour
     }
 
     [Command]
-    private void CmdSetKinematic(bool state) => isKinematicSynced = state;//SyncVar
+    public void CmdSetKinematic(bool state) => isKinematicSynced = state;//SyncVar
 
     [Server]
     private void ResetRespawnFlag() => isRespawning = false;//SyncVar
@@ -182,7 +182,7 @@ public class PlayerRespawn : NetworkBehaviour
     [SerializeField] private GameObject appearParticlePrefab;
 
     [Command]
-    void CmdRequestAppearEffect(Vector3 pos)
+    public void CmdRequestAppearEffect(Vector3 pos)
     {
         RpcPlayAppearEffect(pos); // 서버가 모든 클라이언트에게 실행 명령을 내림
     }
