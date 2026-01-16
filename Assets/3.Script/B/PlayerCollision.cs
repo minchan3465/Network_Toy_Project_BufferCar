@@ -142,17 +142,21 @@ public class PlayerCollision : NetworkBehaviour
     {
         if (collisionParticlePrefab != null)
         {
-            // 1. 위치 보정 (가장 중요)
-            // normal 방향(벽 밖으로) 0.2m + Vector3.up(하늘 위로) 0.2m 
-            // 이렇게 하면 벽과 바닥 양쪽 모두에서 파묻히지 않고 공중에 확실히 뜹니다.
-            Vector3 spawnPos = pos + (normal) + (Vector3.up * 1.6f);
+            // 1. 위치 보정
+            // normal 방향으로 살짝 띄우고(벽에 파묻힘 방지), 위로 조금 올림
+            Vector3 spawnPos = pos + (normal * 0.2f) + (Vector3.up * 1.0f);
 
-            // 2. 회전 보정 (ㅗ 모양 유지)
-            Quaternion rotation = Quaternion.FromToRotation(Vector3.up, normal);
+            // 2. 회전 보정 [핵심 수정]
+            // 기존: Quaternion.FromToRotation(Vector3.up, normal); 
+            // -> 파티클이 Y축(위)으로 디자인된 경우에만 맞음.
+
+            // 변경: Quaternion.LookRotation(normal);
+            // -> 파티클의 Z축(앞)을 충돌 반사각(normal)과 일치시킵니다. (대부분 이 방식)
+            Quaternion rotation = Quaternion.LookRotation(normal);
 
             GameObject effect = Instantiate(collisionParticlePrefab, spawnPos, rotation);
 
-            // 3. 자식 파티클 수명 계산 (기존 로직)
+            // 3. 자식 파티클 수명 계산
             float maxLifeTime = 0f;
             ParticleSystem[] allParticles = effect.GetComponentsInChildren<ParticleSystem>();
             foreach (ParticleSystem ps in allParticles)
