@@ -32,8 +32,11 @@ public class GameManager : NetworkBehaviour {
 	public TMP_Text resultRateTextUI;
 	public TMP_Text feverTextUI;
 	private bool isFever = false;
+	public GameObject spectatorCamera;
 
 	//Server가 관리할거
+	public List<PlayerController> playersController = new List<PlayerController>();
+	public List<PlayerRespawn> playersRespawn = new List<PlayerRespawn>();
 	public Stack<int> Ranks = new Stack<int>();
 	public int winnerNumber;
 	public string winnerName;
@@ -62,18 +65,19 @@ public class GameManager : NetworkBehaviour {
 	// 1. 이미 등록된 플레이어인지 확인
 	// 2. 리스트에 추가
 	// 3. 해당 플레이어의 초기 HP 생성 (3으로 설정)
-	public void RegisterPlayer(InfoPacket playerData) {
+	public void RegisterPlayer(InfoPacket playerData, PlayerController playerController, PlayerRespawn playerRespawn) {
 		if (!isLocalPlayer) return;
 		if (playersData.Contains(playerData)) return;
-		StartCoroutine(delay(playerData));
+		playersData.Add(playerData);
+		playersHp.Add(6);
+		playersController.Add(playerController);
+		playersRespawn.Add(playerRespawn);
+		//StartCoroutine(delay(playerData));
 	}
 	private IEnumerator delay(InfoPacket playerData) {
 		yield return new WaitForSeconds(1f);
-		playersData.Add(playerData);
-		playersHp.Add(6);
+
 	}
-
-
 
 	//------------게임 루프 핵심 (시작과 종료)
 	private void OnGameStartingCheck(bool oldCheck, bool newCheck) { }
@@ -88,8 +92,10 @@ public class GameManager : NetworkBehaviour {
 	[Server]
 	public void SetupGame() {
 		///////////////////////////////////////초기화
-		playersHp.Clear();
 		playersData.Clear();
+		playersController.Clear();
+		playersRespawn.Clear();
+		playersHp.Clear();
 		startCountdownTime = 3;
 		gameTime = 99;
 		winnerNumber = -1;
@@ -104,6 +110,14 @@ public class GameManager : NetworkBehaviour {
 			if (players[i].TryGetComponent(out InfoPacket playerData)) {
 				playersData.Add(playerData);
 				playersHp.Add(6); // 초기 HP 설정
+			}
+			if(players[i].TryGetComponent(out PlayerController playerController)) {
+				playersController.Add(playerController);
+				playerController.IsStunned = true;
+			}
+			if (players[i].TryGetComponent(out PlayerRespawn playerRespawn)) {
+				playersRespawn.Add(playerRespawn);
+				playerRespawn.OnStartLocalPlayer();
 			}
 		}
 		//Debug.Log($"게임 셋업 완료: {playersData.Count}명의 플레이어 준비됨.");
@@ -130,6 +144,7 @@ public class GameManager : NetworkBehaviour {
 		str = $"<color={color}>{winnerName}</color>\n{winnerNumber + 1}P Win!";
 		///////////////////////////////////////////////////
 		onWinnerCamera(winnerNumber);
+		offSpectatorCamera();
 		UpdateWinnerTextUI(str);
 		
 		yield return new WaitForSeconds(5f);
@@ -202,7 +217,10 @@ public class GameManager : NetworkBehaviour {
 	public void ProcessPlayerFell(int playerNum) {
 		playersHp[playerNum] -= 1;
 		if (playersHp[playerNum] < 1) {
+			//죽었음~
 			Ranks.Push(playerNum);
+			playersRespawn[playerNum].canRespawn = false;
+			onSpectatorCamera(connectionToClient);
 		}
 		//플레이어 목숨 체크
 		if (isGameStart) {
@@ -224,12 +242,17 @@ public class GameManager : NetworkBehaviour {
 			Game_Set(winner_check);
 		}
 	}
-
-
+	[TargetRpc]
+	private void onSpectatorCamera(NetworkConnection target) {
+		spectatorCamera.SetActive(true);
+	}
+	[ClientRpc]
+	private void offSpectatorCamera() {
+		if (spectatorCamera.activeSelf.Equals(false)) return;
+		spectatorCamera.SetActive(false);
+	}
 
 	//------------ UI 변경
-
-
 	////////////////////////////////////////////////////////////////////////////////////////// Hp 변경
 	private void OnHpListChanged(SyncList<int>.Operation op, int playernumber, int newItem) {
 		if (op == SyncList<int>.Operation.OP_CLEAR) return;
@@ -250,7 +273,6 @@ public class GameManager : NetworkBehaviour {
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////////////// Name 변경
-	
 	private void OnPlayersDataChanged(SyncList<InfoPacket>.Operation op, int playernumber, InfoPacket newItem) {
 		if (op == SyncList<InfoPacket>.Operation.OP_CLEAR) return;
 		UpdateNameUI(playernumber, playersData[playernumber]._name);
@@ -286,6 +308,9 @@ public class GameManager : NetworkBehaviour {
 			}
 			yield return wfs;
 			startCountdownTime -= 1;
+		}
+		for (int i = 0; i < playersController.Count; i++) {
+			playersController[i].IsStunned = false;
 		}
 	}
 	[ClientRpc]

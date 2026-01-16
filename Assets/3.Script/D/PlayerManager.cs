@@ -15,6 +15,8 @@ public class PlayerManager : NetworkBehaviour {
     public MeshRenderer meshRenderer;
     //public PlayerInfo playerInfo;
     public NetworkPlayer networkPlayer;
+    public PlayerController playerController;
+    public PlayerRespawn playerRespawn;
 
     public InfoPacket packet;
     /*
@@ -25,6 +27,8 @@ public class PlayerManager : NetworkBehaviour {
      */
     private void Awake() {
         TryGetComponent(out networkPlayer);
+        TryGetComponent(out playerController);
+        TryGetComponent(out playerRespawn);
 	}
 
 	private void Start() {
@@ -40,7 +44,7 @@ public class PlayerManager : NetworkBehaviour {
         packet._rate = 2000;
 
         setCarBodyColor(packet._index);
-        GameManager.Instance.RegisterPlayer(packet);
+        GameManager.Instance.RegisterPlayer(packet, playerController, playerRespawn);
     }
 
 	private void setCarBodyColor(int index) {
