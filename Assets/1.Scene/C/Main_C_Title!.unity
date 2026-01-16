@@ -857,6 +857,10 @@ PrefabInstance:
       propertyPath: headlessStartMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7291328288915927524, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: sceneId
+      value: 3503630632
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -4416312163378341147, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
     m_RemovedGameObjects: []

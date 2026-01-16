@@ -1378,8 +1378,16 @@ MonoBehaviour:
   syncInterval: 0
   isGameStart: 0
   gameTime: 0
-  playerHpUI: []
-  playerNameUI: []
+  playerHpUI:
+  - hpButtons: []
+  - hpButtons: []
+  - hpButtons: []
+  - hpButtons: []
+  playerNameUI:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   gameTimer: {fileID: 127312637}
   middleTextUI: {fileID: 127312636}
   winnerTextUI: {fileID: 127312635}
@@ -1387,8 +1395,11 @@ MonoBehaviour:
   winnerCamera: {fileID: 592540689}
   winnerNumber: 0
   winnerName: 
+  resultRankTextUI: {fileID: 0}
+  resultRateTextUI: {fileID: 0}
   feverTextUI: {fileID: 0}
   _connectedPlayers: []
+  playersRating: 
 --- !u!4 &949795780
 Transform:
   m_ObjectHideFlags: 0
@@ -2184,7 +2195,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 6970800248564378294, guid: 33a9a2768db64f843a81afe47d3dde98, type: 3}
+  playerPrefab: {fileID: 6970800248564378294, guid: 34f2a5c4e896eb84ea3787fa1c48bc2d, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
