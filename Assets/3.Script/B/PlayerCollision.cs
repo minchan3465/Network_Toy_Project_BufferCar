@@ -14,6 +14,7 @@ public class PlayerCollision : NetworkBehaviour
     [SerializeField] private float pushForce = 19; // 밀어내는 힘의 세기
     [SerializeField] private double pushCooldown = 0.2f; //밀림 쿨타임(중복 호출 방지)
     [SyncVar] private bool isPushing = false;//밀림 상황
+    [SyncVar] private double lastPushTime; // 서버 시간 기록
 
     public override void OnStartLocalPlayer()
     {
@@ -66,8 +67,6 @@ public class PlayerCollision : NetworkBehaviour
         }
     }
 
-    [SyncVar] private double lastPushTime; // 서버 시간 기록
-
     [Command]
     public void CmdPushBoth(NetworkIdentity self, NetworkIdentity target, Vector3 force, Vector3 contactPoint, Vector3 contactNormal)
     {
@@ -97,14 +96,12 @@ public class PlayerCollision : NetworkBehaviour
             this.isPushing = true;
             targetCol.isPushing = true;
 
-            this.RpcApplyImpulse(-force); // 본인은 뒤로 살짝 (작용 반작용)
-            targetCol.RpcApplyImpulse(force);    // 상대는 앞으로
+            this.RpcApplyImpulse(-force); // 본인은 뒤로 (작용 반작용)
+            targetCol.RpcApplyImpulse(force); // 상대는 앞으로
 
-            RPCSoundandParticle(contactPoint, contactNormal); // 닿은 위치에서 파티클 넣어주시면 됩니다.
-            //사운드의 경우 이번에 3D사운드를 사용하지 않을 것 같습니다.(모노 정도면 OK)
-            //(카메라 시점이 멀리 있어서 포인트에서 사운드를 줘도 입체감 살리는게 불가능함)
+            RPCSoundandParticle(contactPoint, contactNormal); 
 
-            // 일정 시간 후 서버에서 변수만 false로 돌려줌
+            // 일정 시간 후 서버에서 변수만 false로
             Invoke(nameof(ServerResetPushStatus), (float)pushCooldown);
             targetCol.Invoke(nameof(targetCol.ServerResetPushStatus), (float)pushCooldown);
         }
@@ -134,7 +131,7 @@ public class PlayerCollision : NetworkBehaviour
     }
     #endregion
 
-    #region 충돌 Particle
+    #region Enter Particle
     [SerializeField] private GameObject collisionParticlePrefab; // 충돌 파티클 프리팹
 
     [ClientRpc]
@@ -169,7 +166,6 @@ public class PlayerCollision : NetworkBehaviour
             Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 1.5f);
         }
     }
-
 
     #endregion
 
@@ -212,33 +208,32 @@ public class PlayerCollision : NetworkBehaviour
     }
     #endregion
 
-    #region 충돌로직2 OnTriggerEnter_Deadzone
+    #region 충돌로직2 OnTriggerEnter_Deadzone & Respawn
     private void OnTriggerEnter(Collider other)
     {
+        if (!isLocalPlayer) return;
+
         if (other.CompareTag("Deadzone"))
         {
             Debug.Log("Deadzone Tag Detected!");
 
             if (res != null)
             {
-                if (res.isLocalPlayer)
-                {
-                    if (res.isRespawning || !res.canRespawn) { return; }
-                    PlayVibration(vpower, duration);//진동호출!
-                    //여기 사운드나 파티클 넣어주세요?
-
-                    //체력이 남아있다면 리스폰 호출, 그렇지 않으면 실격처리 들어가야됩니다.
-
-                    if (rb != null)
-                    {
-                        rb.linearVelocity = Vector3.zero;
-                        rb.angularVelocity = Vector3.zero;
-                        rb.isKinematic = true;
-                    }
-                    res.CmdRequestRespawn();
-                    CmdRpcDeadEffect(transform.position);
-                    Debug.Log("My car fell! Requesting Respawn to Server...");
-                }
+                 //체력이 남아있다면 리스폰 호출, 그렇지 않으면 실격처리 들어가야됩니다.
+                 if (res.isRespawning || !res.canRespawn) { return; }
+                 
+                 PlayVibration(vpower, duration);//진동호출!
+                 //여기 사운드호출!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                 
+                 if (rb != null)
+                 {
+                     rb.linearVelocity = Vector3.zero;
+                     rb.angularVelocity = Vector3.zero;
+                     rb.isKinematic = true;
+                 }
+                 res.CmdRequestRespawn();//리스폰 요청
+                 CmdRpcDeadEffect(transform.position);//현재 죽은 위치에 폭발 효과
+                 Debug.Log("My car fell! Requesting Respawn to Server...");
             }
         }
     }
@@ -260,6 +255,8 @@ public class PlayerCollision : NetworkBehaviour
         {
             GameObject effect = Instantiate(deadparticle, pos, Quaternion.identity);
 
+            //사운드 호출!!!
+
             // 모든 자식 파티클 시스템을 가져옴
             ParticleSystem[] allParticles = effect.GetComponentsInChildren<ParticleSystem>();
 
@@ -279,7 +276,6 @@ public class PlayerCollision : NetworkBehaviour
             // 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 삭제 (없으면 기본 3초)
             Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
         }
-        //사운드도?
     }
     #endregion
 
