@@ -70,7 +70,7 @@ public class SoundManager : NetworkBehaviour
         {
             PlayBGM(BGM.TitleBGM);
         }
-        else if(scene.name == "F_Main_InGame")
+        else if(scene.name == "Main_InGame!")
         {
             //PlayBGM(BGM.MainGameBGM);
             StartCoroutine(StartGameSoundSequence());

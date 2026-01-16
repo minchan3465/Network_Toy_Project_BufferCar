@@ -53,6 +53,7 @@ MonoBehaviour:
   warningDelay: 2
   maxSpawnRadius: 30
   spawnHeight: 30
+  sfxVolume: 1
   mapCenterPoint: {x: 0, y: -1, z: 0}
 --- !u!114 &4003186962685002203
 MonoBehaviour:
