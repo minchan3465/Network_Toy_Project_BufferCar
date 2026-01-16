@@ -106,14 +106,27 @@ public class GameManager : NetworkBehaviour {
 
 	//------------ 추락시
 	[Server]
-	public void ProcessPlayerFell(int playerNum) {
+	public void ProcessPlayerFell(int playerNum)
+	{
+		// [수정] 안전장치 추가: 리스트 범위 밖이면 무시
+		if (playerNum < 0 || playerNum >= playersHp.Count)
+		{
+			Debug.LogWarning($"[ProcessPlayerFell] 잘못된 플레이어 인덱스 감지: {playerNum}. (List Count: {playersHp.Count})");
+			return;
+		}
+
+		// 기존 로직
 		playersHp[playerNum] -= 1;
-		if(playersHp[playerNum] < 1) {
+
+		if (playersHp[playerNum] < 1)
+		{
 			Ranks.Push(playerNum);
 			Debug.Log("랭카" + Ranks.Count);
 		}
+
 		//플레이어 목숨 체크
-		if (isGameStart) {
+		if (isGameStart)
+		{
 			CheckPlayerHps();
 		}
 	}

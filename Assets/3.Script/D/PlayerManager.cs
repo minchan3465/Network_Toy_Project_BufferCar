@@ -48,12 +48,13 @@ public class PlayerManager : NetworkBehaviour {
 
 	//-----------Ãß¶ô
 	private void OnTriggerEnter(Collider other) {
-		if (other.CompareTag("Deadzone")) {
-            if (isLocalPlayer) {
-                CmdRequestFell();
-            }
-		}
-	}
+        if (!isLocalPlayer) return;
+
+        if (other.CompareTag("Deadzone"))
+        {
+            CmdRequestFell();
+        }
+    }
 
     [Command]
     void CmdRequestFell() {
