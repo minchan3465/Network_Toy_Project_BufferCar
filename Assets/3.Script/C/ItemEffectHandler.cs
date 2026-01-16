@@ -34,6 +34,7 @@ public class ItemEffectHandler : NetworkBehaviour
     private float defaultMass;
     private float defaultSpeed;
     private Vector3 defaultScale;
+    private bool _isFeverActive = false;
 
     void Start()
     {
@@ -43,6 +44,34 @@ public class ItemEffectHandler : NetworkBehaviour
         defaultMass = rb.mass;
         defaultSpeed = controller.Speed;
         defaultScale = transform.localScale;
+    }
+
+    [ServerCallback]
+    private void Update()
+    {
+        if (GameManager.Instance == null) return;
+
+        // GameManager의 시간이 0보다 작으면 피버 타임으로 간주 (-1 상태)
+        bool currentFeverState = GameManager.Instance.gameTime < 0;
+
+        // 상태가 바뀌었을 때만 실행 (최적화)
+        if (_isFeverActive != currentFeverState)
+        {
+            _isFeverActive = currentFeverState;
+
+            if (_isFeverActive)
+            {
+                // [피버 시작] 속도 증가 & 이펙트 켜기
+                controller.Speed = defaultSpeed * nitroSpeedMultiplier;
+                RpcControlEffect(1, true); // 1번이 Nitro 이펙트
+            }
+            else
+            {
+                // [피버 종료] 게임 재시작 시 속도 원상복구
+                controller.Speed = defaultSpeed;
+                RpcControlEffect(1, false);
+            }
+        }
     }
 
     [Server]
@@ -104,7 +133,11 @@ public class ItemEffectHandler : NetworkBehaviour
 
         RpcControlEffect(1, false);
 
-        controller.Speed = defaultSpeed;
+        if (GameManager.Instance != null && GameManager.Instance.gameTime >= 0)
+        {
+            RpcControlEffect(1, false);
+            controller.Speed = defaultSpeed;
+        }
     }
 
     [Server]
