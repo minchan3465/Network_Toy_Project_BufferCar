@@ -19,7 +19,7 @@ public class NetworkPlayer : NetworkBehaviour
 
         DataManager.instance.playerInfo.PlayerNum = newValue;
     }
-    public override void OnStartServer()
+    public override void OnStartClient()
     {
         Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
         ServerPlayerRegistry.instance.RegisterPlayer(this);

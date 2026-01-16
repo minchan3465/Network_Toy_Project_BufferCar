@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0945d9b5de36f046af72531ed50326e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ServerPlayerRegistry
+  manager: {fileID: 0}
 --- !u!4 &43169883
 Transform:
   m_ObjectHideFlags: 0
@@ -216,45 +217,45 @@ PrefabInstance:
       value: Network_Manager
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
-      propertyPath: transport
-      value: 
-      objectReference: {fileID: 1007570161}
-    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
-      propertyPath: onlineScene
-      value: Assets/1.Scene/E/E_Room.unity
-      objectReference: {fileID: 0}
-    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
-      propertyPath: offlineScene
-      value: Assets/1.Scene/E/D_Main.unity
-      objectReference: {fileID: 0}
-    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: playerPrefab
       value: 
-      objectReference: {fileID: 514292793999585233, guid: 655a8ca020730324a871874d79471c5f, type: 3}
-    - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
-      propertyPath: networkAddress
-      value: localhost
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
-      propertyPath: headlessStartMode
-      value: 1
+      propertyPath: 'spawnPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7291328288915927524, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: sceneId
+      value: 3003652995
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6310362781741441580, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1680834797}
   m_SourcePrefab: {fileID: 100100000, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
---- !u!114 &1007570161 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6853478524067311285, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+--- !u!1 &1680834791 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6310362781741441580, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
   m_PrefabInstance: {fileID: 1007570160}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+--- !u!114 &1680834797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1680834791}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a60f8c21aa08fd49922c571168895fa, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Mirror.Transports::kcp2k.KcpTransport
+  m_EditorClassIdentifier: Assembly-CSharp::GameFlowManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

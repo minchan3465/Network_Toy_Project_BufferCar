@@ -715,6 +715,17 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &658247308 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7604404429825324357, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 1414859131}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &707913154
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,8 +899,11 @@ MonoBehaviour:
   winnerCamera: {fileID: 86249344}
   winnerNumber: 0
   winnerName: 
+  resultRankTextUI: {fileID: 1398913255}
+  resultRateTextUI: {fileID: 658247308}
   feverTextUI: {fileID: 77885941}
   _connectedPlayers: []
+  playersRating: 
 --- !u!114 &832760746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -933,7 +947,7 @@ GameObject:
   - component: {fileID: 944507653}
   - component: {fileID: 944507652}
   - component: {fileID: 944507654}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1238,6 +1252,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &1398913255 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4325613950261912336, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 1414859131}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &1414859131
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1329,10 +1354,6 @@ PrefabInstance:
     - target: {fileID: 4060541617197858695, guid: 77777430e7673704494e10e904e4f09c, type: 3}
       propertyPath: m_Name
       value: inGameUI (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 6562362952264747834, guid: 77777430e7673704494e10e904e4f09c, type: 3}
-      propertyPath: m_text
-      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2271,7 +2292,7 @@ GameObject:
   - component: {fileID: 7659447669981570521}
   - component: {fileID: 6101297797514092799}
   - component: {fileID: 504521970550373417}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
