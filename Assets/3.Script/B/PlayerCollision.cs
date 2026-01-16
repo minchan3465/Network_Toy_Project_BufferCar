@@ -27,10 +27,18 @@ public class PlayerCollision : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
+        if (res != null && res.isRespawning) return;
+
         if (NetworkTime.time < lastPushTime + pushCooldown) return;
 
         if (collision.gameObject.CompareTag("Player"))
         {
+            // 상대방의 Respawn 컴포넌트 가져오기
+            if (collision.gameObject.TryGetComponent(out PlayerRespawn targetRes))
+            {
+                // 2. 부딪힌 상대방이 리스폰 중이면 충돌 무시
+                if (targetRes.isRespawning) return;
+            }
             //닿은 점
             ContactPoint contact = collision.GetContact(0);
             Vector3 contactPoint = contact.point;
@@ -63,6 +71,14 @@ public class PlayerCollision : NetworkBehaviour
     [Command]
     public void CmdPushBoth(NetworkIdentity self, NetworkIdentity target, Vector3 force, Vector3 contactPoint, Vector3 contactNormal)
     {
+        // 서버측 보안 검
+        if (this.res != null && this.res.isRespawning) return;
+
+        if (target.TryGetComponent(out PlayerRespawn targetRes))
+        {
+            if (targetRes.isRespawning) return;
+        }
+
         if (NetworkTime.time < lastPushTime + pushCooldown) return;
 
         lastPushTime = NetworkTime.time; // 현재 서버 시간 저장
@@ -86,7 +102,7 @@ public class PlayerCollision : NetworkBehaviour
 
             RPCSoundandParticle(contactPoint, contactNormal); // 닿은 위치에서 파티클 넣어주시면 됩니다.
             //사운드의 경우 이번에 3D사운드를 사용하지 않을 것 같습니다.(모노 정도면 OK)
-            //(카메라 시점이 멀리 있어서 포인트에서 사운드를 줘도 입체감 살리는게 불가능함) 
+            //(카메라 시점이 멀리 있어서 포인트에서 사운드를 줘도 입체감 살리는게 불가능함)
 
             // 일정 시간 후 서버에서 변수만 false로 돌려줌
             Invoke(nameof(ServerResetPushStatus), (float)pushCooldown);
@@ -126,17 +142,21 @@ public class PlayerCollision : NetworkBehaviour
     {
         if (collisionParticlePrefab != null)
         {
-            // 1. 위치 보정 (가장 중요)
-            // normal 방향(벽 밖으로) 0.2m + Vector3.up(하늘 위로) 0.2m 
-            // 이렇게 하면 벽과 바닥 양쪽 모두에서 파묻히지 않고 공중에 확실히 뜹니다.
-            Vector3 spawnPos = pos + (normal) + (Vector3.up * 1.6f);
+            // 1. 위치 보정
+            // normal 방향으로 살짝 띄우고(벽에 파묻힘 방지), 위로 조금 올림
+            Vector3 spawnPos = pos + (normal * 0.2f) + (Vector3.up * 1.0f);
 
-            // 2. 회전 보정 (ㅗ 모양 유지)
-            Quaternion rotation = Quaternion.FromToRotation(Vector3.up, normal);
+            // 2. 회전 보정 [핵심 수정]
+            // 기존: Quaternion.FromToRotation(Vector3.up, normal); 
+            // -> 파티클이 Y축(위)으로 디자인된 경우에만 맞음.
+
+            // 변경: Quaternion.LookRotation(normal);
+            // -> 파티클의 Z축(앞)을 충돌 반사각(normal)과 일치시킵니다. (대부분 이 방식)
+            Quaternion rotation = Quaternion.LookRotation(normal);
 
             GameObject effect = Instantiate(collisionParticlePrefab, spawnPos, rotation);
 
-            // 3. 자식 파티클 수명 계산 (기존 로직)
+            // 3. 자식 파티클 수명 계산
             float maxLifeTime = 0f;
             ParticleSystem[] allParticles = effect.GetComponentsInChildren<ParticleSystem>();
             foreach (ParticleSystem ps in allParticles)
@@ -149,7 +169,7 @@ public class PlayerCollision : NetworkBehaviour
             Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 1.5f);
         }
     }
-    
+
 
     #endregion
 
@@ -164,8 +184,8 @@ public class PlayerCollision : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
-        if (Camera_manager.instance != null) 
-        { 
+        if (Camera_manager.instance != null)
+        {
             Camera_manager.instance.ShakeCamera();
             Debug.Log("Camera shake+PlayVibration");
         }
@@ -226,7 +246,7 @@ public class PlayerCollision : NetworkBehaviour
 
     #region Dead_Particle
     [SerializeField] private GameObject deadparticle; // 충돌 파티클 프리팹
-    
+
     [Command]
     void CmdRpcDeadEffect(Vector3 pos)
     {
