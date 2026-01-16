@@ -16,7 +16,6 @@ public class NetworkPlayer : NetworkBehaviour
         if (!isLocalPlayer) return;
         if (DataManager.instance == null)
             return;
-
         DataManager.instance.playerInfo.PlayerNum = newValue;
     }
     public override void OnStartServer()
@@ -24,14 +23,11 @@ public class NetworkPlayer : NetworkBehaviour
         Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
         ServerPlayerRegistry.instance.RegisterPlayer(this);
     }
-    //[ClientCallback]
-    //public void OnDestroy()
-    //{
-    //    if (ServerPlayerRegistry.instance != null)
-    //    {
-    //        ServerPlayerRegistry.instance.UnregisterPlayer(this);
-    //    }
-    //}
+    public override void OnStopServer()
+    {
+        if (ServerPlayerRegistry.instance != null) 
+            ServerPlayerRegistry.instance.UnregisterPlayer(this);
+    }
     #endregion
     #region Client Side
     public override void OnStartLocalPlayer()
