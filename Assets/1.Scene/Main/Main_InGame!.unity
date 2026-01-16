@@ -1358,6 +1358,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 252dab8b309c356489a52f2ca1d2bcdf, type: 3}
+--- !u!114 &921033152 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7604404429825324357, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 127312634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &921033153 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4325613950261912336, guid: 77777430e7673704494e10e904e4f09c, type: 3}
+  m_PrefabInstance: {fileID: 127312634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &923303477
 GameObject:
   m_ObjectHideFlags: 0
@@ -1599,8 +1621,11 @@ MonoBehaviour:
   winnerCamera: {fileID: 592540689}
   winnerNumber: 0
   winnerName: 
+  resultRankTextUI: {fileID: 921033153}
+  resultRateTextUI: {fileID: 921033152}
   feverTextUI: {fileID: 926434804}
   _connectedPlayers: []
+  playersRating: 
 --- !u!4 &949795780
 Transform:
   m_ObjectHideFlags: 0
