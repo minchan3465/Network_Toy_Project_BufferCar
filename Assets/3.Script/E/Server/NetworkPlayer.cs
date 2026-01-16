@@ -22,7 +22,7 @@ public class NetworkPlayer : NetworkBehaviour
     public override void OnStartClient()
     {
         Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
-        ServerPlayerRegistry.instance.RegisterPlayer(this);
+        //ServerPlayerRegistry.instance.RegisterPlayer(this);
     }
     //[ClientCallback]
     //public void OnDestroy()

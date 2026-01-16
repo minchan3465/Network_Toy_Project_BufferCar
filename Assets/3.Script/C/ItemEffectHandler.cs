@@ -38,6 +38,11 @@ public class ItemEffectHandler : NetworkBehaviour
 
     void Start()
     {
+        // [추가할 코드] 로비(A_Room)라면 아이템 효과 로직을 실행하지 않고 멈춘다!
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "A_Room")
+        {
+            return;
+        }
         controller = GetComponent<PlayerController>();
         rb = controller.Rb;
 

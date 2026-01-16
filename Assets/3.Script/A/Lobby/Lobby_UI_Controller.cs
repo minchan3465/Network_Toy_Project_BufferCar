@@ -35,6 +35,11 @@ public class Lobby_UI_Controller : MonoBehaviour {
 	private Color unreadyColor;
 	private Color readyColor;
 
+	[Header("UI Elements (Size 4)")]
+	// 1~4번 자리에 맞는 이미지와 텍스트를 드래그해서 넣어주세요.
+	public Image[] playerImages = new Image[4];
+	public Text[] playerInfoTexts = new Text[4]; 
+
 	void Awake()
 	{
 		// 버튼에서 Image 컴포넌트를 찾아 할당합니다.
@@ -65,6 +70,13 @@ public class Lobby_UI_Controller : MonoBehaviour {
 			{
 				frame.color = unreadyColor;
 			}
+		}
+
+		// [추가된 로직] 실제 플레이어 정보 UI(이미지/텍스트)를 처음에 모두 끕니다.
+		for (int i = 0; i < 4; i++)
+		{
+			if (playerImages[i] != null) playerImages[i].gameObject.SetActive(false);
+			if (playerInfoTexts[i] != null) playerInfoTexts[i].gameObject.SetActive(false);
 		}
 	}
 	// [서버 연동용] 특정 플레이어의 레디 상태에 따라 색상을 바꾸는 메소드
@@ -104,8 +116,16 @@ public class Lobby_UI_Controller : MonoBehaviour {
 			readyBtnImage.color = unreadyColor;
 		}
 
-		// [추가 역할] 내 플레이어 객체를 찾아 서버에 레디 상태를 보냅니다.
-		// 예: NetworkClient.localPlayer.GetComponent<MyPlayer>().CmdSetReady(isReady);
+		// [핵심 추가] 내 UserInfoManager를 찾아서 서버에 레디 상태를 쏩니다.
+		// UserInfoManager에 싱글톤을 안 쓰기로 했으므로, NetworkClient.localPlayer를 이용합니다.
+		if (NetworkClient.localPlayer != null)
+		{
+			UserInfoManager myInfo = NetworkClient.localPlayer.GetComponent<UserInfoManager>();
+			if (myInfo != null)
+			{
+				myInfo.CmdSendReadyToServer(isReady);
+			}
+		}
 	}
 
 	//서버에 의해 호출됨
@@ -176,4 +196,28 @@ public class Lobby_UI_Controller : MonoBehaviour {
 		//메인신으로 돌아가기
 		SceneManager.LoadScene("Main_Title!");
 	}
+
+	public void UpdateSlotText(int index, string nickname, int rate)
+	{
+		if (index < 0 || index >= playerImages.Length) return;
+
+		// 닉네임이 있으면 유저가 있는 것으로 간주
+		if (!string.IsNullOrEmpty(nickname))
+		{
+			// 이미지와 텍스트 활성화
+			playerImages[index].gameObject.SetActive(true);
+			playerInfoTexts[index].gameObject.SetActive(true);
+
+			// 요청하신 형식: 닉네임 + 줄바꿈 + 레이팅RP
+			playerInfoTexts[index].text = nickname + "\n" + rate + "RP";
+		}
+		else
+		{
+			// 유저가 없으면(나갔으면) 비활성화
+			playerImages[index].gameObject.SetActive(false);
+			playerInfoTexts[index].gameObject.SetActive(false);
+			playerInfoTexts[index].text = "";
+		}
+	}
 }
+

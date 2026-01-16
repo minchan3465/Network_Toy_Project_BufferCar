@@ -5405,7 +5405,6 @@ GameObject:
   - component: {fileID: 7201062563975725197}
   - component: {fileID: 721332033141467808}
   - component: {fileID: -3160357476037317387}
-  - component: {fileID: 5641249817105288841}
   m_Layer: 0
   m_Name: PlayerCar_0115_1900
   m_TagString: Player
@@ -5716,8 +5715,9 @@ MonoBehaviour:
   isRespawning: 0
   isKinematicSynced: 0
   car: {fileID: 681800734350143724}
-  nplayer: {fileID: 5641249817105288841}
-  playerNumber: -1
+  nplayer: {fileID: 0}
+  playerNumber: 1
+  canRespawn: 1
   appearParticlePrefab: {fileID: 4143439122255155475, guid: d75f41abb5a1fa840adc3bcef1d89353, type: 3}
 --- !u!114 &-3160357476037317387
 MonoBehaviour:
@@ -5739,24 +5739,6 @@ MonoBehaviour:
   playerRating: 2000
   meshRenderer: {fileID: 8175656362519344762}
   networkPlayer: {fileID: 0}
---- !u!114 &5641249817105288841
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6970800248564378294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8806241a8bf114844911be714f6a80e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NetworkPlayer
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  playerNumber: 0
-  nickname: 
-  isReady: 0
 --- !u!1 &8588997018763582332
 GameObject:
   m_ObjectHideFlags: 0

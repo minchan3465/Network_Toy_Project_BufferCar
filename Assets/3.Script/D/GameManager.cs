@@ -37,7 +37,7 @@ public class GameManager : NetworkBehaviour {
 	private bool isFever = false;
 
 	//Server가 관리할거
-	public List<NetworkPlayer> _connectedPlayers = new List<NetworkPlayer>();
+	public List<PlayerManager> _connectedPlayers = new List<PlayerManager>();
 	public Stack<int> Ranks = new Stack<int>();
 	public List<int> playersRating = new List<int>();
 
@@ -76,10 +76,11 @@ public class GameManager : NetworkBehaviour {
 		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 		for (int i = 0; i < players.Length; i++) {
 			//Debug.Log("게임 시작 시, 인식된 플레이어 수 : " + players.Length);
-			if (players[i].TryGetComponent(out NetworkPlayer manager)) {
+			if (players[i].TryGetComponent(out PlayerManager manager)) {
 				_connectedPlayers.Add(manager);
 				playersHp.Add(6); // 초기 HP 설정
-				playersName.Add(manager.nickname);
+				playersName.Add(pm.playerNickname);
+				playersRating.Add(pm.playerRating);
 			}
 		}
 		//Debug.Log($"게임 셋업 완료: {_connectedPlayers.Count}명의 플레이어 준비됨.");

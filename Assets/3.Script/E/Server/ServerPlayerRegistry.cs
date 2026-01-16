@@ -7,8 +7,8 @@ public class ServerPlayerRegistry : MonoBehaviour
 {
     [SerializeField] private NetworkManager manager;
     public static ServerPlayerRegistry instance;
-    private readonly Dictionary<NetworkConnectionToClient, NetworkPlayer> connToPlayer = new();
-    private readonly Dictionary<int, NetworkPlayer> players = new();
+    private readonly Dictionary<NetworkConnectionToClient, UserInfoManager> connToPlayer = new();
+    private readonly Dictionary<int, UserInfoManager> players = new();
     private readonly SortedSet<int> availableNumbers = new();
     private int nextPlayerNumber = 1;
     public int PlayerCount => players.Count;
@@ -57,11 +57,14 @@ public class ServerPlayerRegistry : MonoBehaviour
         UnregisterPlayer(player);
     }
     [Server]
-    public void RegisterPlayer(NetworkPlayer player)
+    public void RegisterPlayer(UserInfoManager player)
     {
+        Debug.Log($"[Registry] 등록 시도: {player.PlayerNickname}"); // 이 로그가 찍히는지 확인
+
         NetworkConnectionToClient conn = player.connectionToClient;
         connToPlayer[conn] = player;
         int assignedNumber;
+
         if (availableNumbers.Count > 0)
         {
             assignedNumber = availableNumbers.Min;
@@ -72,12 +75,14 @@ public class ServerPlayerRegistry : MonoBehaviour
             assignedNumber = nextPlayerNumber++;
         }
         player.AssignPlayerNumber(assignedNumber);
+        Debug.Log($"[Registry] 번호 배정 완료: {assignedNumber}"); // 이 로그가 찍혀야 합니다.
         players.Add(assignedNumber, player);
 
         Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
     }
 
-    public void UnregisterPlayer(NetworkPlayer player)
+    [Server]
+    public void UnregisterPlayer(UserInfoManager player)
     {
         Debug.Log("실행됨3");
         int removeKey = -1;
@@ -95,6 +100,11 @@ public class ServerPlayerRegistry : MonoBehaviour
             return;
         }
         players.Remove(removeKey);
+
+        // 나간 사람의 연결 정보도 딕셔너리에서 제거
+        if (player.connectionToClient != null)
+            connToPlayer.Remove(player.connectionToClient);
+
         availableNumbers.Add(removeKey);
         Debug.Log($"[Server] Player Left: {removeKey}");
     }
@@ -112,8 +122,9 @@ public class ServerPlayerRegistry : MonoBehaviour
         GameFlowManager.Instance.StartGame();
     }
     [Server]
-    public IReadOnlyDictionary<int, NetworkPlayer> GetAllPlayers()
+    public IReadOnlyDictionary<int, UserInfoManager> GetAllPlayers()
     {
         return players;
     }
+
 }
