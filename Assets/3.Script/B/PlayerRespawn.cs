@@ -27,7 +27,7 @@ public class PlayerRespawn : NetworkBehaviour
     {
         transform.TryGetComponent(out rb); //player한테 넣어주세요
 
-        playerNumber = nplayer.playerNumber;
+        playerNumber = nplayer.playerNumber - 1;
 
         List<Transform> startPositions = NetworkManager.startPositions;
 
