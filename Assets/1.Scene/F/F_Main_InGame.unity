@@ -7360,6 +7360,10 @@ PrefabInstance:
       propertyPath: 'sfxSources.Array.data[1]'
       value: 
       objectReference: {fileID: 419671592}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[2].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: f00ea0779a98b5c40bb8405af81161ac, type: 3}
     - target: {fileID: 3674788909303889778, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
       propertyPath: m_Enabled
       value: 1

@@ -13,7 +13,6 @@ public enum BGM
     MainGameBGM
 }
 
-
 [Serializable]
 public class SoundData
 {
@@ -28,11 +27,12 @@ public class SoundManager : NetworkBehaviour
     public static SoundManager instance = null;
 
 
-    [Header("오디오 클립 설정(BGM)")]
+
+    [Header("오디오 클립 설정(여기에 넣어도 자동 재생 안 됨)")]
     public AudioClip TitleBGM;
     public AudioClip MainBGM;
 
-    [Header("오디오 소스 설정")]
+    [Header("오디오 소스 설정(실제 재생에 사용되는 곳)")]
     public AudioSource bgmSource;
     public AudioSource[] sfxSources;
 
@@ -119,9 +119,6 @@ public class SoundManager : NetworkBehaviour
         }
     }
 
-    
-
-
     // BGM 재생 함수
     public void PlayBGM(BGM type)
     {
@@ -147,19 +144,18 @@ public class SoundManager : NetworkBehaviour
     IEnumerator StartGameSoundSequence()
     {
 
-        //yield return null;
 
         // 1. 메인 BGM 시작
         PlayBGM(BGM.MainGameBGM);
         Debug.Log("브금 시작");
 
-        // 2. 잠시 후 시동 소리 "부릉" 시작 (루프 재생)
-        yield return new WaitForSeconds(1.0f); // 1초 대기
+        // 2. 잠시 후 시동 소리 반복 재생
+        yield return new WaitForSeconds(1.0f);
         PlayLoopSFX("Engine_IdleSFX", 0);
         Debug.Log("부릉 소리 시작");
 
 
-        // 3. 경적 소리 재생 (서버일 때만 RPC 호출)
+        // 3. 경적 소리 재생
         yield return new WaitForSeconds(0.5f);
 
         if (isServer)
@@ -168,7 +164,7 @@ public class SoundManager : NetworkBehaviour
         }
         else
         {
-            // 서버가 없는 로컬 테스트 환경이라면 직접 재생 함수 호출
+            // 서버가 없는 로컬 테스트 환경이면 강제로 재생
             PlaySFXInternal("GameStartSFX");
         }
         Debug.Log("경적 소리 로직 실행");
