@@ -16,6 +16,8 @@ public class PlayerRespawn : NetworkBehaviour
     [SerializeField] private GameObject car;
     [SerializeField] private NetworkPlayer nplayer;
 
+    
+
     public int playerNumber = -1;//값 쏴주면 받아주세요
 
     public override void OnStartLocalPlayer()
@@ -105,6 +107,12 @@ public class PlayerRespawn : NetworkBehaviour
     {
         if (isRespawning) return;
 
+        if (!canRespawn)
+        {
+            Debug.Log($"{name}탈락");
+            return;
+        }
+
         isRespawning = true;
         isKinematicSynced = true; // 서버에서 물리 고정 시작
 
@@ -143,6 +151,28 @@ public class PlayerRespawn : NetworkBehaviour
 
         respawnRoutine = null;
     }
+
+    [SyncVar(hook = nameof(OnCanRespawnChanged))]
+    public bool canRespawn = true;
+
+    private void OnCanRespawnChanged(bool oldVal, bool newVal)
+    {
+        // 만약 canRespawn이 false가 되었다면 (탈락 확정)
+        if (newVal == false)
+        {
+            // 1. 물리 연산 중지
+            if (rb != null) rb.isKinematic = true;
+
+            // 2. 충돌체 끄기 (Deadzone 재감지 방지 및 다른 플레이어와 충돌 방지)
+            if (TryGetComponent(out Collider col)) col.enabled = false;
+
+            // 3. 시각적 제거 (선택 사항: 완전히 없애거나 투명하게 처리)
+            if (car != null) car.SetActive(false);
+
+            Debug.Log($"{gameObject.name} 플레이어가 최종 탈락하여 모든 기능을 정지합니다.");
+        }
+    }
+
     #endregion
 
     #region 부활 Particle

@@ -223,7 +223,7 @@ public class PlayerCollision : NetworkBehaviour
             {
                 if (res.isLocalPlayer)
                 {
-                    if (res.isRespawning) { return; }
+                    if (res.isRespawning || !res.canRespawn) { return; }
                     PlayVibration(vpower, duration);//진동호출!
                     //여기 사운드나 파티클 넣어주세요?
 
