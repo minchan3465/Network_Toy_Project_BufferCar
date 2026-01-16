@@ -9,7 +9,6 @@ public class PlayerManager : NetworkBehaviour {
     public string playerNickname;
     public int playerRating = 2000;
 
-
     public MeshRenderer meshRenderer;
     public NetworkPlayer networkPlayer;
 

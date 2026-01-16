@@ -16,13 +16,13 @@ public class GameManager : NetworkBehaviour {
 
 	//Sync할거
 	[SyncVar(hook = nameof(OnGameStartingCheck))] public bool isGameStart;
-	[SyncVar(hook = nameof(OnTimerChanged))] public int gameTime;
 	public readonly SyncList<int> playersHp = new SyncList<int>();
 	public readonly SyncList<string> playersName = new SyncList<string>();
 
 	//모두가 개인적으로 간직하는거
 	public List<PlayerUI> playerHpUI = new List<PlayerUI>();
 	public List<TMP_Text> playerNameUI = new List<TMP_Text>();
+	public TMP_Text startCountdownTimer;
 	public TMP_Text gameTimer;
 	public TMP_Text middleTextUI;
 	public TMP_Text winnerTextUI;
@@ -38,52 +38,29 @@ public class GameManager : NetworkBehaviour {
 
 	//Server가 관리할거
 	public List<NetworkPlayer> _connectedPlayers = new List<NetworkPlayer>();
+	public List<PlayerManager> players_manager = new List<PlayerManager>();
 	public Stack<int> Ranks = new Stack<int>();
 	public List<int> playersRating = new List<int>();
+	public int startCountdownTime;
+	public int gameTime;
 
-	//---------메서드 파트
-
+	/////////////////////////////////
+	//---------메서드 파트---------//
+	/////////////////////////////////
 	private void Awake() {
 		if (Instance == null) { Instance = this; } else { Destroy(Instance); }
 	}
-
 	private void Start() {
-		Game_Start();
+		if(isServerOnly) {
+			StartCoroutine(Game_Start());
+		}
 	}
-
 	public override void OnStartClient() {
 		base.OnStartClient();
 		playersHp.OnChange += OnHpListChanged;
 		playersName.OnChange += OnNameListChanged;
 		RefreshAllHpUI();
 		RefreshAllNameUI();
-	}
-
-	//게임이 시작 전, 설정 및 초기화.
-	[Server]
-	public void SetupGame() {
-		///////////////////////////////////////초기화
-		playersHp.Clear();
-		playersName.Clear();
-		_connectedPlayers.Clear();
-		gameTime = 99;
-		winnerNumber = -1;
-		UpdateMiddleTextUI(string.Empty);
-		UpdateWinnerTextUI(string.Empty);
-		UpdateResultRanktTextUI(string.Empty);
-		UpdateResultRatetTextUI(string.Empty);
-		//////////////////////////////////////////////////////////////////////////플레이어 데이터 세팅
-		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-		for (int i = 0; i < players.Length; i++) {
-			//Debug.Log("게임 시작 시, 인식된 플레이어 수 : " + players.Length);
-			if (players[i].TryGetComponent(out NetworkPlayer manager)) {
-				_connectedPlayers.Add(manager);
-				playersHp.Add(6); // 초기 HP 설정
-				playersName.Add(manager.nickname);
-			}
-		}
-		//Debug.Log($"게임 셋업 완료: {_connectedPlayers.Count}명의 플레이어 준비됨.");
-		/////////////////////////////////////////////////////////////////////////////
 	}
 
 	// 1. 이미 등록된 플레이어인지 확인
@@ -104,46 +81,41 @@ public class GameManager : NetworkBehaviour {
 
 
 
-	//------------ 추락시
-	[Server]
-	public void ProcessPlayerFell(int playerNum) {
-		playersHp[playerNum] -= 1;
-		if(playersHp[playerNum] < 1) {
-			Ranks.Push(playerNum);
-			Debug.Log("랭카" + Ranks.Count);
-		}
-		//플레이어 목숨 체크
-		if (isGameStart) {
-			CheckPlayerHps();
-		}
-	}
-	private void CheckPlayerHps() {
-		int alivePlayerCnt = 0;
-		int winner_check = 0;
-		for (int i = 0; i < playersHp.Count; i++) {
-			if (playersHp[i] > 0) {
-				alivePlayerCnt += 1;
-				winner_check = i;
-			}
-		}
-		if (alivePlayerCnt > 1) return;
-		else {
-			Ranks.Push(winner_check);
-			Debug.Log("랭카" + Ranks.Count);
-			Game_Set(winner_check);
-		}
-	}
-
-
-
 	//------------게임 루프 핵심 (시작과 종료)
 	private void OnGameStartingCheck(bool oldCheck, bool newCheck) { }
 
 	[Server]
-	public void Game_Start() {
+	public IEnumerator Game_Start() {
 		SetupGame();
+		yield return StartCoroutine("StartCdTimer_co");
 		isGameStart = true;
 		StartCoroutine("timer_countdown");
+	}
+	[Server]
+	public void SetupGame() {
+		///////////////////////////////////////초기화
+		playersHp.Clear();
+		playersName.Clear();
+		_connectedPlayers.Clear();
+		startCountdownTime = 3;
+		gameTime = 99;
+		winnerNumber = -1;
+		UpdateMiddleTextUI(string.Empty);
+		UpdateWinnerTextUI(string.Empty);
+		UpdateResultRanktTextUI(string.Empty);
+		UpdateResultRatetTextUI(string.Empty);
+		//////////////////////////////////////////////////////////////////////////플레이어 데이터 세팅
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+		for (int i = 0; i < players.Length; i++) {
+			//Debug.Log("게임 시작 시, 인식된 플레이어 수 : " + players.Length);
+			if (players[i].TryGetComponent(out NetworkPlayer manager)) {
+				_connectedPlayers.Add(manager);
+				playersHp.Add(6); // 초기 HP 설정
+				playersName.Add(manager.nickname);
+			}
+		}
+		//Debug.Log($"게임 셋업 완료: {_connectedPlayers.Count}명의 플레이어 준비됨.");
+		/////////////////////////////////////////////////////////////////////////////
 	}
 	[Server]
 	public void Game_Set(int winnerNumber) {
@@ -172,14 +144,13 @@ public class GameManager : NetworkBehaviour {
 		yield return new WaitForSeconds(5f);
 		//우승 결과
 		UpdateWinnerTextUI(string.Empty);
-		//플레이어 UI 변경
-		ResultTextCal();
-		//실제 데이터 변경
+		//플레이어 UI, 실제 데이터 변경
+		ResultCal();
 
 		yield return new WaitForSeconds(7f);
 		//임시 재시작
 		offWinnerCamera();
-		Game_Start();
+		StartCoroutine(Game_Start());
 	}
 	[ClientRpc] private void UpdateMiddleTextUI(string str) { middleTextUI.text = str; }
 	[ClientRpc] private void UpdateWinnerTextUI(string str) { winnerTextUI.text = str; }
@@ -192,39 +163,82 @@ public class GameManager : NetworkBehaviour {
 	}
 	////////////////////////////
 	[ClientRpc] private void offWinnerCamera() { winnerCamera.SetActive(false); }
-	////////////////////////////
 	[Server]
-	private void ResultTextCal() {
+	private void ResultCal() {
 		string result_rank = string.Empty;
 		string result_rate = string.Empty;
 		int rank_count = Ranks.Count;
 		for (int i =0; i < rank_count; i++ ) {
 			int index = Ranks.Pop();
 			string color = setColor(index);
+			int rate = 0;
 			result_rank += $"{i + 1}\t<color={color}>{playersName[index]}</color>";
 			result_rate += $"{playersRating[index]} ";
 			switch (i) {
 				case 0:
-					result_rate += $"<color=orange>+ 200</color>";
+					rate = 200;
+					result_rate += $"<color=orange>+ {rate}</color>";
 					break;
 				case 1:
-					result_rate += $"<color=orange>+ 100</color>";
+					rate = 100;
+					result_rate += $"<color=orange>+ {rate}</color>";
 					break;
 				case 2:
-					result_rate += $"<color=blue>- 100</color>";
+					rate = 100;
+					result_rate += $"<color=blue>- {rate}</color>";
 					break;
 				case 3:
-					result_rate += $"<color=blue>- 200</color>";
+					rate = 200;
+					result_rate += $"<color=blue>- {rate}</color>";
 					break;
 			}
 			result_rank += "\n\n";
 			result_rate += "\n\n";
+
+			//플레이어 레이트값 조정
 		}
 		UpdateResultRanktTextUI(result_rank);
 		UpdateResultRatetTextUI(result_rate);
 	}
 	[ClientRpc] private void UpdateResultRanktTextUI(string str) { resultRankTextUI.text = str; }
 	[ClientRpc] private void UpdateResultRatetTextUI(string str) { resultRateTextUI.text = str; }
+	[Server]
+	public void UpdatePlayerRate(int index, int rate) {
+		//_connectedPlayers[index] = 
+	}
+
+
+	//------------ 추락시
+	[Server]
+	public void ProcessPlayerFell(int playerNum) {
+		playersHp[playerNum] -= 1;
+		if (playersHp[playerNum] < 1) {
+			Ranks.Push(playerNum);
+			Debug.Log("랭카" + Ranks.Count);
+		}
+		//플레이어 목숨 체크
+		if (isGameStart) {
+			CheckPlayerHps();
+		}
+	}
+	private void CheckPlayerHps() {
+		int alivePlayerCnt = 0;
+		int winner_check = 0;
+		for (int i = 0; i < playersHp.Count; i++) {
+			if (playersHp[i] > 0) {
+				alivePlayerCnt += 1;
+				winner_check = i;
+			}
+		}
+		if (alivePlayerCnt > 1) return;
+		else {
+			Ranks.Push(winner_check);
+			Debug.Log("랭카" + Ranks.Count);
+			Game_Set(winner_check);
+		}
+	}
+
+
 
 	//------------ UI 변경
 	////////////////////////////////////////////////////////////////////////////////////////// Hp 변경
@@ -271,21 +285,51 @@ public class GameManager : NetworkBehaviour {
 
 	//-------------- Timer 변경
 	[Server]
+	public IEnumerator StartCdTimer_co() {
+		WaitForSeconds wfs = new WaitForSeconds(1f);
+		while (startCountdownTime >= 0) {
+			Debug.Log(startCountdownTime);
+			if(startCountdownTime.Equals(0)) {
+				UpdateStartCdTimer("Go!!!");
+			} else {
+				UpdateStartCdTimer(startCountdownTime.ToString());
+			}
+			yield return wfs;
+			startCountdownTime -= 1;
+		}
+	}
+	[ClientRpc]
+	private void UpdateStartCdTimer(string startCdTimeText) {
+		startCountdownTimer.text = startCdTimeText;
+		StopCoroutine("FadeOutStartCdTimer");
+		StartCoroutine("FadeOutStartCdTimer");
+	}
+	private IEnumerator FadeOutStartCdTimer() {
+		WaitForSeconds wfs = new WaitForSeconds(0.01f);
+		float alphaValue = 1f;
+		while(alphaValue > 0) {
+			alphaValue -= 0.01f;
+			startCountdownTimer.color = new Color(1f, 1f, 1f, alphaValue);
+			yield return wfs;
+		}
+	}
+
+	[Server]
 	public IEnumerator timer_countdown() {
 		WaitForSeconds wfs = new WaitForSeconds(1f);
 		while (gameTime >= 0) {
 			yield return wfs;
 			gameTime -= 1;
+			UpdateGameTimer(gameTime);
 		}
 		//피버타임!!!!
 		OnFeverTime();
 	}
-	private void OnTimerChanged(int oldTime, int newTime) {	UpdateGameTimer();}
-	private void UpdateGameTimer() {
+	[ClientRpc]
+	private void UpdateGameTimer(int gameTime) {
 		if (gameTime < 0) return;
 		gameTimer.text = gameTime.ToString();
 	}
-
 
 	[ClientRpc]
 	private void OnFeverTime() {
