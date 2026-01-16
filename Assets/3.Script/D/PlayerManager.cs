@@ -38,13 +38,13 @@ public class PlayerManager : NetworkBehaviour {
         //playerInfo = new PlayerInfo(playerID, playerNickname, playerRating);;
         //playerInfo = new PlayerInfo("id", "Car" + Random.Range(100, 1000), 2000);
         packet = new InfoPacket();
-        packet._index = networkPlayer.playerNumber;
+        packet._index = networkPlayer.playerNumber -1;
         packet._id = "id";
         packet._name = "Car" + Random.Range(100, 1000);
         packet._rate = 2000;
 
         setCarBodyColor(packet._index);
-        GameManager.Instance.RegisterPlayer(packet, playerController, playerRespawn);
+        packet._index = GameManager.Instance.RegisterPlayer(packet, playerController, playerRespawn);
     }
 
 	private void setCarBodyColor(int index) {

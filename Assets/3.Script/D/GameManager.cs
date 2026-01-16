@@ -65,14 +65,16 @@ public class GameManager : NetworkBehaviour {
 	// 1. 이미 등록된 플레이어인지 확인
 	// 2. 리스트에 추가
 	// 3. 해당 플레이어의 초기 HP 생성 (3으로 설정)
-	public void RegisterPlayer(InfoPacket playerData, PlayerController playerController, PlayerRespawn playerRespawn) {
-		if (!isLocalPlayer) return;
-		if (playersData.Contains(playerData)) return;
+	public int RegisterPlayer(InfoPacket playerData, PlayerController playerController, PlayerRespawn playerRespawn) {
+		if (!isLocalPlayer) return -1;
+		if (playersData.Contains(playerData)) return -1;
 		playersData.Add(playerData);
 		playersHp.Add(6);
 		playersController.Add(playerController);
 		playersRespawn.Add(playerRespawn);
 		//StartCoroutine(delay(playerData));
+		playerData._index = playersData.Count;
+		return playersData.Count;
 	}
 	private IEnumerator delay(InfoPacket playerData) {
 		yield return new WaitForSeconds(1f);
