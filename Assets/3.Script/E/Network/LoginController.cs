@@ -6,7 +6,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Mirror;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 public class LoginController : MonoBehaviour
 {
     [SerializeField] private TMP_InputField name_input;
@@ -44,8 +44,8 @@ public class LoginController : MonoBehaviour
             Debug.Log("check1"+ DataManager.instance.playerInfo.User_ID);
             Debug.Log("check2"+ DataManager.instance.playerInfo.User_Nic);
             Debug.Log("check3"+ DataManager.instance.playerInfo.User_Rate);
-            gameObject.SetActive(false);
-            SceneManager.LoadScene("Main_InGame!");
+            //gameObject.SetActive(false);
+            //SceneManager.LoadScene("Main_InGame!");
 
         }
         else

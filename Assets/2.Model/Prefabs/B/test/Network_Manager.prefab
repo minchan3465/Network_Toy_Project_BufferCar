@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 6081003270790716960}
   - component: {fileID: 6441865188500998464}
   - component: {fileID: 6853478524067311285}
+  - component: {fileID: 7291328288915927524}
+  - component: {fileID: 56101636555810919}
   m_Layer: 0
   m_Name: Network_Manager
   m_TagString: Untagged
@@ -47,19 +49,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Mirror::Mirror.NetworkManager
   dontDestroyOnLoad: 1
   runInBackground: 1
-  headlessStartMode: 2
+  headlessStartMode: 1
   editorAutoStart: 1
   sendRate: 60
-  offlineScene: 
-  onlineScene: 
+  offlineScene: Assets/1.Scene/E/D_Main.unity
+  onlineScene: Assets/1.Scene/E/E_Room.unity
   offlineSceneLoadDelay: 0
-  transport: {fileID: 0}
-  networkAddress: 52.79.227.146
+  transport: {fileID: 6853478524067311285}
+  networkAddress: localhost
   maxConnections: 5
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 514292793999585233, guid: 655a8ca020730324a871874d79471c5f, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
@@ -108,3 +110,35 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
+--- !u!114 &7291328288915927524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6310362781741441580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 0
+  _assetId: 2540112817
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &56101636555810919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6310362781741441580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f404ad1a25a85b44abd8806f5e0b6781, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Serverchecker
+  type: 1
+  manager: {fileID: 0}
+  transport: {fileID: 0}
