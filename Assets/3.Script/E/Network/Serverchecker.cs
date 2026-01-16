@@ -114,9 +114,6 @@ public class Serverchecker : MonoBehaviour
         }
         else
         {
-            manager.StartServer();
-            Debug.Log($"{manager.networkAddress} : start Server...");
-
             NetworkServer.OnConnectedEvent += (NetworkConnectionToClient) =>
             {
                 Debug.Log($"New Client connect : {NetworkConnectionToClient.address }");
@@ -125,6 +122,9 @@ public class Serverchecker : MonoBehaviour
             {
                 Debug.Log($"Client Disconnect : {NetworkConnectionToClient.address }");
             };
+
+            manager.StartServer();
+            Debug.Log($"{manager.networkAddress} : start Server...");
         }
     }
     public void Start_Client()

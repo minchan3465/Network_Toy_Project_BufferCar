@@ -6,6 +6,9 @@ using Mirror;
 public class PlayerManager : NetworkBehaviour {
     // 서버가 정해주는 순번 (모든 클라이언트에게 동기화)
     public int playerIndex = -1;
+    public string playerNickname;
+    public int playerRating = 2000;
+
 
     public MeshRenderer meshRenderer;
     public NetworkPlayer networkPlayer;
@@ -16,8 +19,9 @@ public class PlayerManager : NetworkBehaviour {
 
 	private void Start() {
         playerIndex = networkPlayer.playerNumber - 1;
+        playerNickname = "Car" + Random.Range(100, 1000);
         setCarBodyColor(playerIndex);
-        GameManager.Instance.RegisterPlayer(networkPlayer);
+        GameManager.Instance.RegisterPlayer(this, networkPlayer);
     }
 
 	private void setCarBodyColor(int index) {

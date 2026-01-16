@@ -145,7 +145,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -5405,9 +5405,9 @@ GameObject:
   - component: {fileID: 7201062563975725197}
   - component: {fileID: 721332033141467808}
   - component: {fileID: -3160357476037317387}
-  - component: {fileID: 3395608283781625710}
+  - component: {fileID: 5641249817105288841}
   m_Layer: 0
-  m_Name: PlayerCar_Particle+
+  m_Name: PlayerCar_0114_1808
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5557,7 +5557,7 @@ MonoBehaviour:
   forceSpeed: 1
   turnSpeed: 10
   IsStunned: 0
-  moveParticleSystem: {fileID: 0}
+  moveParticleSystem: {fileID: 8612059781073760455}
   particleThreshold: 1
   groundCheckDistance: 1
   groundLayer:
@@ -5597,7 +5597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
   sceneId: 0
-  _assetId: 565258576
+  _assetId: 2359044697
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -5716,9 +5716,9 @@ MonoBehaviour:
   isRespawning: 0
   isKinematicSynced: 0
   car: {fileID: 681800734350143724}
-  nplayer: {fileID: 3395608283781625710}
+  nplayer: {fileID: 5641249817105288841}
   playerNumber: 2
-  appearParticlePrefab: {fileID: 0}
+  appearParticlePrefab: {fileID: 4143439122255155475, guid: d75f41abb5a1fa840adc3bcef1d89353, type: 3}
 --- !u!114 &-3160357476037317387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5735,9 +5735,11 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   playerIndex: -1
+  playerNickname: 
+  playerRating: 2000
   meshRenderer: {fileID: 8175656362519344762}
   networkPlayer: {fileID: 0}
---- !u!114 &3395608283781625710
+--- !u!114 &5641249817105288841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
