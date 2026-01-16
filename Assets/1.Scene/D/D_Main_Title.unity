@@ -785,6 +785,10 @@ PrefabInstance:
       propertyPath: ty
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 56101636555810919, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6081003270790716960, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 861.6798
@@ -835,16 +839,16 @@ PrefabInstance:
       objectReference: {fileID: 920553897}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: onlineScene
-      value: Assets/1.Scene/D/B_Main_InGame.unity
+      value: Assets/1.Scene/D/D_Main_InGame.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: offlineScene
-      value: Assets/1.Scene/D/Main_Title.unity
+      value: Assets/1.Scene/D/D_Server_Scene.unity
       objectReference: {fileID: 0}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: playerPrefab
       value: 
-      objectReference: {fileID: 6970800248564378294, guid: 3f8d9363db7f4084b881df8ffde34a7c, type: 3}
+      objectReference: {fileID: 6970800248564378294, guid: 34f2a5c4e896eb84ea3787fa1c48bc2d, type: 3}
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: networkAddress
       value: localhost
@@ -856,6 +860,10 @@ PrefabInstance:
     - target: {fileID: 6441865188500998464, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
       propertyPath: headlessStartMode
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7291328288915927524, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
+      propertyPath: sceneId
+      value: 3988775375
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -4416312163378341147, guid: 5d0440b4a8bd3354891a113231f926cb, type: 3}
@@ -1237,6 +1245,51 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1178274297
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1178274299}
+  - component: {fileID: 1178274298}
+  m_Layer: 0
+  m_Name: DataManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1178274298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178274297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 712b13945558c2d478733feaa5a5d32d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DataManager
+  path: 
+--- !u!4 &1178274299
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178274297}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 957.81824, y: 911.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1899,3 +1952,4 @@ SceneRoots:
   - {fileID: 1173771146}
   - {fileID: 560944859}
   - {fileID: 920553896}
+  - {fileID: 1178274299}
