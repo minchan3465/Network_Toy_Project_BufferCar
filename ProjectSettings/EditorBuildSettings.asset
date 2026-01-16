@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/1.Scene/E/E_Main_InGame!.unity
     guid: ae377a59dc98a4c43a38d4b883ab0c80
   - enabled: 1
+    path: Assets/1.Scene/E/E_Room.unity
+    guid: 00fe1716dfc8f4047992055ecc259623
+  - enabled: 1
     path: Assets/1.Scene/E/E_Main_ServerScene!.unity
     guid: 7d92bfdbdbe12e24aa8c7db2b0fe9f09
   m_configObjects:

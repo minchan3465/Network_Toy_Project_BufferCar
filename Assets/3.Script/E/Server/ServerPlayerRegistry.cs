@@ -7,8 +7,8 @@ public class ServerPlayerRegistry : MonoBehaviour
 {
     [SerializeField] private NetworkManager manager;
     public static ServerPlayerRegistry instance;
-    private readonly Dictionary<NetworkConnectionToClient, NetworkPlayer> connToPlayer = new();
-    private readonly Dictionary<int, NetworkPlayer> players = new();
+    private readonly Dictionary<NetworkConnectionToClient, UserInfoManager> connToPlayer = new();
+    private readonly Dictionary<int, UserInfoManager> players = new();
     private readonly SortedSet<int> availableNumbers = new();
     private int nextPlayerNumber = 1;
     public int PlayerCount => players.Count;
@@ -17,26 +17,30 @@ public class ServerPlayerRegistry : MonoBehaviour
         if (instance == null)
             instance = this;
         else
+        {
             Destroy(gameObject);
+
+            return;
+        }
+        //DontDestroyOnLoad(gameObject);
     }
-    private void OnEnable()
+    private void Start()
     {
         //Debug.Log($"[Registry] OnEnable | active={gameObject.activeInHierarchy} | server={NetworkServer.active}");
-        StartCoroutine(WaitForServer());
-    }
-    private IEnumerator WaitForServer()
-    {
-        while (!NetworkServer.active)
-            yield return null;
-
-        Debug.Log("[Registry] Server active, subscribe disconnect");
         NetworkServer.OnDisconnectedEvent += OnClientDisconnected;
+        //StartCoroutine(WaitForServer());
     }
+    //private IEnumerator WaitForServer()
+    //{
+    //    while (!NetworkServer.active)
+    //        yield return null;
+
+    //    Debug.Log("[Registry] Server active, subscribe disconnect");
+    //}
     private void OnDisable()
     {
         NetworkServer.OnDisconnectedEvent -= OnClientDisconnected;
     }
-    [Server]
     private void OnClientDisconnected(NetworkConnectionToClient conn)
     {
         Debug.Log("is starttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
@@ -58,7 +62,7 @@ public class ServerPlayerRegistry : MonoBehaviour
         UnregisterPlayer(player);
     }
     [Server]
-    public void RegisterPlayer(NetworkPlayer player)
+    public void RegisterPlayer(UserInfoManager player)
     {
         NetworkConnectionToClient conn = player.connectionToClient;
         connToPlayer[conn] = player;
@@ -76,11 +80,13 @@ public class ServerPlayerRegistry : MonoBehaviour
         players.Add(assignedNumber, player);
 
         Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        //DataManager.instance.playerInfo.PlayerNum = assignedNumber;
+        //Debug.Log(DataManager.instance.playerInfo.PlayerNum+"Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     }
 
-    public void UnregisterPlayer(NetworkPlayer player)
+    public void UnregisterPlayer(UserInfoManager player)
     {
-        Debug.Log("½ÇÇàµÊ3");
+        //Debug.Log("½ÇÇàµÊ3");
         int removeKey = -1;
         foreach (var kv in players)
         {
@@ -96,6 +102,8 @@ public class ServerPlayerRegistry : MonoBehaviour
             return;
         }
         players.Remove(removeKey);
+        if (player.connectionToClient != null)
+            connToPlayer.Remove(player.connectionToClient);
         availableNumbers.Add(removeKey);
         Debug.Log($"[Server] Player Left: {removeKey}");
     }
@@ -113,7 +121,7 @@ public class ServerPlayerRegistry : MonoBehaviour
         GameFlowManager.Instance.StartGame();
     }
     [Server]
-    public IReadOnlyDictionary<int, NetworkPlayer> GetAllPlayers()
+    public IReadOnlyDictionary<int, UserInfoManager> GetAllPlayers()
     {
         return players;
     }
