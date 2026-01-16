@@ -19,7 +19,7 @@ public class PlayerRespawn : NetworkBehaviour
 
     private GameObject respawn_ob;
     [SerializeField] private GameObject car;
-    [SerializeField] private NetworkPlayer nplayer;
+    //[SerializeField] private NetworkPlayer nplayer;
 
     public int playerNumber = -1;//값 외부에서 받아주세요
 
@@ -27,7 +27,7 @@ public class PlayerRespawn : NetworkBehaviour
     {
         transform.TryGetComponent(out rb); //player한테 넣어주세요
 
-        playerNumber = nplayer.playerNumber - 1; //NetworkPlayer 안쓰면 제외
+        //playerNumber = nplayer.playerNumber - 1; //NetworkPlayer 안쓰면 제외
 
         List<Transform> startPositions = NetworkManager.startPositions;
 

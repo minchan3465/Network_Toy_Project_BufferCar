@@ -17,7 +17,7 @@ public class GameManager : NetworkBehaviour {
 	//Sync할거
 	[SyncVar(hook = nameof(OnGameStartingCheck))] public bool isGameStart;
 	public readonly SyncList<int> playersHp = new SyncList<int>();
-	public readonly SyncList<InfoPacket> playersData = new SyncList<InfoPacket>();
+	public readonly SyncList<PlayerData> playersData = new SyncList<PlayerData>();
 
 	//모두가 개인적으로 간직하는거
 	public List<PlayerUI> playerHpUI = new List<PlayerUI>();
@@ -35,101 +35,85 @@ public class GameManager : NetworkBehaviour {
 	public GameObject spectatorCamera;
 
 	//Server가 관리할거
-	public List<PlayerController> playersController = new List<PlayerController>();
-	public List<PlayerRespawn> playersRespawn = new List<PlayerRespawn>();
 	public Stack<int> Ranks = new Stack<int>();
-	public int winnerNumber;
-	public string winnerName;
-	public int startCountdownTime;
-	public int gameTime;
+	public int winnerNumber = -1;
+	public string winnerName = string.Empty;
+	public int startCountdownTime = 3;
+	public int gameTime = 99;
 
-	/////////////////////////////////
-	//---------메서드 파트---------//
-	/////////////////////////////////
+
+	///////////////////////////////////////////////////////////////////////
+	//--------------------------- 메서드 파트 ---------------------------//
+	///////////////////////////////////////////////////////////////////////
 	private void Awake() {
 		if (Instance == null) { Instance = this; } 
 		else { Destroy(Instance); }
 	}
 	private void Start() {
-		if(isServerOnly) {
-			StartCoroutine(Game_Start());
+		if (!isLocalPlayer) return;
+		playersData.OnChange += OnPlayersDataChanged;
+		playersHp.OnChange += OnHpListChanged;
+	}
+	//플레이어 준비됨 파트
+	[Command]
+	public void ImReady(PlayerData player) {
+		if (!isLocalPlayer) return;
+		//플레이어 정보 등록, HP 갱신
+		playersData.Add(player);
+		playersHp.Add(6);
+	}
+	//------------ UI 변경
+	////////////////////////////////////////////////////////////////////////////////////////// Name변경
+	/////////////////////그리고 4명이 모였다면, (서버기준) 시작!!!!!!!!!!
+	private void OnPlayersDataChanged(SyncList<PlayerData>.Operation op, int playernumber, PlayerData newItem) {
+		UpdateNameUI(playernumber, playersData[playernumber].nickname);
+		if(isServer) {
+			if(playersData.Count.Equals(4)) {
+				StartCoroutine(Game_Start());
+			}
 		}
 	}
-	public override void OnStartClient() {
-		base.OnStartClient();
-		playersHp.OnChange += OnHpListChanged;
-		RefreshAllHpUI();
-		RefreshAllNameUI();
+	private void UpdateNameUI(int playernumber, string name) {
+		if (playernumber >= playersData.Count) return;
+		string str = string.Empty;
+		string color = setColor(playernumber);
+		if ((playernumber % 2).Equals(0)) {
+			str = $"{playernumber + 1}P <color={color}>{name}</color>";
+		} else {
+			str = $"<color={color}>{name}</color> {playernumber + 1}P";
+		}
+		playerNameUI[playernumber].text = str;
+	}
+	////////////////////////////////////////////////////////////////////////////////////////// Hp 변경
+	private void OnHpListChanged(SyncList<int>.Operation op, int playernumber, int newItem) {
+		UpdateHpUI(playernumber, playersHp[playernumber]);
+	}
+	private void UpdateHpUI(int playernumber, int currentHp) {
+		// 해당 플레이어의 버튼들 순차적으로 끄기
+		// 예: HP가 2라면 -> 0,1번 버튼은 ON(true), 2번 버튼은 OFF(false)
+		// 버튼 인덱스가 현재 체력보다 작으면 활성화, 크거나 같으면 비활성화
+		if (playernumber >= playerHpUI.Count) return;
+		for (int i = 0; i < playerHpUI[playernumber].hpButtons.Length; i++) {
+			playerHpUI[playernumber].hpButtons[i].interactable = (i * 2 < currentHp);
+		}
 	}
 
-	// 1. 이미 등록된 플레이어인지 확인
-	// 2. 리스트에 추가
-	// 3. 해당 플레이어의 초기 HP 생성 (3으로 설정)
-	public int RegisterPlayer(InfoPacket playerData, PlayerController playerController, PlayerRespawn playerRespawn) {
-		if (!isLocalPlayer) return -1;
-		if (playersData.Contains(playerData)) return -1;
-		playersData.Add(playerData);
-		playersHp.Add(6);
-		playersController.Add(playerController);
-		playersRespawn.Add(playerRespawn);
-		//StartCoroutine(delay(playerData));
-		playerData._index = playersData.Count;
-		return playersData.Count;
-	}
-	private IEnumerator delay(InfoPacket playerData) {
-		yield return new WaitForSeconds(1f);
 
-	}
 
 	//------------게임 루프 핵심 (시작과 종료)
 	private void OnGameStartingCheck(bool oldCheck, bool newCheck) { }
 
 	[Server]
 	public IEnumerator Game_Start() {
-		SetupGame();
 		yield return StartCoroutine("StartCdTimer_co");
 		isGameStart = true;
 		StartCoroutine("timer_countdown");
 	}
 	[Server]
-	public void SetupGame() {
-		///////////////////////////////////////초기화
-		playersData.Clear();
-		playersController.Clear();
-		playersRespawn.Clear();
-		playersHp.Clear();
-		startCountdownTime = 3;
-		gameTime = 99;
-		winnerNumber = -1;
-		UpdateMiddleTextUI(string.Empty);
-		UpdateWinnerTextUI(string.Empty);
-		UpdateResultRanktTextUI(string.Empty);
-		UpdateResultRatetTextUI(string.Empty);
-		//////////////////////////////////////////////////////////////////////////플레이어 데이터 세팅
-		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-		for (int i = 0; i < players.Length; i++) {
-			//Debug.Log("게임 시작 시, 인식된 플레이어 수 : " + players.Length);
-			if (players[i].TryGetComponent(out InfoPacket playerData)) {
-				playersData.Add(playerData);
-				playersHp.Add(6); // 초기 HP 설정
-			}
-			if(players[i].TryGetComponent(out PlayerController playerController)) {
-				playersController.Add(playerController);
-				playerController.IsStunned = true;
-			}
-			if (players[i].TryGetComponent(out PlayerRespawn playerRespawn)) {
-				playersRespawn.Add(playerRespawn);
-				playerRespawn.OnStartLocalPlayer();
-			}
-		}
-		//Debug.Log($"게임 셋업 완료: {playersData.Count}명의 플레이어 준비됨.");
-		/////////////////////////////////////////////////////////////////////////////
-	}
-	[Server]
 	public void Game_Set(int winnerNumber) {
 		isGameStart = false;
 		this.winnerNumber = winnerNumber;
-		winnerName = playersData[winnerNumber]._name;
+		winnerName = playersData[winnerNumber].nickname;
 		StopCoroutine("timer_countdown");
 		OffFeverTime();
 		UpdateMiddleTextUI("GAME SET!");
@@ -156,9 +140,7 @@ public class GameManager : NetworkBehaviour {
 		ResultCal();
 
 		yield return new WaitForSeconds(7f);
-		//임시 재시작
-		offWinnerCamera();
-		StartCoroutine(Game_Start());
+		//룸으로 돌아가는 세팅
 	}
 	[ClientRpc] private void UpdateMiddleTextUI(string str) { middleTextUI.text = str; }
 	[ClientRpc] private void UpdateWinnerTextUI(string str) { winnerTextUI.text = str; }
@@ -174,42 +156,42 @@ public class GameManager : NetworkBehaviour {
 	[Server]
 	private void ResultCal() {
 		string result_rank = string.Empty;
-		string result_rate = string.Empty;
+		string resultrate = string.Empty;
 		int rank_count = Ranks.Count;
 		for (int i =0; i < rank_count; i++ ) {
 			int index = Ranks.Pop();
 			string color = setColor(index);
 			int rate = 0;
-			result_rank += $"{i + 1}\t<color={color}>{playersData[index]._name}</color>";
-			result_rate += $"{playersData[index]._rate} ";
+			result_rank += $"{i + 1}\t<color={color}>{playersData[index].nickname}</color>";
+			resultrate += $"{playersData[index].rate} ";
 			switch (i) {
 				case 0:
 					rate = 200;
-					result_rate += $"<color=orange>+ {rate}</color>";
+					resultrate += $"<color=orange>+ {rate}</color>";
 					break;
 				case 1:
 					rate = 100;
-					result_rate += $"<color=orange>+ {rate}</color>";
+					resultrate += $"<color=orange>+ {rate}</color>";
 					break;
 				case 2:
 					rate = 100;
-					result_rate += $"<color=blue>- {rate}</color>";
+					resultrate += $"<color=blue>- {rate}</color>";
 					break;
 				case 3:
 					rate = 200;
-					result_rate += $"<color=blue>- {rate}</color>";
+					resultrate += $"<color=blue>- {rate}</color>";
 					break;
 			}
 			UpdatePlayerRate(index, rate);
 			result_rank += "\n\n";
-			result_rate += "\n\n";
+			resultrate += "\n\n";
 
 			//플레이어 레이트값 조정
 		}
 		UpdateResultRanktTextUI(result_rank);
-		UpdateResultRatetTextUI(result_rate);
+		UpdateResultRatetTextUI(resultrate);
 	}
-	[Server] public void UpdatePlayerRate(int index, int rate) {	playersData[index]._rate += rate; }
+	[Server] public void UpdatePlayerRate(int index, int rate) {	playersData[index].rate += rate; }
 	[ClientRpc] private void UpdateResultRanktTextUI(string str) { resultRankTextUI.text = str; }
 	[ClientRpc] private void UpdateResultRatetTextUI(string str) { resultRateTextUI.text = str; }
 
@@ -221,7 +203,7 @@ public class GameManager : NetworkBehaviour {
 		if (playersHp[playerNum] < 1) {
 			//죽었음~
 			Ranks.Push(playerNum);
-			playersRespawn[playerNum].canRespawn = false;
+			playersData[playerNum].playerRespawn.canRespawn = false;
 			onSpectatorCamera(connectionToClient);
 		}
 		//플레이어 목숨 체크
@@ -254,47 +236,7 @@ public class GameManager : NetworkBehaviour {
 		spectatorCamera.SetActive(false);
 	}
 
-	//------------ UI 변경
-	////////////////////////////////////////////////////////////////////////////////////////// Hp 변경
-	private void OnHpListChanged(SyncList<int>.Operation op, int playernumber, int newItem) {
-		if (op == SyncList<int>.Operation.OP_CLEAR) return;
-		UpdateHpUI(playernumber, playersHp[playernumber]);
-	}
-	private void RefreshAllHpUI() {
-		for (int i = 0; i < playersHp.Count; i++) {
-			UpdateHpUI(i, playersHp[i]);
-		}
-	}
-	private void UpdateHpUI(int playernumber, int currentHp) {
-		// 해당 플레이어의 버튼들 순차적으로 끄기
-		// 예: HP가 2라면 -> 0,1번 버튼은 ON(true), 2번 버튼은 OFF(false)
-		// 버튼 인덱스가 현재 체력보다 작으면 활성화, 크거나 같으면 비활성화
-		if (playernumber >= playerHpUI.Count) return;
-		for (int i = 0; i < playerHpUI[playernumber].hpButtons.Length; i++) {
-			playerHpUI[playernumber].hpButtons[i].interactable = (i*2 < currentHp);
-		}
-	}
-	////////////////////////////////////////////////////////////////////////////////////////// Name 변경
-	private void OnPlayersDataChanged(SyncList<InfoPacket>.Operation op, int playernumber, InfoPacket newItem) {
-		if (op == SyncList<InfoPacket>.Operation.OP_CLEAR) return;
-		UpdateNameUI(playernumber, playersData[playernumber]._name);
-	}
-	private void RefreshAllNameUI() {
-		for (int i = 0; i < playersData.Count; i++) {
-			UpdateNameUI(i, playersData[i]._name);
-		}
-	}
-	private void UpdateNameUI(int playernumber, string name) {
-		if (playernumber >= playersData.Count) return;
-		string str = string.Empty;
-		string color = setColor(playernumber);
-		if((playernumber % 2).Equals(0)) { 
-			str = $"{playernumber + 1}P <color={color}>{name}</color>";
-		} else { 
-			str = $"<color={color}>{name}</color> {playernumber + 1}P"; 
-		}
-		playerNameUI[playernumber].text = str;
-	}
+
 
 
 	//-------------- Timer 변경
@@ -311,8 +253,8 @@ public class GameManager : NetworkBehaviour {
 			yield return wfs;
 			startCountdownTime -= 1;
 		}
-		for (int i = 0; i < playersController.Count; i++) {
-			playersController[i].IsStunned = false;
+		for (int i = 0; i < playersData.Count; i++) {
+			playersData[i].playerController.IsStunned = false;
 		}
 	}
 	[ClientRpc]
