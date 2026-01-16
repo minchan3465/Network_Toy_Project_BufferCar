@@ -7,24 +7,29 @@ using Mirror;
 public class PlayerRespawn : NetworkBehaviour
 {
     private Rigidbody rb;
+
     [SyncVar(hook = nameof(OnRespawnStateChanged))]
     public bool isRespawning = false;
-    // 물리 고정 상태 동기화 (상대방 화면에서도 Kinematic이 되도록)
+
     [SyncVar(hook = nameof(OnKinematicChanged))]
     public bool isKinematicSynced = false;
+
+    [SyncVar(hook = nameof(OnCanRespawnChanged))]
+    public bool canRespawn = true;
+
     private GameObject respawn_ob;
     [SerializeField] private GameObject car;
     [SerializeField] private NetworkPlayer nplayer;
 
-    
+    public int playerNumber = -1;//값 외부에서 받아주세요
 
-    public int playerNumber = -1;//값 쏴주면 받아주세요
-
+    //past_Logic_OnStartLocalPlayer()
+    /*
     public override void OnStartLocalPlayer()
     {
         transform.TryGetComponent(out rb); //player한테 넣어주세요
 
-        playerNumber = nplayer.playerNumber;
+        playerNumber = nplayer.playerNumber - 1; //NetworkPlayer 안쓰면 제외
 
         List<Transform> startPositions = NetworkManager.startPositions;
 
@@ -45,25 +50,60 @@ public class PlayerRespawn : NetworkBehaviour
             respawn_ob = respawnList.spawnList[playerNumber];
         }
     }
+    */
 
-    #region 리스폰 로직
+    public void InitializePlayer(int PlayerNum)
+    {
+        if (rb == null) transform.TryGetComponent(out rb);
+        this.playerNumber = PlayerNum;
 
-    // 변수 값이 변할 때마다 모든 클라이언트에서 실행 (동기화 핵심)
+        if (isLocalPlayer)
+        {
+            SetupInitialPosition();
+            SetupRespawnObject();
+        }
+    }
+
+    private void SetupInitialPosition()
+    {
+        List<Transform> startPositions = NetworkManager.startPositions;
+        startPositions.Sort((a, b) => string.Compare(a.name, b.name));
+
+        if (playerNumber >= 0 && playerNumber < startPositions.Count)
+        {
+            Transform targetPos = startPositions[playerNumber];
+            transform.position = targetPos.position;
+            transform.rotation = targetPos.rotation;
+        }
+    }
+
+    private void SetupRespawnObject()
+    {
+        var respawnList = FindAnyObjectByType<RespawnList>();
+        if (respawnList != null && playerNumber >= 0 && playerNumber < respawnList.spawnList.Count)
+        {
+            respawn_ob = respawnList.spawnList[playerNumber];
+        }
+    }
+
+    #region Respawn Logic
+
+    // 변수 값이 변할 때마다 모든 클라이언트에서 실행
+    //[SyncVar(hook = nameof(OnRespawnStateChanged))] public bool isRespawning = false;
     private void OnRespawnStateChanged(bool oldVal, bool newVal)
     {
         if (car == null) return;
-
-        if (newVal == true) // 리스폰 시작: 차 숨김
+        if (newVal == true) // 리스폰 시작
         {
             car.SetActive(false);
         }
-        else // 리스폰 위치 이동 완료: 깜빡임 시작
+        else // 리스폰 위치 이동 완료/ 깜빡임 시작
         {
             StartCoroutine(BlinkVisuals());
         }
     }
 
-    private void OnKinematicChanged(bool oldVal, bool newVal)
+    private void OnKinematicChanged(bool oldVal, bool newVal)//SyncVar
     {
         if (rb == null) transform.TryGetComponent(out rb);
         if (rb != null)
@@ -71,7 +111,16 @@ public class PlayerRespawn : NetworkBehaviour
             rb.isKinematic = newVal;
         }
     }
-    private IEnumerator BlinkVisuals()
+
+    [Command]
+    public void CmdSetKinematic(bool state) => isKinematicSynced = state;//SyncVar
+
+    [Server]
+    private void ResetRespawnFlag() => isRespawning = false;//SyncVar
+
+    //
+
+    private IEnumerator BlinkVisuals()//깜빡깜빡
     {
         float duration = 2.0f;
         float interval = 0.2f;
@@ -85,12 +134,12 @@ public class PlayerRespawn : NetworkBehaviour
         }
         car.SetActive(true);
 
-        // 깜빡임이 끝난 "이 시점"에 모든 클라이언트의 물리 엔진을 켭니다.
         if (isLocalPlayer)
         {
+            // 깜빡임이 끝난 시점에 모든 클라이언트의 물리 엔진을 켬
             CmdSetKinematic(false);
 
-            // 물리 해제 직후 속도 확실히 초기화 (버그 방지)
+            // 물리 해제 직후 속도 초기화
             if (rb != null)
             {
                 rb.linearVelocity = Vector3.zero;
@@ -98,9 +147,6 @@ public class PlayerRespawn : NetworkBehaviour
             }
         }
     }
-
-    [Command]
-    private void CmdSetKinematic(bool state) => isKinematicSynced = state;
 
     [Command]
     public void CmdRequestRespawn()
@@ -120,11 +166,8 @@ public class PlayerRespawn : NetworkBehaviour
         Invoke(nameof(ResetRespawnFlag), 3.0f);
     }
 
-    [Server]
-    private void ResetRespawnFlag() => isRespawning = false;
-
-
     private Coroutine respawnRoutine;
+
     [TargetRpc]
     void TargetRpcRespawn(NetworkConnection target)
     {
@@ -152,9 +195,6 @@ public class PlayerRespawn : NetworkBehaviour
         respawnRoutine = null;
     }
 
-    [SyncVar(hook = nameof(OnCanRespawnChanged))]
-    public bool canRespawn = true;
-
     private void OnCanRespawnChanged(bool oldVal, bool newVal)
     {
         // 만약 canRespawn이 false가 되었다면 (탈락 확정)
@@ -164,7 +204,7 @@ public class PlayerRespawn : NetworkBehaviour
             if (rb != null) rb.isKinematic = true;
 
             // 2. 충돌체 끄기 (Deadzone 재감지 방지 및 다른 플레이어와 충돌 방지)
-            if (TryGetComponent(out Collider col)) col.enabled = false;
+            if (TryGetComponent(out MeshCollider col)) col.enabled = false;
 
             // 3. 시각적 제거 (선택 사항: 완전히 없애거나 투명하게 처리)
             if (car != null) car.SetActive(false);
@@ -175,11 +215,11 @@ public class PlayerRespawn : NetworkBehaviour
 
     #endregion
 
-    #region 부활 Particle
+    #region Respawn Particle
     [SerializeField] private GameObject appearParticlePrefab;
 
     [Command]
-    void CmdRequestAppearEffect(Vector3 pos)
+    public void CmdRequestAppearEffect(Vector3 pos)
     {
         RpcPlayAppearEffect(pos); // 서버가 모든 클라이언트에게 실행 명령을 내림
     }
@@ -190,10 +230,10 @@ public class PlayerRespawn : NetworkBehaviour
         // 모든 플레이어의 화면에서 실행됨
         if (appearParticlePrefab != null)
         {
-            // 1. 지정된 위치에 파티클 생성 (회전은 기본값)
+            // 지정된 위치에 파티클 생성
             GameObject effect = Instantiate(appearParticlePrefab, pos, Quaternion.identity);
 
-            // 2. 여러 개의 자식 파티클 시스템 중 가장 긴 시간을 찾음 (배열 처리)
+            // 여러 개의 자식 파티클 시스템 중 가장 긴 시간을 찾음
             ParticleSystem[] allParticles = effect.GetComponentsInChildren<ParticleSystem>();
 
             float maxLifeTime = 0f;
@@ -209,7 +249,7 @@ public class PlayerRespawn : NetworkBehaviour
                 }
             }
 
-            // 3. 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 통째로 삭제
+            // 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 통째로 삭제
             // 계산된 시간이 없으면 기본 3초 후 삭제
             Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
         }

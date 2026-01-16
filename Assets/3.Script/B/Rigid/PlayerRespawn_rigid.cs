@@ -47,6 +47,8 @@ public class PlayerRespawn_rigid : NetworkBehaviour
     }
 
     #region 리스폰 로직
+
+    //  Hook
     private void OnRespawnStateChanged(bool oldVal, bool newVal)
     {
         if (car == null) return;
@@ -68,6 +70,7 @@ public class PlayerRespawn_rigid : NetworkBehaviour
             rb.isKinematic = newVal;
         }
     }
+    //  Hook
 
     private IEnumerator BlinkVisuals()
     {
