@@ -290,12 +290,12 @@ GameObject:
   - component: {fileID: 3062942731036585061}
   - component: {fileID: 6562362952264747834}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: Warning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2381859027677699993
 RectTransform:
   m_ObjectHideFlags: 0
@@ -343,7 +343,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: "<color=red>\uB9F5\uC774 \uC904\uC5B4\uB4DC\uB294 \uC911\uC785\uB2C8\uB2E4!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b20aa364a2e4a9343a7223f851f16d31, type: 2}
   m_sharedMaterial: {fileID: 4867554414670008779, guid: b20aa364a2e4a9343a7223f851f16d31, type: 2}

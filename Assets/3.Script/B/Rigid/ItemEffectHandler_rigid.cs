@@ -2,20 +2,21 @@ using UnityEngine;
 using Mirror;
 using System.Collections;
 
-[RequireComponent(typeof(PlayerController))]
-public class ItemEffectHandler : NetworkBehaviour
+[RequireComponent(typeof(PlayerController_rigid))]
+public class ItemEffectHandler_rigid : NetworkBehaviour
 {
-    private PlayerController controller;
-    private Rigidbody rb;
+    private PlayerController_rigid controller;
+    private Rigidbody rb; // 서버용 (실제)
+    // 클라이언트 예측용 RB에 접근하기 위한 프로퍼티
+    private Rigidbody PredictedRb => GetComponent<PredictedRigidbody>().predictedRigidbody;
 
     [Header("--- VFX 연결 ---")]
     [Tooltip("[0]:Empty, [1]:Nitro, [2]:EMP_Cast, [3]:Stun_Hit")]
     [SerializeField] private GameObject[] effectRoots;
 
     [Header("--- 사운드 설정 ---")]
-    [Tooltip("아이템 효과음 볼륨 (0.0 ~ 1.0)")]
     [Range(0f, 1f)]
-    [SerializeField] private float sfxVolume = 1.0f; // [추가됨] 인스펙터 제어용
+    [SerializeField] private float sfxVolume = 1.0f;
 
     [Header("--- 밸런스 설정 (Iron Body) ---")]
     [SerializeField] private float ironDuration = 5f;
@@ -34,44 +35,17 @@ public class ItemEffectHandler : NetworkBehaviour
     private float defaultMass;
     private float defaultSpeed;
     private Vector3 defaultScale;
-    private bool _isFeverActive = false;
+    private float defaultDrag;
 
     void Start()
     {
-        controller = GetComponent<PlayerController>();
-        rb = controller.Rb;
+        controller = GetComponent<PlayerController_rigid>();
+        rb = GetComponent<Rigidbody>();
 
         defaultMass = rb.mass;
+        defaultDrag = rb.linearDamping; // Unity 6 (구 drag)
         defaultSpeed = controller.Speed;
         defaultScale = transform.localScale;
-    }
-
-    [ServerCallback]
-    private void Update()
-    {
-        if (GameManager.Instance == null) return;
-
-        // GameManager의 시간이 0보다 작으면 피버 타임으로 간주 (-1 상태)
-        bool currentFeverState = GameManager.Instance.gameTime < 0;
-
-        // 상태가 바뀌었을 때만 실행 (최적화)
-        if (_isFeverActive != currentFeverState)
-        {
-            _isFeverActive = currentFeverState;
-
-            if (_isFeverActive)
-            {
-                // [피버 시작] 속도 증가 & 이펙트 켜기
-                controller.Speed = defaultSpeed * nitroSpeedMultiplier;
-                RpcControlEffect(1, true); // 1번이 Nitro 이펙트
-            }
-            else
-            {
-                // [피버 종료] 게임 재시작 시 속도 원상복구
-                controller.Speed = defaultSpeed;
-                RpcControlEffect(1, false);
-            }
-        }
     }
 
     [Server]
@@ -89,57 +63,84 @@ public class ItemEffectHandler : NetworkBehaviour
 
     #region 아이템 스킬 구현 (로직)
 
+    // 1. 아이언 바디 (질량 증가)
     [Server]
     private IEnumerator IronBodyRoutine()
     {
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("Power UpSFX", transform.position, 1.0f, sfxVolume);
 
-        float heavyMass = defaultMass * ironMassMultiplier;
+        // 서버 물리 적용
+        rb.mass = defaultMass * ironMassMultiplier;
 
-        // 1. 서버에서의 질량 변경
-        rb.mass = heavyMass;
-
-        // 2. [추가] 클라이언트에게도 질량 바꾸라고 명령
-        RpcSetMass(heavyMass);
-
-        RpcSetScale(defaultScale * ironScaleMultiplier);
+        // 클라이언트 물리 & 시각 적용
+        RpcSetIronBodyState(true, defaultMass * ironMassMultiplier, defaultScale * ironScaleMultiplier);
 
         yield return new WaitForSeconds(ironDuration);
 
-        // 3. 서버 질량 원상복구
+        // 복구
         rb.mass = defaultMass;
+        RpcSetIronBodyState(false, defaultMass, defaultScale);
+    }
 
-        // 4. [추가] 클라이언트 질량 원상복구
-        RpcSetMass(defaultMass);
+    [ClientRpc]
+    private void RpcSetIronBodyState(bool isActive, float mass, Vector3 scale)
+    {
+        transform.localScale = scale;
 
-        RpcSetScale(defaultScale);
+        // [핵심] 예측용 RB의 질량도 같이 바꿔줘야 충돌 시 밀리지 않음
+        if (isLocalPlayer)
+        {
+            Rigidbody pRb = PredictedRb;
+            if (pRb != null) pRb.mass = mass;
+        }
+        else
+        {
+            // 타 클라이언트 입장에서의 물리(보간용)도 적용
+            if (rb != null) rb.mass = mass;
+        }
     }
 
 
+    // 2. 니트로 (속도 증가 + 순간 가속)
     [Server]
     private IEnumerator NitroChargeRoutine()
     {
         RpcControlEffect(1, true);
 
-        // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("Burst_ImpactSFX", transform.position, 1.0f, sfxVolume);
 
+        // 최대 속도 제한 해제
         controller.Speed = defaultSpeed * nitroSpeedMultiplier;
-        rb.AddForce(transform.forward * nitroImpulseForce, ForceMode.Impulse);
+
+        // [핵심] 순간 가속: 서버와 클라이언트 양쪽에 힘을 가해야 딜레이가 없음
+        Vector3 forceVec = transform.forward * nitroImpulseForce;
+        rb.AddForce(forceVec, ForceMode.Impulse);
+        RpcApplyNitroImpulse(forceVec);
 
         yield return new WaitForSeconds(nitroDuration);
 
         RpcControlEffect(1, false);
+        controller.Speed = defaultSpeed; // 속도 복구
+    }
 
-        if (GameManager.Instance != null && GameManager.Instance.gameTime >= 0)
+    [ClientRpc]
+    private void RpcApplyNitroImpulse(Vector3 force)
+    {
+        // 로컬 플레이어라면 예측용 리지드바디에 힘을 가함 (즉시 반응)
+        if (isLocalPlayer)
         {
-            RpcControlEffect(1, false);
-            controller.Speed = defaultSpeed;
+            Rigidbody pRb = PredictedRb;
+            if (pRb != null)
+            {
+                pRb.AddForce(force, ForceMode.Impulse);
+            }
         }
     }
 
+
+    // 3. EMP (광역 스턴)
     [Server]
     private void Svr_UseEMP()
     {
@@ -148,21 +149,19 @@ public class ItemEffectHandler : NetworkBehaviour
         RpcControlEffect(2, true);
         StartCoroutine(StopParticleDelay(2, empBlastVfxDuration));
 
-        
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
 
-        
-        PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
+        // UnityEngine.Object.FindObjectsByType은 Unity 2023.1+ 권장 (구버전이면 FindObjectsOfType 사용)
+        PlayerController_rigid[] allPlayers = FindObjectsByType<PlayerController_rigid>(FindObjectsSortMode.None);
 
-        foreach (PlayerController target in allPlayers)
+        foreach (PlayerController_rigid target in allPlayers)
         {
             if (target.gameObject == gameObject) continue;
 
-            var targetHandler = target.GetComponent<ItemEffectHandler>();
+            var targetHandler = target.GetComponent<ItemEffectHandler_rigid>();
             if (targetHandler != null)
             {
-                Debug.Log($"[EMP] 타겟 발견: {target.name} -> 스턴 적용 시도");
                 targetHandler.Svr_ApplyStun(empStunDuration);
             }
         }
@@ -179,28 +178,23 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     public void Svr_ApplyStun(float time)
     {
-        if (currentStunCoroutine != null)
-        {
-            StopCoroutine(currentStunCoroutine);
-        }
+        if (currentStunCoroutine != null) StopCoroutine(currentStunCoroutine);
         currentStunCoroutine = StartCoroutine(StunRoutine(time));
     }
 
     private IEnumerator StunRoutine(float time)
     {
-        Debug.Log($"<color=red>[EMP] 스턴 시작! 유지 시간: {time}초</color>");
-
+        // 1. 상태 동기화 (PlayerController_rigid의 FixedUpdate에서 이동 로직을 막음)
         controller.IsStunned = true;
-        controller.enabled = false;
-        RpcSetControllerState(false);
 
-        float originalDrag = rb.linearDamping;
+        // 2. 물리적 미끄러짐 방지 (Drag 증가)
+        float stunDrag = 10.0f; // 꽉 잡히는 느낌
+        rb.linearDamping = stunDrag;
+        RpcSetStunDrag(stunDrag);
 
-        // [수정 1] 서버 마찰력 변경
-        rb.linearDamping = 2.0f;
-
-        // [수정 2] 클라이언트에게도 마찰력 2.0으로 바꾸라고 명령!
-        RpcSetDrag(2.0f);
+        // [변경] controller.enabled = false를 하지 않습니다.
+        // 이유: FixedUpdate가 돌아야 PlayerController 내부의 "if(IsStunned) velocity=0" 로직이 작동하여
+        // 예측 엔진과 싸우지 않고 위치를 고정할 수 있습니다.
 
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
@@ -211,46 +205,27 @@ public class ItemEffectHandler : NetworkBehaviour
 
         if (effectRoots.Length > 3) RpcControlEffect(3, false);
 
+        // 해제
         controller.IsStunned = false;
-        controller.enabled = true;
-        RpcSetControllerState(true);
-
-        // [수정 3] 서버 마찰력 복구
-        rb.linearDamping = originalDrag;
-
-        // [수정 4] 클라이언트에게도 원래대로 돌려놓으라고 명령!
-        RpcSetDrag(originalDrag);
+        rb.linearDamping = defaultDrag;
+        RpcSetStunDrag(defaultDrag);
 
         currentStunCoroutine = null;
-        Debug.Log($"<color=green>[EMP] 스턴 해제 완료</color>");
     }
 
-    // [신규 추가] 클라이언트의 컴포넌트를 제어하는 RPC 함수
     [ClientRpc]
-    private void RpcSetControllerState(bool isEnabled)
+    private void RpcSetStunDrag(float drag)
     {
-        if (controller != null)
+        if (isLocalPlayer)
         {
-            // 컨트롤러가 꺼지면 FixedUpdate가 멈추므로
-            // 속도 0 고정 로직도 실행되지 않아, 밀리는 힘이 정상 적용됩니다.
-            controller.enabled = isEnabled;
+            Rigidbody pRb = PredictedRb;
+            if (pRb != null) pRb.linearDamping = drag;
         }
     }
 
     #endregion
 
     #region 클라이언트 시각 처리
-
-    [ClientRpc] private void RpcSetScale(Vector3 s) => transform.localScale = s;
-
-    [ClientRpc]
-    private void RpcSetMass(float newMass)
-    {
-        if (rb == null) rb = GetComponent<Rigidbody>();
-        rb.mass = newMass;
-        // 디버깅용 (테스트 후 삭제 가능)
-        // Debug.Log($"[IronBody] 질량 변경됨: {rb.mass}");
-    }
 
     [ClientRpc]
     private void RpcControlEffect(int index, bool isPlaying)
@@ -269,21 +244,6 @@ public class ItemEffectHandler : NetworkBehaviour
         {
             var childParticles = rootObj.GetComponentsInChildren<ParticleSystem>();
             foreach (var ps in childParticles) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-        }
-    }
-
-    [ClientRpc]
-    private void RpcSetDrag(float newDrag)
-    {
-        // 혹시 rb가 없으면 찾기
-        if (rb == null && transform.TryGetComponent(out PlayerController pc))
-            rb = pc.Rb;
-
-        if (rb == null) rb = GetComponent<Rigidbody>();
-
-        if (rb != null)
-        {
-            rb.linearDamping = newDrag;
         }
     }
 

@@ -923,7 +923,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.49019608}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.87058824}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1818,8 +1818,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f5b4aac586a3443a7293944a74d1da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Lobby_UI_Controller
-  _LobbyManager: {fileID: 0}
-  Ready_btn_text: {fileID: 0}
+  Ready_btn: {fileID: 3921351225621961907}
+  Ready_btn_text: {fileID: 8923648068859865107}
+  Quit_btn: {fileID: 3958211937484995981}
+  Notice_text: {fileID: 1936412571192478506}
+  Count_text: {fileID: 1842378864449799106}
+  Player_Frames:
+  - {fileID: 1663205246660976988}
+  - {fileID: 1320924316155846485}
+  - {fileID: 1596972853826704234}
+  - {fileID: 6496602409195033520}
 --- !u!1 &6412515922589534553
 GameObject:
   m_ObjectHideFlags: 0
