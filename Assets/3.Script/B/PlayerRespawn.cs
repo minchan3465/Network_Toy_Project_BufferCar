@@ -164,7 +164,7 @@ public class PlayerRespawn : NetworkBehaviour
             if (rb != null) rb.isKinematic = true;
 
             // 2. 충돌체 끄기 (Deadzone 재감지 방지 및 다른 플레이어와 충돌 방지)
-            if (TryGetComponent(out Collider col)) col.enabled = false;
+            if (TryGetComponent(out MeshCollider col)) col.enabled = false;
 
             // 3. 시각적 제거 (선택 사항: 완전히 없애거나 투명하게 처리)
             if (car != null) car.SetActive(false);
