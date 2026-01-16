@@ -16,8 +16,18 @@ public class PlayerCollision : NetworkBehaviour
     [SyncVar] private bool isPushing = false;//밀림 상황
     [SyncVar] private double lastPushTime; // 서버 시간 기록
 
+    /*
     public override void OnStartLocalPlayer()
     {
+        input = FindAnyObjectByType<Inputsystem>();
+        transform.TryGetComponent(out rb);
+        transform.TryGetComponent(out res);
+    }
+    */
+
+    private void Start()
+    {
+        if (!isLocalPlayer) { return; }
         input = FindAnyObjectByType<Inputsystem>();
         transform.TryGetComponent(out rb);
         transform.TryGetComponent(out res);
@@ -216,6 +226,7 @@ public class PlayerCollision : NetworkBehaviour
         if (other.CompareTag("Deadzone"))
         {
             Debug.Log("Deadzone Tag Detected!");
+            GameManager.Instance.ProcessPlayerFell(res.playerNumber);
 
             if (res != null)
             {
