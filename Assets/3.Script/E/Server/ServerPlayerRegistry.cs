@@ -36,6 +36,7 @@ public class ServerPlayerRegistry : MonoBehaviour
     {
         NetworkServer.OnDisconnectedEvent -= OnClientDisconnected;
     }
+    [Server]
     private void OnClientDisconnected(NetworkConnectionToClient conn)
     {
         Debug.Log("is starttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
