@@ -66,11 +66,11 @@ public class SoundManager : NetworkBehaviour
     {
         //StopAllCoroutines();
 
-        if (scene.name == "Main_Title!" || scene.name == "Room!")
+        if (scene.name == "Main_C_Title!" || scene.name == "Room!")
         {
             PlayBGM(BGM.TitleBGM);
         }
-        else if(scene.name == "Main_InGame!")
+        else if(scene.name == "Main_C_InGame!")
         {
             //PlayBGM(BGM.MainGameBGM);
             StartCoroutine(StartGameSoundSequence());

@@ -256,16 +256,34 @@ public class GameManager : NetworkBehaviour {
 			UpdateNameUI(i, playersName[i]);
 		}
 	}
-	private void UpdateNameUI(int playernumber, string name) {
+	private void UpdateNameUI(int playernumber, string name)
+	{
+		// [기존 코드] 이름 데이터 범위만 체크하고 있음 (부족함)
 		if (playernumber >= playersName.Count) return;
+
+		// [★추가할 안전장치] UI 리스트 범위도 체크해야 튕기지 않음!
+		if (playerNameUI == null || playernumber >= playerNameUI.Count)
+		{
+			// UI가 연결 안 됐으면 그냥 무시 (에러 방지)
+			return;
+		}
+
 		string str = string.Empty;
 		string color = setColor(playernumber);
-		if((playernumber % 2).Equals(0)) { 
+		if ((playernumber % 2).Equals(0))
+		{
 			str = $"{playernumber + 1}P <color={color}>{name}</color>";
-		} else { 
-			str = $"<color={color}>{name}</color> {playernumber + 1}P"; 
 		}
-		playerNameUI[playernumber].text = str;
+		else
+		{
+			str = $"<color={color}>{name}</color> {playernumber + 1}P";
+		}
+
+		// [★추가] 실제 텍스트 오브젝트가 존재하는지 확인
+		if (playerNameUI[playernumber] != null)
+		{
+			playerNameUI[playernumber].text = str;
+		}
 	}
 
 
@@ -322,8 +340,6 @@ public class GameManager : NetworkBehaviour {
 		feverTextUI.text = string.Empty;
 		StopCoroutine("feverTextColorChange");
 	}
-
-
 
 
 	//------------ 색 계산...
