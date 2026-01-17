@@ -306,6 +306,34 @@ PrefabInstance:
       propertyPath: m_Color.g
       value: 0.6666667
       objectReference: {fileID: 0}
+    - target: {fileID: 3921351225621961907, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921351225621961907, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921351225621961907, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1206709507}
+    - target: {fileID: 3921351225621961907, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921351225621961907, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: bnt_action
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921351225621961907, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Test_Room_ReadyBtn, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3921351225621961907, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: Lobby_UI_Controller, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5641979483260535263, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -393,8 +421,28 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5988332027084951748, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1206709507}
   m_SourcePrefab: {fileID: 100100000, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+--- !u!1 &1206709506 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5988332027084951748, guid: 84b91e13ff7b51642be52acea0c0ffd5, type: 3}
+  m_PrefabInstance: {fileID: 1206709505}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1206709507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206709506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539b9a9c4552ee7499968f9d8f21321a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Test_Room_ReadyBtn
 --- !u!1 &1519247117
 GameObject:
   m_ObjectHideFlags: 0

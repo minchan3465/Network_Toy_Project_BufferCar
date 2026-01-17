@@ -15,30 +15,35 @@ public class SettingManager : NetworkBehaviour {
 	 */
 
 	public GameObject playerCar;
-	public Vector3 spawnPos;
-	public PlayerData playerData;
+	public GameObject spawnPos;
 
 	private MeshRenderer meshRenderer;
 
-	private void OnEnable() {
-		if (!isLocalPlayer) return;
-		GameObject playerCar = Instantiate(this.playerCar, spawnPos, Quaternion.identity);
-		if(playerCar.TryGetComponent(out playerData)) {
-			GameObject[] players = GameObject.FindGameObjectsWithTag("PlayerDDOL");
+	public override void OnStartLocalPlayer() {
+		Debug.Log("실행됨1");
+		Debug.Log("실행됨2");
+		GameObject playerCar = Instantiate(this.playerCar, spawnPos.transform.position, Quaternion.identity);
+		Debug.Log("실행됨3");
+		if (playerCar.TryGetComponent(out PlayerData playerData)) {
+			Debug.Log("실행됨4");
+			GameObject[] players = GameObject.FindGameObjectsWithTag("Player_Lobby");
+			Debug.Log("실행됨5");
 			foreach (GameObject player in players) {
-				if (!isLocalPlayer) continue;
-				//if (player.TryGetComponent(out UserInfoManager manager) {
-				//	playerData.index = manager.PlayerNum;
-				//	playerData.nickname = manager.PlayerNickName;
-				//	playerData.rate = manager.PlayerRate;
-				//}
+				Debug.Log("실행됨 반복문on");
+				if (player.TryGetComponent(out UserInfoManager manager)) {
+					if (manager.isLocalPlayer) continue;
+					Debug.Log("내가 받을 데이터 찾았쇼~");
+					playerData.index = manager.PlayerNum;
+					playerData.nickname = manager.PlayerNickname;
+					playerData.rate = manager.PlayerRate;
+				}
 				break;
 			}
 
 			if(playerCar.TryGetComponent(out meshRenderer)) {
 				meshRenderer.materials[0].color = Setting_CarBodyColor(playerData.index);
 			}
-			//playerData.playerRespawn.위치 지정 메서드
+			playerData.playerRespawn.InitializePlayer(playerData.index);
 			//세팅 끝.
 			//난 실행될 준비 됐어요~~~~
 			GameManager.Instance.ImReady(playerData);
