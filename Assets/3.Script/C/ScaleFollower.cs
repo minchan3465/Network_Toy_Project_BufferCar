@@ -23,7 +23,7 @@ public class ScaleFollower : MonoBehaviour
         if (MapShrinker.Instance == null) return;
 
         // 1. 현재 맵이 얼마나 줄어들었는지 비율을 가져옵니다. (1.0 -> 0.4)
-        float mapRatio = MapShrinker.Instance.CurrentScaleRatio; //
+        float mapRatio = MapShrinker.Instance.CurrentScaleRatio;
 
         // 2. "줄어든 양"을 계산합니다. (예: 맵이 0.9면 줄어든 양은 0.1)
         float lostAmount = 1.0f - mapRatio;
@@ -37,7 +37,12 @@ public class ScaleFollower : MonoBehaviour
         // 5. 너무 작아져서 뒤집히지 않게 최소값 제한 (Clamp)
         myRatio = Mathf.Max(myRatio, minScaleRatio);
 
-        // 6. 크기 적용
-        transform.localScale = initialScale * myRatio;
+        // [수정됨] 6. 크기 적용 (Y축은 줄이지 않고 원래 높이 유지)
+        // X, Z는 비율대로 줄이고, Y는 initialScale.y 그대로 사용합니다.
+        transform.localScale = new Vector3(
+            initialScale.x * myRatio,
+            initialScale.y,          // Y축 고정 (줄어들지 않음)
+            initialScale.z * myRatio
+        );
     }
 }

@@ -23,6 +23,8 @@ public class PlayerRespawn : NetworkBehaviour
 
     public int playerNumber = -1;//값 외부에서 받아주세요
 
+    //past_Logic_OnStartLocalPlayer()
+    /*
     public override void OnStartLocalPlayer()
     {
         transform.TryGetComponent(out rb); //player한테 넣어주세요
@@ -44,6 +46,41 @@ public class PlayerRespawn : NetworkBehaviour
 
         var respawnList = FindAnyObjectByType<RespawnList>();
         if (respawnList != null && playerNumber < respawnList.spawnList.Count)
+        {
+            respawn_ob = respawnList.spawnList[playerNumber];
+        }
+    }
+    */
+
+    public void InitializePlayer(int PlayerNum)
+    {
+        if (rb == null) transform.TryGetComponent(out rb);
+        this.playerNumber = PlayerNum;
+
+        if (isLocalPlayer)
+        {
+            SetupInitialPosition();
+            SetupRespawnObject();
+        }
+    }
+
+    private void SetupInitialPosition()
+    {
+        List<Transform> startPositions = NetworkManager.startPositions;
+        startPositions.Sort((a, b) => string.Compare(a.name, b.name));
+
+        if (playerNumber >= 0 && playerNumber < startPositions.Count)
+        {
+            Transform targetPos = startPositions[playerNumber];
+            transform.position = targetPos.position;
+            transform.rotation = targetPos.rotation;
+        }
+    }
+
+    private void SetupRespawnObject()
+    {
+        var respawnList = FindAnyObjectByType<RespawnList>();
+        if (respawnList != null && playerNumber >= 0 && playerNumber < respawnList.spawnList.Count)
         {
             respawn_ob = respawnList.spawnList[playerNumber];
         }
