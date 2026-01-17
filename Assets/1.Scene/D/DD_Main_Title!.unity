@@ -137,6 +137,14 @@ PrefabInstance:
       value: MainTitle_NetworkManager
       objectReference: {fileID: 0}
     - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: onlineScene
+      value: Assets/1.Scene/D/DD_Main_Room.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: offlineScene
+      value: Assets/1.Scene/D/DD_Main_Title!.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
       propertyPath: networkAddress
       value: localhost
       objectReference: {fileID: 0}
