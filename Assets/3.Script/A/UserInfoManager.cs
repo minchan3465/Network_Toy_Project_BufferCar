@@ -16,14 +16,12 @@ public class UserInfoManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+        StartCoroutine(C_SendInitialInfo());
         //RefreshUI();
     }
     public override void OnStartServer()
     {
-        StartCoroutine(C_SendInitialInfo());
-        Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
-        ServerPlayerRegistry.instance.RegisterPlayer(this);
-        Debug.Log("Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+        StartCoroutine(C_StartRegistry());
     }
 
     //서버에 접속해서 나의 플레이어 오브젝트(UserInfoManager)가 내 화면에 나타나는 순간 실행됩니다.
@@ -44,14 +42,17 @@ public class UserInfoManager : NetworkBehaviour
         //    CmdRequestSetInfo(nic, rate);
         //}
     }
-    IEnumerator C_SendInitialInfo()
+    IEnumerator C_StartRegistry()
     {
         // 1. Registry가 준비될 때까지 대기
         while (ServerPlayerRegistry.instance == null)
         {
             yield return null;
         }
-        Debug.Log("ServerPlayerRegistry is startttttttttttttttt");
+
+        Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
+        ServerPlayerRegistry.instance.RegisterPlayer(this);
+        Debug.Log("Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
         // 2. DataManager 확인 및 데이터 준비
         if (DataManager.instance != null && DataManager.instance.playerInfo != null)
         {
@@ -59,6 +60,37 @@ public class UserInfoManager : NetworkBehaviour
             int rate = DataManager.instance.playerInfo.User_Rate;
 
             // 3. 서버에 내 정보 등록 요청
+            Debug.Log("CmdRequestSetInfo is startttttttttttttttt");
+            Debug.Log("nic is "+ nic);
+            Debug.Log("rate is "+ rate);
+            CmdRequestSetInfo(nic, rate);
+        }
+    }
+    IEnumerator C_SendInitialInfo()
+    {
+        // 1. Registry가 준비될 때까지 대기
+        // 2. DataManager 확인 및 데이터 준비
+        while (DataManager.instance == null)
+        {
+            yield return null;
+        }
+        string nic;
+        int rate;
+        if (DataManager.instance.playerInfo != null)
+        {
+            nic = DataManager.instance.playerInfo.User_Nic;
+            rate = DataManager.instance.playerInfo.User_Rate;
+
+            // 3. 서버에 내 정보 등록 요청
+            Debug.Log("CmdRequestSetInfo is startttttttttttttttt");
+            Debug.Log("nic is " + nic);
+            Debug.Log("rate is " + rate);
+            CmdRequestSetInfo(nic, rate);
+        }
+        else
+        {
+            nic = null;
+            rate = -1;
             CmdRequestSetInfo(nic, rate);
         }
     }
