@@ -50,6 +50,8 @@ public class Serverchecker : MonoBehaviour
             Default_data(Path);
         }
         Path = Path + "/License.json";
+        manager = NetworkManager.singleton;
+        transport = (KcpTransport)manager.transport;
     }
     private void Default_data(string path)
     {
@@ -90,10 +92,8 @@ public class Serverchecker : MonoBehaviour
             return Type.Empty;
         }
 }
-    private void OnEnable()
+    private void Start()
     {
-        manager = NetworkManager.singleton;
-        transport = (KcpTransport)manager.transport;
 
         type = License_type(Path);
         //manager = NetworkManager.singleton;
