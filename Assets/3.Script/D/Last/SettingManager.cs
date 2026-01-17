@@ -19,28 +19,36 @@ public class SettingManager : NetworkBehaviour {
 
 	private MeshRenderer meshRenderer;
 
-	public override void OnStartLocalPlayer() {
-		Debug.Log("실행됨1");
-		Debug.Log("실행됨2");
+	[Client]
+	private void OnEnable() {
+		Debug.Log("SettingManager 활성화됨");
+		// isLocalPlayer 체크 대신 이걸 사용하세요.
+		StartCoroutine(WaitForLocalPlayerAndSetup());
+	}
+
+	private IEnumerator WaitForLocalPlayerAndSetup() {
+		// 1. 진짜 로컬 플레이어 오브젝트가 생성될 때까지 대기
+		// 씬 전환 직후에는 내 캐릭터가 아직 스폰 안 됐을 수 있음
+		while (NetworkClient.localPlayer == null) {
+			yield return null;
+		}
 		GameObject playerCar = Instantiate(this.playerCar, spawnPos.transform.position, Quaternion.identity);
-		Debug.Log("실행됨3");
+		GameObject[] players = GameObject.FindGameObjectsWithTag("Player_Lobby");
+
 		if (playerCar.TryGetComponent(out PlayerData playerData)) {
-			Debug.Log("실행됨4");
-			GameObject[] players = GameObject.FindGameObjectsWithTag("Player_Lobby");
-			Debug.Log("실행됨5");
 			foreach (GameObject player in players) {
-				Debug.Log("실행됨 반복문on");
+				if (player.TryGetComponent(out NetworkIdentity identity)) {
+					if(!identity.isLocalPlayer)	continue;
+				}
 				if (player.TryGetComponent(out UserInfoManager manager)) {
-					if (manager.isLocalPlayer) continue;
-					Debug.Log("내가 받을 데이터 찾았쇼~");
-					playerData.index = manager.PlayerNum;
+					playerData.index = manager.PlayerNum-1;
 					playerData.nickname = manager.PlayerNickname;
 					playerData.rate = manager.PlayerRate;
+					break;
 				}
-				break;
 			}
 
-			if(playerCar.TryGetComponent(out meshRenderer)) {
+			if (playerCar.TryGetComponent(out meshRenderer)) {
 				meshRenderer.materials[0].color = Setting_CarBodyColor(playerData.index);
 			}
 			playerData.playerRespawn.InitializePlayer(playerData.index);
@@ -48,6 +56,7 @@ public class SettingManager : NetworkBehaviour {
 			//난 실행될 준비 됐어요~~~~
 			GameManager.Instance.ImReady(playerData);
 		}
+		enabled = false;
 	}
 
 	private Color Setting_CarBodyColor(int index) {

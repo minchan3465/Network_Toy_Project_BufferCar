@@ -202,7 +202,7 @@ MonoBehaviour:
   editorAutoStart: 0
   sendRate: 60
   offlineScene: Assets/1.Scene/D/DD_Main_Title!.unity
-  onlineScene: Assets/1.Scene/D/DD_Main_Room.unity
+  onlineScene: Assets/1.Scene/D/D_Main_InGame.unity
   offlineSceneLoadDelay: 0
   transport: {fileID: 1577865737384351624}
   networkAddress: localhost
