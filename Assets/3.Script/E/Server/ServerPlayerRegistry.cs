@@ -80,6 +80,10 @@ public class ServerPlayerRegistry : MonoBehaviour
         players.Add(assignedNumber, player);
 
         Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
         //DataManager.instance.playerInfo.PlayerNum = assignedNumber;
         //Debug.Log(DataManager.instance.playerInfo.PlayerNum+"Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     }

@@ -136,10 +136,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainTitle_NetworkManager
       objectReference: {fileID: 0}
-    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
-      propertyPath: playerPrefab
-      value: 
-      objectReference: {fileID: 6970800248564378294, guid: 34f2a5c4e896eb84ea3787fa1c48bc2d, type: 3}
     - target: {fileID: 6091014898218233269, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
       propertyPath: m_LocalPosition.x
       value: 93.86882
@@ -185,51 +181,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
---- !u!1 &473130600
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 473130602}
-  - component: {fileID: 473130601}
-  m_Layer: 0
-  m_Name: PlayerRegistry
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &473130601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 473130600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0945d9b5de36f046af72531ed50326e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ServerPlayerRegistry
-  manager: {fileID: 0}
---- !u!4 &473130602
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 473130600}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 738.43713, y: 515.16736, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &510461557
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,6 +673,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 989307025}
   m_CullTransparentMesh: 1
+--- !u!1 &1026596664
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1026596667}
+  - component: {fileID: 1026596666}
+  - component: {fileID: 1026596665}
+  m_Layer: 0
+  m_Name: DontDestroy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1026596665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026596664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0945d9b5de36f046af72531ed50326e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ServerPlayerRegistry
+  manager: {fileID: 0}
+--- !u!114 &1026596666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026596664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 712b13945558c2d478733feaa5a5d32d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DataManager
+  path: 
+--- !u!4 &1026596667
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026596664}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 738.43713, y: 515.16736, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1160158544
 GameObject:
   m_ObjectHideFlags: 0
@@ -1279,5 +1289,5 @@ SceneRoots:
   - {fileID: 560944859}
   - {fileID: 84582883}
   - {fileID: 1402634367}
-  - {fileID: 473130602}
   - {fileID: 1720543768}
+  - {fileID: 1026596667}

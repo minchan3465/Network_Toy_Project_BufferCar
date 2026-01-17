@@ -174,7 +174,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 6970800248564378294, guid: 34f2a5c4e896eb84ea3787fa1c48bc2d, type: 3}
+  playerPrefab: {fileID: 5157216562942663249, guid: 74c8c50ba8aec6b498824ed6a3f972ea, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
@@ -238,6 +238,7 @@ GameObject:
   - component: {fileID: 1683142898740045056}
   - component: {fileID: 1599978574141829414}
   - component: {fileID: 5034788865292511168}
+  - component: {fileID: 8523887768272900530}
   m_Layer: 0
   m_Name: networkManager
   m_TagString: Untagged
@@ -245,6 +246,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8523887768272900530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8523887768272900529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fce5190b55567647b3380ef14854401, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SystemSetup
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

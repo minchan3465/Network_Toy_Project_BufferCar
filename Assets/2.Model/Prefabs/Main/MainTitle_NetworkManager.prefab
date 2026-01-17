@@ -52,7 +52,7 @@ MonoBehaviour:
   editorAutoStart: 0
   sendRate: 60
   offlineScene: Assets/1.Scene/Main/Main_Title!.unity
-  onlineScene: Assets/1.Scene/Main/Main_InGame!.unity
+  onlineScene: Assets/1.Scene/Main/Main_Room.unity
   offlineSceneLoadDelay: 0
   transport: {fileID: 9088558201630282931}
   networkAddress: 13.124.179.117
@@ -60,7 +60,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 6970800248564378294, guid: 33a9a2768db64f843a81afe47d3dde98, type: 3}
+  playerPrefab: {fileID: 5157216562942663249, guid: 74c8c50ba8aec6b498824ed6a3f972ea, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:

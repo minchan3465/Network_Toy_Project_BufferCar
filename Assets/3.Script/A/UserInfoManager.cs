@@ -4,8 +4,6 @@ using System.Collections;
 
 public class UserInfoManager : NetworkBehaviour
 {
-    public static UserInfoManager instance;
-
     [Header("Network Synced Data")]
     [SyncVar(hook = nameof(OnNicknameChange))] public string PlayerNickname = "";
     [SyncVar(hook = nameof(OnRateChange))] public int PlayerRate = 0;
@@ -20,13 +18,19 @@ public class UserInfoManager : NetworkBehaviour
         base.OnStartClient();
         //RefreshUI();
     }
+    public override void OnStartServer()
+    {
+        StartCoroutine(C_SendInitialInfo());
+        Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
+        ServerPlayerRegistry.instance.RegisterPlayer(this);
+        Debug.Log("Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+    }
 
     //서버에 접속해서 나의 플레이어 오브젝트(UserInfoManager)가 내 화면에 나타나는 순간 실행됩니다.
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
 
-        StartCoroutine(C_SendInitialInfo());
 
         //if (DataManager.instance != null && DataManager.instance.playerInfo != null)
         //{
@@ -47,7 +51,7 @@ public class UserInfoManager : NetworkBehaviour
         {
             yield return null;
         }
-
+        Debug.Log("ServerPlayerRegistry is startttttttttttttttt");
         // 2. DataManager 확인 및 데이터 준비
         if (DataManager.instance != null && DataManager.instance.playerInfo != null)
         {
@@ -67,10 +71,10 @@ public class UserInfoManager : NetworkBehaviour
         this.PlayerRate = rate;
 
         // 서버 레지스트리에 나를 등록하고 번호 할당 요청
-        if (ServerPlayerRegistry.instance != null)
-        {
-            ServerPlayerRegistry.instance.RegisterPlayer(this);
-        }
+        //if (ServerPlayerRegistry.instance != null)
+        //{
+        //    ServerPlayerRegistry.instance.RegisterPlayer(this);
+        //}
     }
 
     [Command]
@@ -87,21 +91,25 @@ public class UserInfoManager : NetworkBehaviour
     // [보완 추천] 유저가 나갈 때 내 화면에서 해당 슬롯을 즉시 끄기 위해 추가
     public override void OnStopClient()
     {
-        if (ServerPlayerRegistry.instance != null)
-            ServerPlayerRegistry.instance.UnregisterPlayer(this);
         if (lobbyUI != null && PlayerNum > 0)
         {
             //lobbyUI.UpdateSlotText(PlayerNum - 1, "", 0);
         }
         base.OnStopClient();
     }
+    public override void OnStopServer()
+    {
+        if (ServerPlayerRegistry.instance != null)
+            ServerPlayerRegistry.instance.UnregisterPlayer(this);
+    }
 
     // 서버(Registry)에서 번호를 부여할 때 호출하는 함수
     public void AssignPlayerNumber(int number)
     {
-        Debug.Log($"[Client] 서버로부터 번호를 받았습니다: {number}"); // 이 로그가 찍혀야 성공입니다.
-        this.PlayerNum = number;
-        DataManager.instance.playerInfo.PlayerNum = number;
+        Debug.Log($"[Client] catch number from server : {number}"); // 이 로그가 찍혀야 성공입니다.
+        PlayerNum = number;
+
+        //DataManager.instance.playerInfo.PlayerNum = number;
         // 서버 환경이라면 즉시 UI 갱신 (호스트 유저용)
         if (isServer)
         {
@@ -112,7 +120,18 @@ public class UserInfoManager : NetworkBehaviour
     #region Hooks (UI 갱신 로직)
     void OnNicknameChange(string oldV, string newV) { }// => RefreshUI();
     void OnRateChange(int oldV, int newV) { }// => RefreshUI();
-    void OnNumChange(int oldV, int newV) { }// => RefreshUI();
+    void OnNumChange(int oldV, int newV) 
+    {
+        Debug.Log($"[Client] PlayerNum changed: {newV}");
+
+        if (!isLocalPlayer) return;
+
+        if (DataManager.instance != null)
+        {
+            Debug.Log($"DataManager.instance.playerInfo.PlayerNum is changed: {newV}");
+            DataManager.instance.playerInfo.PlayerNum = newV;
+        }
+    }// => RefreshUI();
     void OnReadyChange(bool oldV, bool newV) { }// => RefreshUI();
     /*
     private void RefreshUI()
