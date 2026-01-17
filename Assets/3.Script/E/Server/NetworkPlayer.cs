@@ -21,12 +21,13 @@ public class NetworkPlayer : NetworkBehaviour
     public override void OnStartServer()
     {
         Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
-        ServerPlayerRegistry.instance.RegisterPlayer(this);
+        //ServerPlayerRegistry.instance.RegisterPlayer(this);
+        Debug.Log("Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     }
     public override void OnStopServer()
     {
-        if (ServerPlayerRegistry.instance != null) 
-            ServerPlayerRegistry.instance.UnregisterPlayer(this);
+        //if (ServerPlayerRegistry.instance != null) 
+            //ServerPlayerRegistry.instance.UnregisterPlayer(this);
     }
     #endregion
     #region Client Side

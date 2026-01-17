@@ -90,7 +90,7 @@ public class Serverchecker : MonoBehaviour
             return Type.Empty;
         }
 }
-    private void Start()
+    private void OnEnable()
     {
         manager = NetworkManager.singleton;
         transport = (KcpTransport)manager.transport;
