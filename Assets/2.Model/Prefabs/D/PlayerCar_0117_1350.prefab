@@ -5403,7 +5403,6 @@ GameObject:
   - component: {fileID: 5328875335724292207}
   - component: {fileID: 7517677244894276996}
   - component: {fileID: 7201062563975725197}
-  - component: {fileID: 8811690187291113967}
   - component: {fileID: 721332033141467808}
   - component: {fileID: 4631832448925590629}
   m_Layer: 0
@@ -5698,24 +5697,6 @@ MonoBehaviour:
   nitroImpulseForce: 50
   empStunDuration: 2
   empBlastVfxDuration: 2
---- !u!114 &8811690187291113967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6970800248564378294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8806241a8bf114844911be714f6a80e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NetworkPlayer
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  playerNumber: 0
-  nickname: 
-  isReady: 0
 --- !u!114 &721332033141467808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5755,8 +5736,9 @@ MonoBehaviour:
   index: -1
   nickname: 
   rate: -1
-  playerController: {fileID: 0}
-  playerRespawn: {fileID: 0}
+  playerController: {fileID: 2341995391491258313}
+  playerRespawn: {fileID: 721332033141467808}
+  carMeshRenderer: {fileID: 681800734350143724}
 --- !u!1 &8588997018763582332
 GameObject:
   m_ObjectHideFlags: 0

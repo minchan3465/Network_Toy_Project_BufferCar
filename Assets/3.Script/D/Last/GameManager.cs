@@ -46,30 +46,32 @@ public class GameManager : NetworkBehaviour {
 	//--------------------------- 메서드 파트 ---------------------------//
 	///////////////////////////////////////////////////////////////////////
 	private void Awake() {
-		if (Instance == null) { Instance = this; } 
-		else { Destroy(Instance); }
+		if (Instance == null) { Instance = this; } else { Destroy(Instance); }
 	}
 	private void Start() {
-		if (!isLocalPlayer) return;
 		playersData.OnChange += OnPlayersDataChanged;
+		if (!isOwned) return;
 		playersHp.OnChange += OnHpListChanged;
 	}
 	//플레이어 준비됨 파트
-	[Command]
 	public void ImReady(PlayerData player) {
-		if (!isLocalPlayer) return;
+		//if (!isOwned) return;
 		//플레이어 정보 등록, HP 갱신
 		playersData.Add(player);
 		playersHp.Add(6);
+		Debug.Log("[GameManager] User Data Get.");
 	}
+
 	//------------ UI 변경
 	////////////////////////////////////////////////////////////////////////////////////////// Name변경
 	/////////////////////그리고 4명이 모였다면, (서버기준) 시작!!!!!!!!!!
 	private void OnPlayersDataChanged(SyncList<PlayerData>.Operation op, int playernumber, PlayerData newItem) {
 		UpdateNameUI(playernumber, playersData[playernumber].nickname);
-		if(isServer) {
-			if(playersData.Count.Equals(4)) {
+		Debug.Log("[All] User Updated.");
+		if (isServer) {
+			if (playersData.Count.Equals(1)) {
 				StartCoroutine(Game_Start());
+				Debug.Log("[Server] Game Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			}
 		}
 	}
@@ -104,7 +106,14 @@ public class GameManager : NetworkBehaviour {
 	private void OnGameStartingCheck(bool oldCheck, bool newCheck) { }
 
 	[Server]
+	private void Game_Setup() {
+		startCountdownTime = 3;
+		gameTime = 99;
+	}
+
+	[Server]
 	public IEnumerator Game_Start() {
+		Game_Setup();
 		yield return StartCoroutine("StartCdTimer_co");
 		isGameStart = true;
 		StartCoroutine("timer_countdown");
@@ -141,7 +150,9 @@ public class GameManager : NetworkBehaviour {
 
 		yield return new WaitForSeconds(7f);
 		//룸으로 돌아가는 세팅
+		//그 전에, 플레이어들한테 아바타 권한 다시 돌려놔야함.
 	}
+
 	[ClientRpc] private void UpdateMiddleTextUI(string str) { middleTextUI.text = str; }
 	[ClientRpc] private void UpdateWinnerTextUI(string str) { winnerTextUI.text = str; }
 

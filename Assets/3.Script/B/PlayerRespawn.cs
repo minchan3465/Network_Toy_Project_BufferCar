@@ -57,7 +57,7 @@ public class PlayerRespawn : NetworkBehaviour
         if (rb == null) transform.TryGetComponent(out rb);
         this.playerNumber = PlayerNum;
 
-        if (isLocalPlayer)
+        if (isOwned)
         {
             SetupInitialPosition();
             SetupRespawnObject();

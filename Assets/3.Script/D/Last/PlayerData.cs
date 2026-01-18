@@ -4,15 +4,61 @@ using UnityEngine;
 using Mirror;
 
 public class PlayerData : NetworkBehaviour {
-	public int index = -1;
-	public string nickname = string.Empty;
-	public int rate = -1;
+	[SyncVar(hook = nameof(UpdatePlayerIndex))] public int index = -1;
+	[SyncVar] public string nickname = string.Empty;
+	[SyncVar] public int rate = -1;
 
 	public PlayerController playerController;
 	public PlayerRespawn playerRespawn;
+	public GameObject carMeshRenderer;
 
 	private void Awake() {
 		TryGetComponent(out playerController);
 		TryGetComponent(out playerRespawn);
+	}
+
+	public override void OnStartAuthority() {
+		base.OnStartAuthority();
+		Debug.Log("권한 받음" + isOwned);
+		Debug.Log("여전히 LocalPlayer는 아님" + isLocalPlayer);
+		playerRespawn.InitializePlayer(index);
+		CmdImReady();
+	}
+
+	[Command]
+	public void CmdImReady() {
+		GameManager.Instance.ImReady(this);
+	}
+
+	public void UpdatePlayerIndex(int oldIndex, int newIndex) {	
+		SetCarBodyColor(Setting_CarBodyColor(index));
+	}
+
+	private void SetCarBodyColor(Color color) {
+		if(carMeshRenderer.TryGetComponent(out MeshRenderer meshRenderer)) {
+			meshRenderer.materials[0].color = color;
+		}
+	}
+
+	private Color Setting_CarBodyColor(int index) {
+		switch (index) {
+			case 0: return Color.red;
+			case 1: return Color.green;
+			case 2: return Color.blue;
+			case 3: return Color.yellow;
+			default: return Color.white;
+		}
+	}
+
+	private void OnTriggerEnter(Collider other) {
+		if (!isOwned) return;
+		if(other.CompareTag("Deadzone")) {
+			test_fall();
+		}
+	}
+
+	[Command]
+	private void test_fall() {
+		GameManager.Instance.ProcessPlayerFell(index);
 	}
 }

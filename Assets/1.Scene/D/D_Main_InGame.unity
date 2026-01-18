@@ -495,8 +495,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  playerCar: {fileID: 6970800248564378294, guid: 7ea7d527aa94b9942b14f886c5edd1a9, type: 3}
-  spawnPos: {fileID: 8902263121963276000}
+  playerCarPrefab: {fileID: 6970800248564378294, guid: 7ea7d527aa94b9942b14f886c5edd1a9, type: 3}
+  spawnPos: {fileID: 2078178218}
 --- !u!114 &511994330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -968,10 +968,10 @@ MonoBehaviour:
   resultRateTextUI: {fileID: 658247308}
   feverTextUI: {fileID: 77885941}
   spectatorCamera: {fileID: 1212915925}
-  winnerNumber: 0
+  winnerNumber: -1
   winnerName: 
-  startCountdownTime: 0
-  gameTime: 0
+  startCountdownTime: -1
+  gameTime: -1
 --- !u!114 &832760746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2145,6 +2145,37 @@ Transform:
   - {fileID: 1770576901}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2078178218
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2078178219}
+  m_Layer: 0
+  m_Name: Test_Spawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2078178219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078178218}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &107001919341536513
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2655,3 +2686,4 @@ SceneRoots:
   - {fileID: 1212915927}
   - {fileID: 1548132041}
   - {fileID: 511994328}
+  - {fileID: 2078178219}

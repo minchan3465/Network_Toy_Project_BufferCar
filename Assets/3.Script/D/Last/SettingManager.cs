@@ -14,70 +14,55 @@ public class SettingManager : NetworkBehaviour {
 	 6. 그리고 스스로 Disable (알수없는 오류를 막기 위해서.
 	 */
 
-	public GameObject playerCar;
+	public GameObject playerCarPrefab;
 	public GameObject spawnPos;
-
-	private MeshRenderer meshRenderer;
 
 	[Client]
 	private void OnEnable() {
-		Debug.Log("SettingManager 활성화됨");
-		// isLocalPlayer 체크 대신 이걸 사용하세요.
+		//Debug.Log("SettingManager 활성화됨");
 		StartCoroutine(WaitForLocalPlayerAndSetup());
 	}
 
 	private IEnumerator WaitForLocalPlayerAndSetup() {
-		// 1. 진짜 로컬 플레이어 오브젝트가 생성될 때까지 대기
+		// 로컬 플레이어 오브젝트가 생성될 때까지 대기
 		// 씬 전환 직후에는 내 캐릭터가 아직 스폰 안 됐을 수 있음
 		while (NetworkClient.localPlayer == null) {
 			yield return null;
 		}
-		GameObject playerCar = Instantiate(this.playerCar, spawnPos.transform.position, Quaternion.identity);
-		GameObject[] players = GameObject.FindGameObjectsWithTag("Player_Lobby");
 
-		if (playerCar.TryGetComponent(out PlayerData playerData)) {
-			foreach (GameObject player in players) {
-				if (player.TryGetComponent(out NetworkIdentity identity)) {
-					if(!identity.isLocalPlayer)	continue;
-				}
-				if (player.TryGetComponent(out UserInfoManager manager)) {
-					playerData.index = manager.PlayerNum-1;
-					playerData.nickname = manager.PlayerNickname;
-					playerData.rate = manager.PlayerRate;
-					break;
-				}
-			}
+		int targetIndex = -1;
+		string targetName = "Unknown";
+		int targetRate = -1;
 
-			if (playerCar.TryGetComponent(out meshRenderer)) {
-				meshRenderer.materials[0].color = Setting_CarBodyColor(playerData.index);
+		if(NetworkClient.localPlayer.TryGetComponent(out UserInfoManager manager)) {
+			while (string.IsNullOrEmpty(manager.PlayerNickname) || manager.PlayerRate == -1) {
+				yield return null;
 			}
-			playerData.playerRespawn.InitializePlayer(playerData.index);
-			//세팅 끝.
-			//난 실행될 준비 됐어요~~~~
-			GameManager.Instance.ImReady(playerData);
+			targetIndex = manager.PlayerNum - 1;
+			targetName = manager.PlayerNickname;
+			targetRate = manager.PlayerRate;
 		}
+		CmdRequestSpawnAndReady(targetIndex, targetName, targetRate);
 		enabled = false;
 	}
+	[Command(requiresAuthority = false)]
+	private void CmdRequestSpawnAndReady(int index, string nickname, int rate, NetworkConnectionToClient senderConnection = null) {
+		GameObject car = Instantiate(playerCarPrefab, spawnPos.transform.position, Quaternion.identity);
 
-	private Color Setting_CarBodyColor(int index) {
-		Color color;
-		switch (index) {
-			case 0:
-				color = Color.red;
-				break;
-			case 1:
-				color = Color.green;
-				break;
-			case 2:
-				color = Color.blue;
-				break;
-			case 3:
-				color = Color.yellow;
-				break;
-			default:
-				color = Color.white;
-				break;
+		if (car.TryGetComponent(out PlayerData playerData)) {
+			playerData.index = index;
+			playerData.nickname = nickname;
+			playerData.rate = rate;
+
+			//네트워크 스폰, 다른 사람들한테도 연동시켜주기 위한거...
+			NetworkServer.Spawn(car, senderConnection);
+			//어쨌든, 해당 차량에 플레이어 아바타 권한 양도.
+
+			//NetworkServer.ReplacePlayerForConnection(senderConnection, car, true);
+			NetworkServer.AddPlayerForConnection(senderConnection, car);
+
+			//플레이어 위치 설정
+			//playerData.playerRespawn.InitializePlayer(playerData.index);
 		}
-		return color;
 	}
 }
