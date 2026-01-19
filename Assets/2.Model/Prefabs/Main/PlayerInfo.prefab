@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4665063075903131570}
   - component: {fileID: 7411285571569988045}
   - component: {fileID: -1258125124454192956}
+  - component: {fileID: -6973232329894679171}
   m_Layer: 0
   m_Name: PlayerInfo
   m_TagString: Player_Lobby
@@ -52,7 +53,6 @@ MonoBehaviour:
   PlayerNickname: 
   PlayerRate: 0
   PlayerNum: 0
-  isReady: 0
 --- !u!114 &7411285571569988045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,3 +104,21 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &-6973232329894679171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5157216562942663249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79874ac94d5b1314788ecf0e86bd23fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror.Components::Mirror.NetworkRoomPlayer
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  showRoomGUI: 1
+  readyToBegin: 0
+  index: 0
