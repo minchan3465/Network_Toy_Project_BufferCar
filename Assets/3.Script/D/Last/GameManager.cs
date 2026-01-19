@@ -129,13 +129,13 @@ public class GameManager : NetworkBehaviour {
 		Game_Setup();
 		yield return StartCoroutine("StartCdTimer_co");
 		isGameStart = true;
-		PlayerCanMoveWhenStart();
+		PlayerCanMoveChange(false);
 		StartCoroutine("timer_countdown");
 	}
 	[ClientRpc]
-	private void PlayerCanMoveWhenStart() {
+	private void PlayerCanMoveChange(bool _bool) {
 		if(car.TryGetComponent(out PlayerController playerController)) {
-			playerController.IsStunned = false;
+			playerController.IsStunned = _bool;
 		}
 	}
 
@@ -151,6 +151,7 @@ public class GameManager : NetworkBehaviour {
 	}
 	private IEnumerator Game_Result() {
 		yield return new WaitForSeconds(3f);
+		PlayerCanMoveChange(true);
 		UpdateMiddleTextUI(string.Empty);
 
 		/////////////////////////////////////////////////// 승리한 사람 텍스트
@@ -266,7 +267,7 @@ public class GameManager : NetworkBehaviour {
 			//죽었음~
 			Ranks.Push(playerNum);
 			StopPlayerRespawn(target);
-			onSpectatorCamera(target);
+			OnSpectatorCamera(target);
 		}
 		//플레이어 목숨 체크
 		if (isGameStart) {
@@ -296,9 +297,16 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	[TargetRpc]
-	private void onSpectatorCamera(NetworkConnection target) {
+	private void OnSpectatorCamera(NetworkConnection target) {
+		StartCoroutine(OnSpectatorCamera_co());
+	}
+	private IEnumerator OnSpectatorCamera_co() {
+		middleTextUI.text = "game over...";
+		yield return new WaitForSeconds(2f);
+		middleTextUI.text = string.Empty;
 		spectatorCamera.SetActive(true);
 	}
+
 	[ClientRpc]
 	private void offSpectatorCamera() {
 		if (spectatorCamera.activeSelf.Equals(false)) return;
