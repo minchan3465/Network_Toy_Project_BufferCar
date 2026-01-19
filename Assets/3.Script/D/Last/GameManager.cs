@@ -95,13 +95,11 @@ public class GameManager : NetworkBehaviour {
 	private void OnPlayersNameChanged(SyncList<string>.Operation op, int playernumber, string newItem) {
 		UpdateNameUI(playernumber, newItem);
 	}
-
 	private void RefreshNameUI() {
 		for(int i = 0; i < playersData.Count; i++) {
 			UpdateNameUI(i, playersData[i].nickname);
 		}
 	}
-
 	private void UpdateNameUI(int playernumber, string name) {
 		string str;
 		string color = setColor(playernumber);
