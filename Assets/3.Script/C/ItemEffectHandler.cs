@@ -8,27 +8,25 @@ public class ItemEffectHandler : NetworkBehaviour
     private PlayerController controller;
     private Rigidbody rb;
     private PlayerRespawn myRespawn;
+    private NetworkPlayer networkPlayer;
 
     [Header("--- VFX 연결 ---")]
     [Tooltip("[0]:Empty, [1]:Nitro, [2]:EMP_Cast, [3]:Stun_Hit")]
     [SerializeField] private GameObject[] effectRoots;
 
     [Header("--- 사운드 설정 ---")]
-    [Tooltip("아이템 효과음 볼륨 (0.0 ~ 1.0)")]
     [Range(0f, 1f)]
     [SerializeField] private float sfxVolume = 1.0f;
 
-    [Header("--- 밸런스 설정 (Iron Body) ---")]
+    [Header("--- 밸런스 설정 ---")]
     [SerializeField] private float ironDuration = 5f;
     [SerializeField] private float ironMassMultiplier = 5f;
     [SerializeField] private float ironScaleMultiplier = 1.5f;
 
-    [Header("--- 밸런스 설정 (Nitro) ---")]
     [SerializeField] private float nitroDuration = 3f;
     [SerializeField] private float nitroSpeedMultiplier = 2.5f;
     [SerializeField] private float nitroImpulseForce = 50f;
 
-    [Header("--- 밸런스 설정 (EMP) ---")]
     [SerializeField] private float empStunDuration = 2.0f;
     [SerializeField] private float empBlastVfxDuration = 2.0f;
 
@@ -36,14 +34,17 @@ public class ItemEffectHandler : NetworkBehaviour
     private float defaultSpeed;
     private Vector3 defaultScale;
 
-    private bool _isFeverActive = false;
-    private bool _wasDead = false; // [추가] 죽음 처리를 한 번만 실행하기 위한 플래그
+    // [핵심 변경] 상태를 관리하는 변수들
+    private bool _isFeverActive = false; // 피버 타임인가?
+    private bool _isNitroPlaying = false; // 니트로 아이템 사용 중인가?
+    private bool _wasDead = false;
 
     void Start()
     {
         controller = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
         myRespawn = GetComponent<PlayerRespawn>();
+        networkPlayer = GetComponent<NetworkPlayer>();
 
         if (rb != null) defaultMass = rb.mass;
         if (controller != null) defaultSpeed = controller.Speed;
@@ -55,55 +56,84 @@ public class ItemEffectHandler : NetworkBehaviour
     {
         if (GameManager.Instance == null) return;
 
-        // 1. 내 생존 여부 확인
-        bool isDead = (myRespawn != null && !myRespawn.canRespawn);
-
+        // 1. 죽음 체크
+        bool isDead = CheckIsDeadOnServer();
         if (isDead)
         {
-            // 죽었는데 아직 처리를 안 했다면? (죽은 직후 1회 실행)
             if (!_wasDead)
             {
-                ForceStopAllEffects(); // [핵심] 모든 이펙트 강제 종료
-                _wasDead = true;       // 처리 완료 표시
+                ForceStopAllEffects();
+                _wasDead = true;
             }
-            return; // 죽어있는 동안은 아래 로직 실행 X
+            return;
         }
-
-        // 다시 살아났다면 플래그 초기화 (혹시 모를 리스폰 대비)
         _wasDead = false;
 
-        // 2. 피버 타임 로직 (살아있을 때만)
+        // 2. 피버 타임 상태 감지
         bool currentFeverState = GameManager.Instance.gameTime < 0;
 
+        // 피버 상태가 바뀌었을 때만 로직 실행 (최적화)
         if (_isFeverActive != currentFeverState)
         {
             _isFeverActive = currentFeverState;
-
-            if (_isFeverActive)
-            {
-                controller.Speed = defaultSpeed * nitroSpeedMultiplier;
-                RpcControlEffect(1, true);
-            }
-            else
-            {
-                controller.Speed = defaultSpeed;
-                RpcControlEffect(1, false);
-            }
+            // 피버가 켜지거나 꺼질 때, 니트로 상태와 합쳐서 최종 결정
+            UpdateNitroState();
         }
     }
 
-    // [추가] 모든 효과를 즉시 끄는 함수
+    // [핵심 해결책] 니트로와 피버 상태를 종합해서 켤지 끌지 결정하는 함수
+    private void UpdateNitroState()
+    {
+        // 죽었으면 무조건 끔
+        if (CheckIsDeadOnServer())
+        {
+            controller.Speed = defaultSpeed;
+            RpcControlEffect(1, false);
+            return;
+        }
+
+        // 니트로 아이템 사용 중이거나 OR 피버 타임이면 -> 켠다!
+        bool shouldActive = _isNitroPlaying || _isFeverActive;
+
+        if (shouldActive)
+        {
+            controller.Speed = defaultSpeed * nitroSpeedMultiplier;
+            RpcControlEffect(1, true); // 파티클 ON
+        }
+        else
+        {
+            controller.Speed = defaultSpeed;
+            RpcControlEffect(1, false); // 파티클 OFF
+        }
+    }
+
+    // 서버 데이터를 통해 죽음 판별
+    private bool CheckIsDeadOnServer()
+    {
+        if (networkPlayer != null && GameManager.Instance != null)
+        {
+            int myIndex = networkPlayer.playerNumber;
+            if (myIndex >= 0 && myIndex < GameManager.Instance.playersHp.Count)
+            {
+                if (GameManager.Instance.playersHp[myIndex] < 1) return true;
+            }
+        }
+        if (myRespawn != null && !myRespawn.canRespawn) return true;
+        return false;
+    }
+
     private void ForceStopAllEffects()
     {
         _isFeverActive = false;
+        _isNitroPlaying = false; // 니트로 상태도 강제 초기화
+
         if (controller != null) controller.Speed = defaultSpeed;
         if (rb != null)
         {
             rb.mass = defaultMass;
-            rb.linearDamping = 0; // 혹시 스턴 중이었다면 해제
+            rb.linearDamping = 0;
         }
 
-        // 등록된 모든 파티클 끄기
         if (effectRoots != null)
         {
             for (int i = 0; i < effectRoots.Length; i++)
@@ -116,7 +146,7 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     public void Svr_ApplyItemEffect(int index)
     {
-        if (myRespawn != null && !myRespawn.canRespawn) return;
+        if (CheckIsDeadOnServer()) return;
 
         switch (index)
         {
@@ -143,8 +173,7 @@ public class ItemEffectHandler : NetworkBehaviour
 
         yield return new WaitForSeconds(ironDuration);
 
-        // 끝나고 나서 죽어있으면 굳이 복구할 필요 없음 (ForceStop에서 이미 처리됨)
-        if (myRespawn == null || myRespawn.canRespawn)
+        if (!CheckIsDeadOnServer())
         {
             rb.mass = defaultMass;
             RpcSetMass(defaultMass);
@@ -155,37 +184,24 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     private IEnumerator NitroChargeRoutine()
     {
-        RpcControlEffect(1, true);
+        // 1. 니트로 사용 중임을 표시
+        _isNitroPlaying = true;
+
+        // 2. 상태 업데이트 (여기서 파티클 ON + 속도 증가가 일어남)
+        UpdateNitroState();
 
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("Burst_ImpactSFX", transform.position, 1.0f, sfxVolume);
 
-        controller.Speed = defaultSpeed * nitroSpeedMultiplier;
         rb.AddForce(transform.forward * nitroImpulseForce, ForceMode.Impulse);
 
         yield return new WaitForSeconds(nitroDuration);
 
-        // [수정된 로직] 코루틴이 끝난 시점의 상태 체크
-        bool isFever = (GameManager.Instance != null && GameManager.Instance.gameTime < 0);
-        bool isDead = (myRespawn != null && !myRespawn.canRespawn);
+        // 3. 니트로 사용 끝남
+        _isNitroPlaying = false;
 
-        // 1. 죽었으면? -> 무조건 끈다.
-        if (isDead)
-        {
-            RpcControlEffect(1, false);
-            controller.Speed = defaultSpeed;
-        }
-        // 2. 피버 타임이 아니면? -> 끈다.
-        else if (!isFever)
-        {
-            RpcControlEffect(1, false);
-            controller.Speed = defaultSpeed;
-        }
-        // 3. 피버 타임이면? -> 끄지 않고 유지한다. (Speed도 유지)
-        else
-        {
-            controller.Speed = defaultSpeed * nitroSpeedMultiplier;
-        }
+        // 4. 상태 업데이트 (피버 중이면 안 꺼지고, 피버 아니면 꺼짐)
+        UpdateNitroState();
     }
 
     [Server]
@@ -203,8 +219,7 @@ public class ItemEffectHandler : NetworkBehaviour
             if (target.gameObject == gameObject) continue;
             var targetHandler = target.GetComponent<ItemEffectHandler>();
 
-            var targetRespawn = target.GetComponent<PlayerRespawn>();
-            if (targetHandler != null && (targetRespawn == null || targetRespawn.canRespawn))
+            if (targetHandler != null)
             {
                 targetHandler.Svr_ApplyStun(empStunDuration);
             }
@@ -214,7 +229,6 @@ public class ItemEffectHandler : NetworkBehaviour
     private IEnumerator StopParticleDelay(int index, float delay)
     {
         yield return new WaitForSeconds(delay);
-        // 혹시 그 사이에 죽었더라도 끄는 건 문제없음
         RpcControlEffect(index, false);
     }
 
@@ -223,6 +237,8 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     public void Svr_ApplyStun(float time)
     {
+        if (CheckIsDeadOnServer()) return;
+
         if (currentStunCoroutine != null) StopCoroutine(currentStunCoroutine);
         currentStunCoroutine = StartCoroutine(StunRoutine(time));
     }
@@ -246,7 +262,7 @@ public class ItemEffectHandler : NetworkBehaviour
 
         if (effectRoots.Length > 3) RpcControlEffect(3, false);
 
-        if (myRespawn == null || myRespawn.canRespawn)
+        if (!CheckIsDeadOnServer())
         {
             controller.IsStunned = false;
             controller.enabled = true;
@@ -301,7 +317,6 @@ public class ItemEffectHandler : NetworkBehaviour
     private void RpcSetDrag(float newDrag)
     {
         if (rb == null && transform.TryGetComponent(out PlayerController pc)) rb = pc.Rb;
-        if (rb == null) rb = GetComponent<Rigidbody>();
         if (rb == null) rb = GetComponent<Rigidbody>();
         if (rb != null) rb.linearDamping = newDrag;
     }
