@@ -66,7 +66,7 @@ public class SoundManager : NetworkBehaviour
     {
         //StopAllCoroutines();
 
-        if (scene.name == "Main_Title!" || scene.name == "Room!")
+        if (scene.name == "Main_Title!" || scene.name == "Main_Room")
         {
             PlayBGM(BGM.TitleBGM);
         }
