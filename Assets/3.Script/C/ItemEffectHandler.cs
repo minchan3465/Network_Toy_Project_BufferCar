@@ -7,6 +7,7 @@ public class ItemEffectHandler : NetworkBehaviour
 {
     private PlayerController controller;
     private Rigidbody rb;
+    private PlayerRespawn myRespawn; // [추가] 내 생존 여부 확인용
 
     [Header("--- VFX 연결 ---")]
     [Tooltip("[0]:Empty, [1]:Nitro, [2]:EMP_Cast, [3]:Stun_Hit")]
@@ -15,7 +16,7 @@ public class ItemEffectHandler : NetworkBehaviour
     [Header("--- 사운드 설정 ---")]
     [Tooltip("아이템 효과음 볼륨 (0.0 ~ 1.0)")]
     [Range(0f, 1f)]
-    [SerializeField] private float sfxVolume = 1.0f; // [추가됨] 인스펙터 제어용
+    [SerializeField] private float sfxVolume = 1.0f;
 
     [Header("--- 밸런스 설정 (Iron Body) ---")]
     [SerializeField] private float ironDuration = 5f;
@@ -39,25 +40,13 @@ public class ItemEffectHandler : NetworkBehaviour
     void Start()
     {
         controller = GetComponent<PlayerController>();
-
-        // [수정 전] controller.Rb가 아직 준비 안 됐을 수 있음 (에러 원인)
-        // rb = controller.Rb; 
-
-        // [수정 후] 실행 순서 상관없이 내 몸에 붙은 리지드바디를 직접 가져옵니다. (안전함)
         rb = GetComponent<Rigidbody>();
 
-        // rb가 확실히 있을 때만 값 저장
-        if (rb != null)
-        {
-            defaultMass = rb.mass;
-        }
+        // [추가] 내 죽음 상태를 확인하기 위해 컴포넌트 가져오기
+        myRespawn = GetComponent<PlayerRespawn>();
 
-        // controller가 확실히 있을 때만 값 저장
-        if (controller != null)
-        {
-            defaultSpeed = controller.Speed;
-        }
-
+        if (rb != null) defaultMass = rb.mass;
+        if (controller != null) defaultSpeed = controller.Speed;
         defaultScale = transform.localScale;
     }
 
@@ -66,23 +55,34 @@ public class ItemEffectHandler : NetworkBehaviour
     {
         if (GameManager.Instance == null) return;
 
-        // GameManager의 시간이 0보다 작으면 피버 타임으로 간주 (-1 상태)
+        // [해결책 2] 죽은 플레이어(Respawn 불가)라면 피버 로직 차단
+        // GameManager가 ProcessPlayerFell에서 canRespawn을 false로 만듭니다.
+        if (myRespawn != null && !myRespawn.canRespawn)
+        {
+            // 만약 피버 효과가 켜진 상태로 죽었다면 즉시 끕니다.
+            if (_isFeverActive)
+            {
+                _isFeverActive = false;
+                controller.Speed = defaultSpeed;
+                RpcControlEffect(1, false);
+            }
+            return; // 더 이상 아래 로직(피버 체크)을 실행하지 않음
+        }
+
+        // --- 기존 피버 로직 ---
         bool currentFeverState = GameManager.Instance.gameTime < 0;
 
-        // 상태가 바뀌었을 때만 실행 (최적화)
         if (_isFeverActive != currentFeverState)
         {
             _isFeverActive = currentFeverState;
 
             if (_isFeverActive)
             {
-                // [피버 시작] 속도 증가 & 이펙트 켜기
                 controller.Speed = defaultSpeed * nitroSpeedMultiplier;
-                RpcControlEffect(1, true); // 1번이 Nitro 이펙트
+                RpcControlEffect(1, true);
             }
             else
             {
-                // [피버 종료] 게임 재시작 시 속도 원상복구
                 controller.Speed = defaultSpeed;
                 RpcControlEffect(1, false);
             }
@@ -92,6 +92,9 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     public void Svr_ApplyItemEffect(int index)
     {
+        // 죽은 상태면 아이템 사용 불가
+        if (myRespawn != null && !myRespawn.canRespawn) return;
+
         switch (index)
         {
             case 0: StartCoroutine(IronBodyRoutine()); break;
@@ -111,33 +114,22 @@ public class ItemEffectHandler : NetworkBehaviour
             SoundManager.instance.PlaySFXPoint("Power UpSFX", transform.position, 1.0f, sfxVolume);
 
         float heavyMass = defaultMass * ironMassMultiplier;
-
-        // 1. 서버에서의 질량 변경
         rb.mass = heavyMass;
-
-        // 2. [추가] 클라이언트에게도 질량 바꾸라고 명령
         RpcSetMass(heavyMass);
-
         RpcSetScale(defaultScale * ironScaleMultiplier);
 
         yield return new WaitForSeconds(ironDuration);
 
-        // 3. 서버 질량 원상복구
         rb.mass = defaultMass;
-
-        // 4. [추가] 클라이언트 질량 원상복구
         RpcSetMass(defaultMass);
-
         RpcSetScale(defaultScale);
     }
-
 
     [Server]
     private IEnumerator NitroChargeRoutine()
     {
         RpcControlEffect(1, true);
 
-        // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("Burst_ImpactSFX", transform.position, 1.0f, sfxVolume);
 
@@ -146,38 +138,46 @@ public class ItemEffectHandler : NetworkBehaviour
 
         yield return new WaitForSeconds(nitroDuration);
 
-        RpcControlEffect(1, false);
+        // [해결책 1] 시간이 다 됐어도 피버 타임이면 끄지 않는다!
+        bool isFever = false;
+        if (GameManager.Instance != null)
+        {
+            isFever = GameManager.Instance.gameTime < 0;
+        }
 
-        if (GameManager.Instance != null && GameManager.Instance.gameTime >= 0)
+        // 죽은 상태가 아니고, 피버 타임도 아닐 때만 끕니다.
+        if (!isFever && (myRespawn == null || myRespawn.canRespawn))
         {
             RpcControlEffect(1, false);
             controller.Speed = defaultSpeed;
+        }
+        else
+        {
+            // 피버 타임이거나 죽은 상태면 로직 유지 (Update문에서 처리됨)
+            // 피버 중이면 속도를 줄이지 않고 계속 빠름 유지
+            controller.Speed = defaultSpeed * nitroSpeedMultiplier;
         }
     }
 
     [Server]
     private void Svr_UseEMP()
     {
-        Debug.Log($"[EMP] {name}가 EMP 발동!");
-
         RpcControlEffect(2, true);
         StartCoroutine(StopParticleDelay(2, empBlastVfxDuration));
 
-        
         if (SoundManager.instance != null)
             SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
 
-        
         PlayerController[] allPlayers = FindObjectsByType<PlayerController>(FindObjectsSortMode.None);
-
         foreach (PlayerController target in allPlayers)
         {
             if (target.gameObject == gameObject) continue;
-
             var targetHandler = target.GetComponent<ItemEffectHandler>();
-            if (targetHandler != null)
+
+            // 타겟이 살아있을 때만 스턴
+            var targetRespawn = target.GetComponent<PlayerRespawn>();
+            if (targetHandler != null && (targetRespawn == null || targetRespawn.canRespawn))
             {
-                Debug.Log($"[EMP] 타겟 발견: {target.name} -> 스턴 적용 시도");
                 targetHandler.Svr_ApplyStun(empStunDuration);
             }
         }
@@ -194,27 +194,18 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     public void Svr_ApplyStun(float time)
     {
-        if (currentStunCoroutine != null)
-        {
-            StopCoroutine(currentStunCoroutine);
-        }
+        if (currentStunCoroutine != null) StopCoroutine(currentStunCoroutine);
         currentStunCoroutine = StartCoroutine(StunRoutine(time));
     }
 
     private IEnumerator StunRoutine(float time)
     {
-        Debug.Log($"<color=red>[EMP] 스턴 시작! 유지 시간: {time}초</color>");
-
         controller.IsStunned = true;
         controller.enabled = false;
         RpcSetControllerState(false);
 
         float originalDrag = rb.linearDamping;
-
-        // [수정 1] 서버 마찰력 변경
         rb.linearDamping = 2.0f;
-
-        // [수정 2] 클라이언트에게도 마찰력 2.0으로 바꾸라고 명령!
         RpcSetDrag(2.0f);
 
         if (SoundManager.instance != null)
@@ -226,30 +217,23 @@ public class ItemEffectHandler : NetworkBehaviour
 
         if (effectRoots.Length > 3) RpcControlEffect(3, false);
 
-        controller.IsStunned = false;
-        controller.enabled = true;
-        RpcSetControllerState(true);
+        // 스턴 끝났을 때 죽어있으면 다시 켜지 않음
+        if (myRespawn == null || myRespawn.canRespawn)
+        {
+            controller.IsStunned = false;
+            controller.enabled = true;
+            RpcSetControllerState(true);
+        }
 
-        // [수정 3] 서버 마찰력 복구
         rb.linearDamping = originalDrag;
-
-        // [수정 4] 클라이언트에게도 원래대로 돌려놓으라고 명령!
         RpcSetDrag(originalDrag);
-
         currentStunCoroutine = null;
-        Debug.Log($"<color=green>[EMP] 스턴 해제 완료</color>");
     }
 
-    // [신규 추가] 클라이언트의 컴포넌트를 제어하는 RPC 함수
     [ClientRpc]
     private void RpcSetControllerState(bool isEnabled)
     {
-        if (controller != null)
-        {
-            // 컨트롤러가 꺼지면 FixedUpdate가 멈추므로
-            // 속도 0 고정 로직도 실행되지 않아, 밀리는 힘이 정상 적용됩니다.
-            controller.enabled = isEnabled;
-        }
+        if (controller != null) controller.enabled = isEnabled;
     }
 
     #endregion
@@ -263,8 +247,6 @@ public class ItemEffectHandler : NetworkBehaviour
     {
         if (rb == null) rb = GetComponent<Rigidbody>();
         rb.mass = newMass;
-        // 디버깅용 (테스트 후 삭제 가능)
-        // Debug.Log($"[IronBody] 질량 변경됨: {rb.mass}");
     }
 
     [ClientRpc]
@@ -290,16 +272,9 @@ public class ItemEffectHandler : NetworkBehaviour
     [ClientRpc]
     private void RpcSetDrag(float newDrag)
     {
-        // 혹시 rb가 없으면 찾기
-        if (rb == null && transform.TryGetComponent(out PlayerController pc))
-            rb = pc.Rb;
-
+        if (rb == null && transform.TryGetComponent(out PlayerController pc)) rb = pc.Rb;
         if (rb == null) rb = GetComponent<Rigidbody>();
-
-        if (rb != null)
-        {
-            rb.linearDamping = newDrag;
-        }
+        if (rb != null) rb.linearDamping = newDrag;
     }
 
     [TargetRpc]
