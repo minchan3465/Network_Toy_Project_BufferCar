@@ -5689,14 +5689,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 8588997018763582332}
   sfxVolume: 1
-  ironDuration: 5
-  ironMassMultiplier: 5
+  ironDuration: 3
+  ironMassMultiplier: 2
   ironScaleMultiplier: 1.5
   nitroDuration: 3
-  nitroSpeedMultiplier: 2.5
-  nitroImpulseForce: 50
-  empStunDuration: 2
-  empBlastVfxDuration: 2
+  nitroSpeedMultiplier: 2
+  nitroImpulseForce: 25
+  empStunDuration: 1.2
+  empBlastVfxDuration: 1.2
 --- !u!114 &721332033141467808
 MonoBehaviour:
   m_ObjectHideFlags: 0
