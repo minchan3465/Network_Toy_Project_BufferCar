@@ -29,9 +29,17 @@ public class PlayerRespawn : NetworkBehaviour
 
         if (isOwned)
         {
+            CmdSetKinematic(true);
             SetupInitialPosition();
             SetupRespawnObject();
+            StartCoroutine(ReleaseKinematicAfterInit());
         }
+    }
+
+    private IEnumerator ReleaseKinematicAfterInit()
+    {
+        yield return new WaitForSeconds(0.2f);
+        CmdSetKinematic(false);
     }
 
     private void SetupInitialPosition()
@@ -181,9 +189,15 @@ public class PlayerRespawn : NetworkBehaviour
 
             // 3. 시각적 제거 (선택 사항: 완전히 없애거나 투명하게 처리)
             if (car != null) car.SetActive(false);
-
+            if (isOwned) StartCoroutine(FinalExileSequence());
             Debug.Log($"{gameObject.name} 플레이어가 최종 탈락하여 모든 기능을 정지합니다.");
         }
+    }
+
+    private IEnumerator FinalExileSequence()
+    {
+        yield return new WaitForSeconds(1f);
+        transform.position = new Vector3(50000f, 0, 50000f);
     }
 
     #endregion
