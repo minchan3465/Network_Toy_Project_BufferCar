@@ -104,9 +104,9 @@ public class PlayerCollision : NetworkBehaviour
 
     //
     //충돌로직2
-     private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (!isOwned || isPushing) return; // 로컬 권한 및 중복 충돌 즉시 차단
+        if (!isOwned || isPushing) return;
         if (res != null && res.isRespawning) return;
         if (NetworkTime.time < lastPushTime + pushCooldown) return;
 
@@ -117,34 +117,32 @@ public class PlayerCollision : NetworkBehaviour
 
             if (collision.gameObject.TryGetComponent(out NetworkIdentity targetIdentity))
             {
-                // 1. 상대 속도 계산 (sqrMagnitude가 성능에 미세하게 더 좋습니다)
-                Vector3 relVel = collision.relativeVelocity;
-                float relVelMag = relVel.magnitude;
-
+                // 1. 방향 계산 (원래 로직 유지)
                 Vector3 dirToTarget = (collision.transform.position - transform.position);
                 dirToTarget.y = 0;
                 dirToTarget.Normalize();
 
-                // 2. 속도 차이 기반 보너스
-                float mySpeedSqr = rb.linearVelocity.sqrMagnitude;
-                float targetSpeedSqr = collision.gameObject.GetComponent<Rigidbody>().linearVelocity.sqrMagnitude;
+                // 2. 속도 보너스 (매우 미세하게 설정)
+                // magnitude를 사용하여 속도 비례 선형 증가 유도
+                float mySpeed = rb.linearVelocity.magnitude;
+                float targetSpeed = collision.gameObject.GetComponent<Rigidbody>().linearVelocity.magnitude;
 
-                // 속도 차이 계산 (제곱값이므로 기준값 조정 필요)
-                float speedDiffSqr = mySpeedSqr - targetSpeedSqr;
-                // 0.01f 배율은 그대로 두거나 제곱값에 맞춰 미세 조정
-                float attackerBonus = 1f + (Mathf.Max(0, speedDiffSqr) * 0.0008f);
+                // (내 속도 - 상대 속도)의 차이를 0~1 사이의 비율로 환산 (최대 속도 22 기준)
+                float speedDiff = Mathf.Max(0, mySpeed - targetSpeed);
+                // 22로 나누어 0~1 사이 값으로 만든 뒤 0.2를 곱함 (최대 20% 보너스 제한)
+                float attackerBonus = 1f + (speedDiff / 22f * 0.2f);
 
-                // 3. 힘 계산
-                float baseImpulse = pushForce * (1f + relVelMag * 0.1f);
-                Vector3 forceToTarget = dirToTarget * baseImpulse * attackerBonus;
-                Vector3 forceToSelf = -dirToTarget * baseImpulse / attackerBonus;
+                // 3. 최종 힘 계산
+                // 기본 pushForce(19)에서 크게 벗어나지 않음 (최대 22~23 정도)
+                Vector3 forceToTarget = dirToTarget * pushForce * attackerBonus;
+                Vector3 forceToSelf = -dirToTarget * pushForce / attackerBonus;
 
                 ContactPoint contact = collision.GetContact(0);
 
-                // [선행 예측] 내 화면에서는 즉시 적용 (반응속도 극대화)
+                // 선행 예측 적용
                 ApplyImpulseLocal(forceToSelf);
 
-                // 서버에 전송
+                // 서버 전송
                 CmdPushBoth(targetIdentity, forceToTarget, forceToSelf, contact.point, contact.normal);
             }
         }
