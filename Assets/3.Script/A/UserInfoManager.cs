@@ -16,6 +16,11 @@ public class UserInfoManager : NetworkRoomPlayer
     public override void OnStartClient()
     {
         base.OnStartClient();
+
+        // 시작할 때 딱 한 번만 찾아서 저장해둡니다. (캐싱)
+        if (lobbyUI == null)
+            lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
+
         StartCoroutine(C_SendInitialInfo());
         RefreshUI();
     }
@@ -58,21 +63,21 @@ public class UserInfoManager : NetworkRoomPlayer
         {
             yield return null;
         }
+        // [중요] 중복 실행 방지를 위해 이미 번호를 할당받았는지 체크
+        if (PlayerNum != 0) yield break;
 
         Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
+        //서버에서 먼저 나를 등록 (번호 부여)
         ServerPlayerRegistry.instance.RegisterPlayer(this);
+
         Debug.Log("Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
         // 2. DataManager 확인 및 데이터 준비
         if (DataManager.instance != null && DataManager.instance.playerInfo != null)
         {
             string nic = DataManager.instance.playerInfo.User_Nic;
             int rate = DataManager.instance.playerInfo.User_Rate;
-
-            // 3. 서버에 내 정보 등록 요청
-            Debug.Log("CmdRequestSetInfo is startttttttttttttttt");
-            Debug.Log("nic is "+ nic);
-            Debug.Log("rate is "+ rate);
-            CmdRequestSetInfo(nic, rate);
+            this.PlayerNickname = nic; // 서버니까 그냥 직접 넣으면 SyncVar가 알아서 전파됨
+            this.PlayerRate = rate;
         }
     }
     IEnumerator C_SendInitialInfo()
@@ -178,8 +183,12 @@ public class UserInfoManager : NetworkRoomPlayer
 
     private void RefreshUI()
     {
-        if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
-        if (lobbyUI == null) return;
+        // 이미 캐싱되어 있다면 Find를 건너뜁니다.
+        if (lobbyUI == null)
+        {
+            lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
+            if (lobbyUI == null) return;
+        }
 
         Debug.Log($"[UI Debug] 내 이름: {PlayerNickname}, 인덱스: {index}, NetworkIdentity 번호: {netId}");
 

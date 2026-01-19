@@ -65,6 +65,13 @@ public class ServerPlayerRegistry : MonoBehaviour
     public void RegisterPlayer(UserInfoManager player)
     {
         NetworkConnectionToClient conn = player.connectionToClient;
+        // [수정] 이미 등록된 연결(커넥션)이라면 중복 등록하지 않고 리턴
+        if (connToPlayer.ContainsKey(conn))
+        {
+            Debug.LogWarning($"[Server] Player already registered for connection: {conn}");
+            return;
+        }
+
         connToPlayer[conn] = player;
         int assignedNumber;
         if (availableNumbers.Count > 0)
