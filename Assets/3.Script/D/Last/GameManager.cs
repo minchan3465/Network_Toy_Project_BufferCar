@@ -21,6 +21,7 @@ public class GameManager : NetworkBehaviour {
 	//Sync할거
 	[SyncVar(hook = nameof(OnGameStartingCheck))] public bool isGameStart;
 	public readonly SyncList<int> playersHp = new SyncList<int>();
+	public readonly SyncList<string> playersName = new SyncList<string>();
 	public readonly SyncList<PlayerData> playersData = new SyncList<PlayerData>();
 
 	//모두가 개인적으로 간직하는거
@@ -57,6 +58,7 @@ public class GameManager : NetworkBehaviour {
 	private void Start() {
 		//NetworkServer.OnDisconnectedEvent += OnClientDisconnected;
 		playersData.OnChange += OnPlayersDataChanged;
+		playersName.OnChange += OnPlayersNameChanged;
 		playersHp.OnChange += OnHpListChanged;
 		RefreshNameUI();
 	}
@@ -66,22 +68,10 @@ public class GameManager : NetworkBehaviour {
 		//플레이어 정보 등록, HP 갱신
 		playersData.Add(player);
 		playersHp.Add(6);
+		playersName.Add(player.nickname);
 	}
-	//private void OnClientDisconnected(NetworkConnectionToClient conn) {
-	//	Debug.Log("[GDD] Debug Log 1");
-	//	if (!NetworkServer.active) return;
-	//	int disconnectPlayer_index = -1;
-	//	Debug.Log("[GDD] Debug Log 2");
-	//	if (conn.identity != null) {
-	//		GameObject disconnectPlayer = conn.identity.gameObject;
-	//		Debug.Log("[GDD] Debug Log 3");
-	//		if(disconnectPlayer.TryGetComponent(out UserInfoManager manager)) {
-	//			disconnectPlayer_index = manager.PlayerNum;
-	//			SetDisconnectPlayerIndexInfo(disconnectPlayer_index);
-	//			Debug.Log("[GDD] Debug Log 4");
-	//		}
-	//	}
-	//}
+	//플레이어 나가면, 그 번호는 Lost라는 이름을 가지게 하고, hp를 0으로 함.
+	//근데 정보가 그대로 남아있을지는 모르겠음;
 	public void SetDisconnectPlayerIndexInfo(int index) {
 		PlayerData lostPlayer = playersData[index];
 		lostPlayer.name = "Lost...";
@@ -92,10 +82,8 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	//------------ UI 변경
-	////////////////////////////////////////////////////////////////////////////////////////// Name변경
 	/////////////////////그리고 4명이 모였다면, (서버기준) 시작!!!!!!!!!!
 	private void OnPlayersDataChanged(SyncList<PlayerData>.Operation op, int playernumber, PlayerData newItem) {
-		UpdateNameUI(playernumber, playersData[playernumber].nickname);
 		if (isServer) {
 			if (isGameStart) return;
 			if (playersData.Count.Equals(max_player)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -103,6 +91,11 @@ public class GameManager : NetworkBehaviour {
 			}
 		}
 	}
+	////////////////////////////////////////////////////////////////////////////////////////// Name변경
+	private void OnPlayersNameChanged(SyncList<string>.Operation op, int playernumber, string newItem) {
+		UpdateNameUI(playernumber, newItem);
+	}
+
 	private void RefreshNameUI() {
 		for(int i = 0; i < playersData.Count; i++) {
 			UpdateNameUI(i, playersData[i].nickname);
@@ -110,11 +103,10 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	private void UpdateNameUI(int playernumber, string name) {
-		if (playernumber >= playersData.Count) return;
 		string str;
 		string color = setColor(playernumber);
-		if ((playernumber % 2).Equals(0)) {	str = $"{playernumber + 1}P <color={color}>{name}</color>";	} 
-		else {	str = $"<color={color}>{name}</color> {playernumber + 1}P";	}
+		if ((playernumber % 2).Equals(0)) { str = $"{playernumber + 1}P <color={color}>{name}</color>"; } 
+		else { str = $"<color={color}>{name}</color> {playernumber + 1}P"; }
 		playerNameUI[playernumber].text = str;
 	}
 	////////////////////////////////////////////////////////////////////////////////////////// Hp 변경

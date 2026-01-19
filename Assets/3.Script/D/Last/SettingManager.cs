@@ -30,18 +30,11 @@ public class SettingManager : NetworkBehaviour {
 			yield return null;
 		}
 
-		int targetIndex = -1;
-		string targetName = "Unknown";
-		int targetRate = -1;
+		int targetIndex = DataManager.instance.playerInfo.PlayerNum - 1;
+		string targetName = DataManager.instance.playerInfo.User_Nic;
+		int targetRate = DataManager.instance.playerInfo.User_Rate;
 
-		if(NetworkClient.localPlayer.TryGetComponent(out UserInfoManager manager)) {
-			while (string.IsNullOrEmpty(manager.PlayerNickname) || manager.PlayerRate == -1) {
-				yield return null;
-			}
-			targetIndex = manager.PlayerNum - 1;
-			targetName = manager.PlayerNickname;
-			targetRate = manager.PlayerRate;
-		}
+
 		CmdRequestSpawnAndReady(targetIndex, targetName, targetRate);
 		enabled = false;
 	}
