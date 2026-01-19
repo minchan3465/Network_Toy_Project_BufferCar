@@ -173,7 +173,11 @@ public class UserInfoManager : NetworkRoomPlayer
 
     private void RefreshUI()
     {
-        if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
+        if (lobbyUI == null)
+            if(!TryGetComponent(out Lobby_UI_Controller lobby_UI))
+            {
+                Debug.Log("TryGetComponent Lobby_UI_Controller is fail");
+            }
 
         if (lobbyUI != null)
         {
