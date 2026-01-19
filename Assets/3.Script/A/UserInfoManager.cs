@@ -32,7 +32,6 @@ public class UserInfoManager : NetworkRoomPlayer
     //서버에 접속해서 나의 플레이어 오브젝트(UserInfoManager)가 내 화면에 나타나는 순간 실행됩니다.
     public override void OnStartLocalPlayer()
     {
-        base.OnStartLocalPlayer();
 
 
         //if (DataManager.instance != null && DataManager.instance.playerInfo != null)

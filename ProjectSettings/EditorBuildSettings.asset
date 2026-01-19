@@ -6,17 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/1.Scene/Main/Main_Title!.unity
-    guid: ec679241f1a6ce44bb60074e5f6e484c
+    path: Assets/1.Scene/E/E_Main_Title!.unity
+    guid: e875db77e4d6f5749a682f3aa341595d
   - enabled: 1
-    path: Assets/1.Scene/Main/Main_Room.unity
-    guid: 699592e618d278f40926a9cd92e81a8c
+    path: Assets/1.Scene/E/E_Main_Room.unity
+    guid: ad61ec42e473ff14db2e9f25471b67c9
   - enabled: 1
-    path: Assets/1.Scene/Main/Main_InGame!.unity
-    guid: 93a57e55977fe304ca996d84cb5130f0
+    path: Assets/1.Scene/E/E_Main_InGame!.unity
+    guid: 328832f4b166a834a8299cce4cdf5e14
   - enabled: 1
-    path: Assets/1.Scene/Main/Main_ServerScene!.unity
-    guid: b6ea1454a5e7aba47bcc2805ad3755e2
+    path: Assets/1.Scene/E/E_Main_ServerScene!.unity
+    guid: 1ebcbb8b24788f74e835d85716dd235b
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
