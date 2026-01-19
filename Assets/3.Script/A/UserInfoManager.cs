@@ -8,10 +8,13 @@ public class UserInfoManager : NetworkBehaviour
     [SyncVar(hook = nameof(OnNicknameChange))] public string PlayerNickname = "";
     [SyncVar(hook = nameof(OnRateChange))] public int PlayerRate = 0;
     [SyncVar(hook = nameof(OnNumChange))] public int PlayerNum = 0;
-    [SyncVar(hook = nameof(OnReadyChange))] public bool isReady = false;
 
     private Lobby_UI_Controller lobbyUI;
     private NetworkRoomPlayer roomPlayer;
+
+    private bool lastReadyState; // 이전 레디 상태 기억
+    // 현재 레디 상태를 외부(Registry 등)에서 확인할 수 있는 프로퍼티
+    public bool IsReady => roomPlayer != null && roomPlayer.readyToBegin;
 
     public override void OnStartClient()
     {
@@ -23,92 +26,46 @@ public class UserInfoManager : NetworkBehaviour
         StartCoroutine(C_SendInitialInfo());
     }
 
-    public void OnReadyStatusChanged(bool oldValue, bool newValue)
-    {
-        isReady = newValue;
-        RefreshUI();
-    }
-
-    public override void OnStartServer()
-    {
-        StartCoroutine(C_StartRegistry());
-    }
-
-    [ServerCallback]
     private void Update()
     {
-        if (roomPlayer != null && isReady != roomPlayer.readyToBegin)
+        if (roomPlayer == null) roomPlayer = GetComponent<NetworkRoomPlayer>();
+
+        // 상태가 실제로 변했을 때만 UI 갱신 (매 프레임 UI 연산 방지)
+        if (roomPlayer != null && roomPlayer.readyToBegin != lastReadyState)
         {
-            isReady = roomPlayer.readyToBegin;
-            ServerPlayerRegistry.instance?.TryStartGame();
+            lastReadyState = roomPlayer.readyToBegin;
+            RefreshUI();
+
+            // 서버라면 레디 상태가 변할 때마다 게임 시작 가능 여부 체크
+            if (isServer)
+            {
+                ServerPlayerRegistry.instance?.TryStartGame();
+            }
         }
     }
 
     public void ToggleReady()
     {
-        if (!isLocalPlayer) return; // 내 객체일 때만 서버에 요청 가능
+        if (!isLocalPlayer || roomPlayer == null) return;
 
-        // 서버에 내 레디 상태를 반전시켜달라고 요청
-        CmdSetReadyState(!isReady);
-    }
-    [Command]
-    void CmdSetReadyState(bool state)
-    {
-        this.isReady = state; // 서버에서 값이 바뀌면 SyncVar에 의해 모든 클라이언트의 OnReadyChange가 실행됨
-
-        // 서버 레지스트리에 알림 (게임 시작 체크용)
-        if (ServerPlayerRegistry.instance != null)
-            ServerPlayerRegistry.instance.TryStartGame();
-    }
-    IEnumerator C_StartRegistry()
-    {
-        yield return new WaitUntil(() => connectionToClient != null);
-        ServerPlayerRegistry.instance?.RegisterPlayer(this);
+        // [핵심] Mirror 내부 명령어를 직접 호출하여 상태를 바꿉니다.
+        roomPlayer.CmdChangeReadyState(!roomPlayer.readyToBegin);
     }
 
-    IEnumerator C_SendInitialInfo()
+    public void RefreshUI()
     {
-        while (DataManager.instance == null) yield return null;
-        if (DataManager.instance.playerInfo != null)
+        if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
+        if (roomPlayer == null) roomPlayer = GetComponent<NetworkRoomPlayer>();
+
+        if (lobbyUI != null && PlayerNum > 0 && PlayerNum <= 4)
         {
-            // 내 객체일 때만 내 정보를 서버에 보냄
-            if (isLocalPlayer)
-                CmdRequestSetInfo(DataManager.instance.playerInfo.User_Nic, DataManager.instance.playerInfo.User_Rate);
+            // [기준] roomPlayer.readyToBegin 값을 UI 색상 기준으로 사용
+            lobbyUI.UpdatePlayerFrameColor(PlayerNum - 1, roomPlayer.readyToBegin);
+            lobbyUI.UpdateSlotText(PlayerNum - 1, PlayerNickname, PlayerRate);
         }
     }
 
-    [Command]
-    void CmdRequestSetInfo(string nic, int rate)
-    {
-        this.PlayerNickname = nic;
-        this.PlayerRate = rate;
-    }
-
-    public override void OnStopServer()
-    {
-        ServerPlayerRegistry.instance?.UnregisterPlayer(this);
-    }
-
-    public void AssignPlayerNumber(int number)
-    {
-        PlayerNum = number;
-    }
-
-    [Command]
-    public void CmdSendReadyToServer(bool ready)
-    {
-        if (ServerPlayerRegistry.instance != null)
-        {
-            ServerPlayerRegistry.instance.TryStartGame();
-        }
-    }
-
-    public override void OnStopClient()
-    {
-        base.OnStopClient();
-    }
-
-    #region Hooks (UI 갱신 로직)
+    // --- 데이터 변경 시 리프레시 ---
     void OnNicknameChange(string oldV, string newV) => RefreshUI();
     void OnRateChange(int oldV, int newV) => RefreshUI();
     void OnNumChange(int oldV, int newV)
@@ -117,21 +74,20 @@ public class UserInfoManager : NetworkBehaviour
             DataManager.instance.playerInfo.PlayerNum = newV;
         RefreshUI();
     }
-    void OnReadyChange(bool oldV, bool newV) 
-    {
-        Debug.Log($"[SyncVar] {PlayerNickname}의 레디 상태 변경: {newV}");
-        RefreshUI();
-    }
-private void RefreshUI()
-    {
-        if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
 
-        // 이제 roomPlayer 대신 SyncVar인 isReady를 직접 사용합니다.
-        if (lobbyUI != null && PlayerNum > 0 && PlayerNum <= 4)
-        {
-            lobbyUI.UpdatePlayerFrameColor(PlayerNum - 1, isReady);
-            lobbyUI.UpdateSlotText(PlayerNum - 1, PlayerNickname, PlayerRate);
-        }
+    // --- 서버 관련 로직 (기존 유지) ---
+    public override void OnStartServer() => StartCoroutine(C_StartRegistry());
+    IEnumerator C_StartRegistry()
+    {
+        yield return new WaitUntil(() => connectionToClient != null);
+        ServerPlayerRegistry.instance?.RegisterPlayer(this);
     }
-    #endregion
+    IEnumerator C_SendInitialInfo()
+    {
+        while (DataManager.instance == null) yield return null;
+        if (isLocalPlayer) CmdRequestSetInfo(DataManager.instance.playerInfo.User_Nic, DataManager.instance.playerInfo.User_Rate);
+    }
+    [Command] void CmdRequestSetInfo(string nic, int rate) { this.PlayerNickname = nic; this.PlayerRate = rate; }
+    public override void OnStopServer() => ServerPlayerRegistry.instance?.UnregisterPlayer(this);
+    public void AssignPlayerNumber(int number) => PlayerNum = number;
 }

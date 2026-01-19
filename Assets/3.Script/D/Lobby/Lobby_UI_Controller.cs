@@ -137,7 +137,7 @@ public class Lobby_UI_Controller : MonoBehaviour
         if (Notice_text) Notice_text.gameObject.SetActive(true);
         if (Count_text) Count_text.gameObject.SetActive(true);
         if (countdownCoroutine != null) StopCoroutine(countdownCoroutine);
-        countdownCoroutine = StartCoroutine(C_StartCountdown());
+        //countdownCoroutine = StartCoroutine(C_StartCountdown());
     }
 
     public void CancelGameSequence()
@@ -149,21 +149,21 @@ public class Lobby_UI_Controller : MonoBehaviour
         if (Quit_btn) Quit_btn.interactable = true;
     }
 
-    IEnumerator C_StartCountdown()
-    {
-        if (Notice_text) Notice_text.text = "게임이 곧 시작됩니다.";
-        int count = 3;
-        while (count > 0)
-        {
-            if (Count_text) Count_text.text = count.ToString();
-            yield return new WaitForSeconds(1.0f);
-            count--;
-        }
-        if (Count_text) Count_text.text = "START!";
-        if (NetworkServer.active)
-        {
-            yield return new WaitForSeconds(0.5f);
-            NetworkManager.singleton.ServerChangeScene("Main_InGame!");
-        }
-    }
+    //IEnumerator C_StartCountdown()
+    //{
+    //    if (Notice_text) Notice_text.text = "게임이 곧 시작됩니다.";
+    //    int count = 3;
+    //    while (count > 0)
+    //    {
+    //        if (Count_text) Count_text.text = count.ToString();
+    //        yield return new WaitForSeconds(1.0f);
+    //        count--;
+    //    }
+    //    if (Count_text) Count_text.text = "START!";
+    //    if (NetworkServer.active)
+    //    {
+    //        yield return new WaitForSeconds(0.5f);
+    //        NetworkManager.singleton.ServerChangeScene("Main_InGame!");
+    //    }
+    //}
 }

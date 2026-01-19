@@ -114,13 +114,15 @@ public class ServerPlayerRegistry : MonoBehaviour
     [Server]
     public void TryStartGame()
     {
-        if (players.Count == 0)
-            return;
+        if (players.Count == 0) return;
+
         foreach (var p in players)
         {
-            if (!p.Value.isReady)
+            // [수정] UserInfoManager의 프로퍼티를 통해 NetworkRoomPlayer의 레디 상태 확인
+            if (!p.Value.IsReady)
                 return;
         }
+
         Debug.Log("[Server] All players ready. Starting game.");
         GameFlowManager.Instance.StartGame();
     }
