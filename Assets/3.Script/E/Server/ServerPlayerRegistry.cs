@@ -64,8 +64,11 @@ public class ServerPlayerRegistry : MonoBehaviour
     [Server]
     public void RegisterPlayer(UserInfoManager player)
     {
-        NetworkConnectionToClient conn = player.connectionToClient;
-        connToPlayer[conn] = player;
+        if (player.connectionToClient == null) return;
+
+        // 이미 등록된 커넥션이면 무시 (중복 생성 방지 핵심)
+        if (connToPlayer.ContainsKey(player.connectionToClient)) return;
+
         int assignedNumber;
         if (availableNumbers.Count > 0)
         {
@@ -76,15 +79,12 @@ public class ServerPlayerRegistry : MonoBehaviour
         {
             assignedNumber = nextPlayerNumber++;
         }
-        player.AssignPlayerNumber(assignedNumber);
-        players.Add(assignedNumber, player);
 
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        //DataManager.instance.playerInfo.PlayerNum = assignedNumber;
+        players[assignedNumber] = player;
+        connToPlayer[player.connectionToClient] = player;
+
+        player.AssignPlayerNumber(assignedNumber);
+        Debug.Log($"[Server] {player.PlayerNickname} 등록 완료. 슬롯: {assignedNumber}");
         //Debug.Log(DataManager.instance.playerInfo.PlayerNum+"Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     }
 
@@ -114,13 +114,15 @@ public class ServerPlayerRegistry : MonoBehaviour
     [Server]
     public void TryStartGame()
     {
-        if (players.Count == 0)
-            return;
+        if (players.Count == 0) return;
+
         foreach (var p in players)
         {
-            if (!p.Value.isReady)
+            // [수정] UserInfoManager의 프로퍼티를 통해 NetworkRoomPlayer의 레디 상태 확인
+            if (!p.Value.IsReady)
                 return;
         }
+
         Debug.Log("[Server] All players ready. Starting game.");
         GameFlowManager.Instance.StartGame();
     }
