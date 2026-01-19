@@ -2,7 +2,7 @@ using UnityEngine;
 using Mirror;
 using System.Collections;
 
-public class UserInfoManager : NetworkBehaviour
+public class UserInfoManager : NetworkRoomPlayer
 {
     [Header("Network Synced Data")]
     [SyncVar(hook = nameof(OnNicknameChange))] public string PlayerNickname = "";
@@ -17,13 +17,18 @@ public class UserInfoManager : NetworkBehaviour
     {
         base.OnStartClient();
         StartCoroutine(C_SendInitialInfo());
-        //RefreshUI();
+        RefreshUI();
     }
     public override void OnStartServer()
     {
         StartCoroutine(C_StartRegistry());
     }
 
+    // 룸 플레이어의 상태가 바뀔 때 호출되는 Mirror 내장 콜백
+    public override void OnClientEnterRoom()
+    {
+        RefreshUI();
+    }
     //서버에 접속해서 나의 플레이어 오브젝트(UserInfoManager)가 내 화면에 나타나는 순간 실행됩니다.
     public override void OnStartLocalPlayer()
     {
@@ -166,21 +171,19 @@ public class UserInfoManager : NetworkBehaviour
         RefreshUI();
     }
     void OnReadyChange(bool oldV, bool newV) => RefreshUI();
-    
+
     private void RefreshUI()
     {
         if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
 
-        if (lobbyUI != null && PlayerNum > 0)
+        if (lobbyUI != null)
         {
-            // [중요] 레이팅이나 닉네임이 바뀌었을 때 UI에 즉시 반영하는 로직이 필요합니다.
-            lobbyUI.UpdatePlayerFrameColor(PlayerNum - 1, isReady);
-
-            // 만약 UI에 닉네임/레이팅 텍스트 갱신 함수가 있다면 여기서 함께 호출하세요.
-            lobbyUI.UpdateSlotText(PlayerNum - 1, PlayerNickname, PlayerRate);
+            // index와 readyToBegin은 상속받은 NetworkRoomPlayer에 이미 들어있는 변수입니다.
+            lobbyUI.UpdatePlayerFrameColor(index, readyToBegin);
+            lobbyUI.UpdateSlotText(index, PlayerNickname, PlayerRate);
         }
     }
-    
+
     #endregion
 
 

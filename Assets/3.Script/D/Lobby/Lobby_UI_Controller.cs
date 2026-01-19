@@ -117,25 +117,18 @@ public class Lobby_UI_Controller : MonoBehaviour
 
     public void Lobby_Ready()
     {
-        // 1. 로컬 상태 토글
-        isMyReadyState = !isMyReadyState;
+        // 1. 내 로컬 플레이어 객체를 UserInfoManager 타입으로 가져옵니다.
+        UserInfoManager myInfo = NetworkClient.localPlayer?.GetComponent<UserInfoManager>();
 
-        // 2. 내 버튼 UI 즉시 변경 (반응성 향상)
-        UpdateMyButtonState(isMyReadyState);
+        if (myInfo != null)
+        {
+            // 2. Mirror 룸매니저에게 내 레디 상태를 반전시켜달라고 명령합니다. (CmdChangeReadyState)
+            // 이 명령을 내리면 서버가 상태를 바꾸고, 모든 유저의 OnClientReadyStateChanged가 실행됩니다.
+            bool nextState = !myInfo.readyToBegin;
+            myInfo.CmdChangeReadyState(nextState);
 
-        // 3. [중요] 서버로 "나 레디했어/취소했어" 신호 보내기
-        // Mirror에서는 NetworkClient.localPlayer를 통해 내 플레이어 객체를 찾을 수 있습니다.
-        if (NetworkClient.localPlayer != null)
-        {
-            UserInfoManager myUserInfo = NetworkClient.localPlayer.GetComponent<UserInfoManager>();
-            if (myUserInfo != null)
-            {
-                myUserInfo.CmdSendReadyToServer(isMyReadyState);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[LobbyUI] 로컬 플레이어를 찾을 수 없습니다. 서버와 연결되어 있나요?");
+            // 3. 내 버튼의 시각적 텍스트/색상만 즉시 업데이트합니다.
+            UpdateMyButtonState(nextState);
         }
     }
 
