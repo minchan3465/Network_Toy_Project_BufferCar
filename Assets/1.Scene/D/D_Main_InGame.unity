@@ -946,7 +946,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  max_player: 0
+  max_player: 1
   isGameStart: 0
   playerHpUI:
   - hpButtons:

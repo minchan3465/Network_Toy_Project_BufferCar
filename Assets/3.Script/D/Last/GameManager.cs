@@ -197,26 +197,32 @@ public class GameManager : NetworkBehaviour {
 			///////////////////////////////////////////////////////////////////////////////// 순위, 레이팅
 			int point = 0;
 			bool isHigh = true;
+			result_rate = $"{playersData[index].rate} ";
 			switch (i) {
 				case 0:
 					point = 200;
 					isHigh = true;
+					result_rate += $"<color=orange>+ {point}</color>";
 					break;
 				case 1:
 					point = 100;
 					isHigh = true;
+					result_rate += $"<color=orange>+ {point}</color>";
 					break;
 				case 2:
 					point = -100;
 					isHigh = false;
+					result_rate += $"<color=blue>- {point}</color>";
 					break;
 				case 3:
 					point = -200;
 					isHigh = false;
+					result_rate += $"<color=blue>- {point}</color>";
 					break;
 			}
-			UpdateResultRanktTextUI(result_rank, i);
-			UpdateResultRatetTextUI(i, playersData[index].rate, point, 2f, isHigh);
+			UpdateResultRanktTextUI(i, result_rank);
+			UpdateResultRatetTextUI(i, result_rate);
+			UpdateResultRatetTextUI(i, playersData[index].rate, point, 1f, isHigh);
 
 			//플레이어 레이트값 조정
 			//UpdatePlayerRate(index, rate);
@@ -225,7 +231,8 @@ public class GameManager : NetworkBehaviour {
 		yield return new WaitForSeconds(4f);
 		//룸으로 돌아가기
 	}
-	[ClientRpc] private void UpdateResultRanktTextUI(string str, int index) { resultRankTextUI[index].text = str; }
+	[ClientRpc] private void UpdateResultRanktTextUI(int index, string text) { resultRankTextUI[index].text = text; }
+	[ClientRpc] private void UpdateResultRatetTextUI(int index, string text) { resultRateTextUI[index].text = text; }
 	[ClientRpc] private void UpdateResultRatetTextUI(int index, int rate, int point, float duration, bool isHigh) {
 		StartCoroutine(RateChangeAnimation_co(index, rate, point, duration, isHigh));
 	}
