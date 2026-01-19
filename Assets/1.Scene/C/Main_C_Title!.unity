@@ -148,6 +148,14 @@ PrefabInstance:
       propertyPath: networkAddress
       value: localhost
       objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: 'spawnPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 6970800248564378294, guid: debbb0be4462e8c4aa188eca6578afe0, type: 3}
     - target: {fileID: 6091014898218233269, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
       propertyPath: m_LocalPosition.x
       value: 93.86882
@@ -191,30 +199,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2009209254682796026, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 84582885}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
---- !u!1 &84582884 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2009209254682796026, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
-  m_PrefabInstance: {fileID: 84582883}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &84582885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 84582884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Mirror::Mirror.NetworkManagerHUD
-  offsetX: 0
-  offsetY: 0
 --- !u!1 &510461557
 GameObject:
   m_ObjectHideFlags: 0
