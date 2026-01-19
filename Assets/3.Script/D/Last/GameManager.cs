@@ -34,6 +34,8 @@ public class GameManager : NetworkBehaviour {
 	private bool isFever = false;
 	public GameObject spectatorCamera;
 
+	public GameObject car;
+
 	//Server가 관리할거
 	public Stack<int> Ranks = new Stack<int>();
 	public int winnerNumber = -1;
@@ -50,7 +52,6 @@ public class GameManager : NetworkBehaviour {
 	}
 	private void Start() {
 		playersData.OnChange += OnPlayersDataChanged;
-		if (!isOwned) return;
 		playersHp.OnChange += OnHpListChanged;
 	}
 	//플레이어 준비됨 파트
@@ -69,7 +70,8 @@ public class GameManager : NetworkBehaviour {
 		UpdateNameUI(playernumber, playersData[playernumber].nickname);
 		Debug.Log("[All] User Updated.");
 		if (isServer) {
-			if (playersData.Count.Equals(1)) {
+			if (isGameStart) return;
+			if (playersData.Count.Equals(3)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				StartCoroutine(Game_Start());
 				Debug.Log("[Server] Game Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			}
@@ -116,8 +118,16 @@ public class GameManager : NetworkBehaviour {
 		Game_Setup();
 		yield return StartCoroutine("StartCdTimer_co");
 		isGameStart = true;
+		PlayerCanMoveWhenStart();
 		StartCoroutine("timer_countdown");
 	}
+	[ClientRpc]
+	private void PlayerCanMoveWhenStart() {
+		if(car.TryGetComponent(out PlayerController playerController)) {
+			playerController.IsStunned = false;
+		}
+	}
+
 	[Server]
 	public void Game_Set(int winnerNumber) {
 		isGameStart = false;
@@ -209,13 +219,14 @@ public class GameManager : NetworkBehaviour {
 
 	//------------ 추락시
 	[Server]
-	public void ProcessPlayerFell(int playerNum) {
+	public void ProcessPlayerFell(int playerNum, NetworkConnectionToClient target) {
 		playersHp[playerNum] -= 1;
+
 		if (playersHp[playerNum] < 1) {
 			//죽었음~
 			Ranks.Push(playerNum);
-			playersData[playerNum].playerRespawn.canRespawn = false;
-			onSpectatorCamera(connectionToClient);
+			StopPlayerRespawn(target);
+			onSpectatorCamera(target);
 		}
 		//플레이어 목숨 체크
 		if (isGameStart) {
@@ -237,6 +248,13 @@ public class GameManager : NetworkBehaviour {
 			Game_Set(winner_check);
 		}
 	}
+	[TargetRpc]
+	private void StopPlayerRespawn(NetworkConnection target) {
+		if (car.TryGetComponent(out PlayerRespawn playerRespawn)) {
+			playerRespawn.canRespawn = false;
+		}
+	}
+
 	[TargetRpc]
 	private void onSpectatorCamera(NetworkConnection target) {
 		spectatorCamera.SetActive(true);
@@ -264,10 +282,8 @@ public class GameManager : NetworkBehaviour {
 			yield return wfs;
 			startCountdownTime -= 1;
 		}
-		for (int i = 0; i < playersData.Count; i++) {
-			playersData[i].playerController.IsStunned = false;
-		}
 	}
+
 	[ClientRpc]
 	private void UpdateStartCdTimer(string startCdTimeText) {
 		startCountdownTimer.text = startCdTimeText;

@@ -1,7 +1,7 @@
 [
 	{
 		"License": "1",
-		"ServerIP": "192.168.1.68",
+		"ServerIP": "localhost",
 		"Port": "7777"
 	}
 ]

@@ -74,6 +74,6 @@ public class PlayerManager : NetworkBehaviour {
 
     [Command]
     void CmdRequestFell() {
-        GameManager.Instance.ProcessPlayerFell(_index);
+        //GameManager.Instance.ProcessPlayerFell(_index);
     }
 }

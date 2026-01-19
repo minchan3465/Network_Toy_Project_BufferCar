@@ -59,7 +59,7 @@ public class SettingManager : NetworkBehaviour {
 			//어쨌든, 해당 차량에 플레이어 아바타 권한 양도.
 
 			//NetworkServer.ReplacePlayerForConnection(senderConnection, car, true);
-			NetworkServer.AddPlayerForConnection(senderConnection, car);
+			//NetworkServer.AddPlayerForConnection(senderConnection, car);
 
 			//플레이어 위치 설정
 			//playerData.playerRespawn.InitializePlayer(playerData.index);

@@ -19,15 +19,19 @@ public class PlayerData : NetworkBehaviour {
 
 	public override void OnStartAuthority() {
 		base.OnStartAuthority();
-		Debug.Log("권한 받음" + isOwned);
-		Debug.Log("여전히 LocalPlayer는 아님" + isLocalPlayer);
+		GameManager.Instance.car = gameObject;
 		playerRespawn.InitializePlayer(index);
+		playerController.IsStunned = true;
 		CmdImReady();
 	}
 
 	[Command]
 	public void CmdImReady() {
 		GameManager.Instance.ImReady(this);
+	}
+
+	public void PlayerStunChange(bool _bool) {
+		playerController.IsStunned = _bool;
 	}
 
 	public void UpdatePlayerIndex(int oldIndex, int newIndex) {	
@@ -52,13 +56,13 @@ public class PlayerData : NetworkBehaviour {
 
 	private void OnTriggerEnter(Collider other) {
 		if (!isOwned) return;
-		if(other.CompareTag("Deadzone")) {
-			test_fall();
+		if (other.CompareTag("Deadzone")) {
+			Onfall();
 		}
 	}
 
 	[Command]
-	private void test_fall() {
-		GameManager.Instance.ProcessPlayerFell(index);
+	private void Onfall() {
+		GameManager.Instance.ProcessPlayerFell(index, connectionToClient);
 	}
 }

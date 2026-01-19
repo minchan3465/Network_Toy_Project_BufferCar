@@ -134,7 +134,7 @@ public class PlayerRespawn : NetworkBehaviour
         }
         car.SetActive(true);
 
-        if (isLocalPlayer)
+        if (isOwned)
         {
             // 깜빡임이 끝난 시점에 모든 클라이언트의 물리 엔진을 켬
             CmdSetKinematic(false);

@@ -27,7 +27,7 @@ public class PlayerCollision : NetworkBehaviour
 
     private void Start()
     {
-        if (!isLocalPlayer) { return; }
+        if (!isOwned) { return; }
         input = FindAnyObjectByType<Inputsystem>();
         transform.TryGetComponent(out rb);
         transform.TryGetComponent(out res);
@@ -36,7 +36,7 @@ public class PlayerCollision : NetworkBehaviour
     #region 충돌로직1 OnCollisionEnter_Player
     private void OnCollisionEnter(Collision collision)
     {
-        if (!isLocalPlayer) return;
+        if (!isOwned) return;
 
         if (res != null && res.isRespawning) return;
 
@@ -127,7 +127,7 @@ public class PlayerCollision : NetworkBehaviour
     public void RpcApplyImpulse(Vector3 force)
     {
         PlayVibration(vpower, duration);//진동호출!
-        Debug.Log($"{name} RPC execution. IsLocal: {isLocalPlayer}");
+        Debug.Log($"{name} RPC execution. IsLocal: {isOwned}");
         // 각 플레이어의 화면에서 실행
         if (rb == null) rb = GetComponent<Rigidbody>();
 
@@ -188,7 +188,7 @@ public class PlayerCollision : NetworkBehaviour
 
     public void PlayVibration(float intensity, float time)
     {
-        if (!isLocalPlayer) return;
+        if (!isOwned) return;
 
         if (Camera_manager.instance != null)
         {
@@ -221,12 +221,12 @@ public class PlayerCollision : NetworkBehaviour
     #region 충돌로직2 OnTriggerEnter_Deadzone & Respawn
     private void OnTriggerEnter(Collider other)
     {
-        if (!isLocalPlayer) return;
+        if (!isOwned) return;
 
         if (other.CompareTag("Deadzone"))
         {
             Debug.Log("Deadzone Tag Detected!");
-            GameManager.Instance.ProcessPlayerFell(res.playerNumber);
+            //GameManager.Instance.ProcessPlayerFell(res.playerNumber);
 
             if (res != null)
             {
