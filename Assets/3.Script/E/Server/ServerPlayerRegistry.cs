@@ -64,15 +64,11 @@ public class ServerPlayerRegistry : MonoBehaviour
     [Server]
     public void RegisterPlayer(UserInfoManager player)
     {
-        NetworkConnectionToClient conn = player.connectionToClient;
-        // [수정] 이미 등록된 연결(커넥션)이라면 중복 등록하지 않고 리턴
-        if (connToPlayer.ContainsKey(conn))
-        {
-            Debug.LogWarning($"[Server] Player already registered for connection: {conn}");
-            return;
-        }
+        if (player.connectionToClient == null) return;
 
-        connToPlayer[conn] = player;
+        // 이미 등록된 커넥션이면 무시 (중복 생성 방지 핵심)
+        if (connToPlayer.ContainsKey(player.connectionToClient)) return;
+
         int assignedNumber;
         if (availableNumbers.Count > 0)
         {
@@ -83,15 +79,12 @@ public class ServerPlayerRegistry : MonoBehaviour
         {
             assignedNumber = nextPlayerNumber++;
         }
-        player.AssignPlayerNumber(assignedNumber);
-        players.Add(assignedNumber, player);
 
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
-        //DataManager.instance.playerInfo.PlayerNum = assignedNumber;
+        players[assignedNumber] = player;
+        connToPlayer[player.connectionToClient] = player;
+
+        player.AssignPlayerNumber(assignedNumber);
+        Debug.Log($"[Server] {player.PlayerNickname} 등록 완료. 슬롯: {assignedNumber}");
         //Debug.Log(DataManager.instance.playerInfo.PlayerNum+"Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     }
 
@@ -125,7 +118,7 @@ public class ServerPlayerRegistry : MonoBehaviour
             return;
         foreach (var p in players)
         {
-            if (!p.Value.readyToBegin)
+            if (!p.Value.isReady)
                 return;
         }
         Debug.Log("[Server] All players ready. Starting game.");
