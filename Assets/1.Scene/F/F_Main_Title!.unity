@@ -138,7 +138,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
       propertyPath: onlineScene
-      value: Assets/1.Scene/Main/Main_InGame!.unity
+      value: Assets/1.Scene/F/F_Main_InGame!.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: offlineScene
+      value: Assets/1.Scene/F/F_Main_Title!.unity
       objectReference: {fileID: 0}
     - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
       propertyPath: networkAddress
@@ -942,7 +946,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 538726137806644396, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1868329535176279374, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
       propertyPath: m_Name

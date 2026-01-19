@@ -673,7 +673,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  playerCarPrefab: {fileID: 6970800248564378294, guid: 7ea7d527aa94b9942b14f886c5edd1a9, type: 3}
+  playerCarPrefab: {fileID: 6970800248564378294, guid: debbb0be4462e8c4aa188eca6578afe0, type: 3}
   spawnPos: {fileID: 36918364}
 --- !u!114 &309211257
 MonoBehaviour:
@@ -1699,7 +1699,7 @@ MonoBehaviour:
   resultRateTextUI: {fileID: 127312640}
   feverTextUI: {fileID: 127312639}
   spectatorCamera: {fileID: 706949604}
-  car: {fileID: 0}
+  car: {fileID: 6970800248564378294, guid: debbb0be4462e8c4aa188eca6578afe0, type: 3}
   winnerNumber: -1
   winnerName: 
   startCountdownTime: 3
