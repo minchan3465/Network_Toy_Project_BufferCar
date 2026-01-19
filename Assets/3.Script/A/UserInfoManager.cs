@@ -150,8 +150,8 @@ public class UserInfoManager : NetworkBehaviour
     }
 
     #region Hooks (UI 갱신 로직)
-    void OnNicknameChange(string oldV, string newV) { }// => RefreshUI();
-    void OnRateChange(int oldV, int newV) { }// => RefreshUI();
+    void OnNicknameChange(string oldV, string newV) => RefreshUI();
+    void OnRateChange(int oldV, int newV) => RefreshUI();
     void OnNumChange(int oldV, int newV) 
     {
         Debug.Log($"[Client] PlayerNum changed: {newV}");
@@ -163,9 +163,10 @@ public class UserInfoManager : NetworkBehaviour
             Debug.Log($"DataManager.instance.playerInfo.PlayerNum is changed: {newV}");
             DataManager.instance.playerInfo.PlayerNum = newV;
         }
-    }// => RefreshUI();
-    void OnReadyChange(bool oldV, bool newV) { }// => RefreshUI();
-    /*
+        RefreshUI();
+    }
+    void OnReadyChange(bool oldV, bool newV) => RefreshUI();
+    
     private void RefreshUI()
     {
         if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
@@ -179,7 +180,7 @@ public class UserInfoManager : NetworkBehaviour
             lobbyUI.UpdateSlotText(PlayerNum - 1, PlayerNickname, PlayerRate);
         }
     }
-     */
+    
     #endregion
 
 
