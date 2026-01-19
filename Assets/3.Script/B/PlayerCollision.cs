@@ -25,6 +25,7 @@ public class PlayerCollision : NetworkBehaviour
     }
 
     #region 충돌로직1 OnCollisionEnter_Player
+    /*
     private void OnCollisionEnter(Collision collision)
     {
         if (!isOwned) return;
@@ -39,12 +40,13 @@ public class PlayerCollision : NetworkBehaviour
                 // 2. 부딪힌 상대방이 리스폰 중이면 충돌 무시
                 if (targetRes.isRespawning) return;
             }
+            if (isPushing) return;
+
             //닿은 점
             ContactPoint contact = collision.GetContact(0);
             Vector3 contactPoint = contact.point;
             Vector3 contactNormal = contact.normal; // 충돌 표면의 방향 (법선)
 
-            if (isPushing) return;
             NetworkIdentity targetIdentity = collision.gameObject.GetComponent<NetworkIdentity>();
 
             if (targetIdentity != null)
@@ -98,6 +100,89 @@ public class PlayerCollision : NetworkBehaviour
             targetCol.Invoke(nameof(targetCol.ServerResetPushStatus), (float)pushCooldown);
         }
     }
+    */
+
+    //
+    //충돌로직2
+     private void OnCollisionEnter(Collision collision)
+    {
+        if (!isOwned || isPushing) return; // 로컬 권한 및 중복 충돌 즉시 차단
+        if (res != null && res.isRespawning) return;
+        if (NetworkTime.time < lastPushTime + pushCooldown) return;
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            if (collision.gameObject.TryGetComponent(out PlayerRespawn targetRes))
+                if (targetRes.isRespawning) return;
+
+            if (collision.gameObject.TryGetComponent(out NetworkIdentity targetIdentity))
+            {
+                // 1. 상대 속도 계산 (sqrMagnitude가 성능에 미세하게 더 좋습니다)
+                Vector3 relVel = collision.relativeVelocity;
+                float relVelMag = relVel.magnitude;
+
+                Vector3 dirToTarget = (collision.transform.position - transform.position);
+                dirToTarget.y = 0;
+                dirToTarget.Normalize();
+
+                // 2. 속도 차이 기반 보너스
+                float mySpeedSqr = rb.linearVelocity.sqrMagnitude;
+                float targetSpeedSqr = collision.gameObject.GetComponent<Rigidbody>().linearVelocity.sqrMagnitude;
+
+                // 속도 차이 계산 (제곱값이므로 기준값 조정 필요)
+                float speedDiffSqr = mySpeedSqr - targetSpeedSqr;
+                // 0.01f 배율은 그대로 두거나 제곱값에 맞춰 미세 조정
+                float attackerBonus = 1f + (Mathf.Max(0, speedDiffSqr) * 0.0008f);
+
+                // 3. 힘 계산
+                float baseImpulse = pushForce * (1f + relVelMag * 0.1f);
+                Vector3 forceToTarget = dirToTarget * baseImpulse * attackerBonus;
+                Vector3 forceToSelf = -dirToTarget * baseImpulse / attackerBonus;
+
+                ContactPoint contact = collision.GetContact(0);
+
+                // [선행 예측] 내 화면에서는 즉시 적용 (반응속도 극대화)
+                ApplyImpulseLocal(forceToSelf);
+
+                // 서버에 전송
+                CmdPushBoth(targetIdentity, forceToTarget, forceToSelf, contact.point, contact.normal);
+            }
+        }
+    }
+    private void ApplyImpulseLocal(Vector3 force)
+    {
+        if (rb == null) rb = GetComponent<Rigidbody>();
+        rb.linearVelocity = Vector3.zero;
+        rb.AddForce(force + Vector3.up * 3f, ForceMode.Impulse);
+        if (input != null) input.Enter(); // 조작 차단 로직
+    }
+
+    [Command]
+    public void CmdPushBoth(NetworkIdentity target, Vector3 forceToTarget, Vector3 forceToSelf, Vector3 contactPoint, Vector3 contactNormal)
+    {
+        if (this.isPushing) return;
+        if (target.TryGetComponent(out PlayerCollision targetCol))
+        {
+            if (targetCol.isPushing) return;
+
+            this.isPushing = true;
+            targetCol.isPushing = true;
+            this.lastPushTime = NetworkTime.time;
+            targetCol.lastPushTime = NetworkTime.time;
+
+            // 호출자(connectionToClient)에게는 이미 선행 적용했으므로 전송 제외하고 상대에게만 Rpc
+            targetCol.RpcApplyImpulse(forceToTarget);
+            // 나를 제외한 다른 사람들에게 내 위치 동기화를 위해 Rpc (선택 사항)
+            // RpcApplyImpulseExcludeOwner(forceToSelf); 
+
+            RPCSoundandParticle(contactPoint, contactNormal);
+
+            Invoke(nameof(ServerResetPushStatus), (float)pushCooldown);
+            targetCol.Invoke(nameof(targetCol.ServerResetPushStatus), (float)pushCooldown);
+        }
+    }
+
+    //
 
     [Server]
     private void ServerResetPushStatus()
