@@ -176,10 +176,6 @@ public class GameManager : NetworkBehaviour {
 		UpdateWinnerTextUI(string.Empty);
 		//플레이어 UI, 실제 데이터 변경
 		StartCoroutine(ResultCal());
-
-		//yield return new WaitForSeconds(7f);
-		//룸으로 돌아가는 세팅
-		//그 전에, 플레이어들한테 아바타 권한 다시 돌려놔야함.
 	}
 
 	[ClientRpc] private void UpdateMiddleTextUI(string str) { middleTextUI.text = str; }
@@ -238,7 +234,7 @@ public class GameManager : NetworkBehaviour {
 		}
 
 		yield return new WaitForSeconds(4f);
-		//룸으로 돌아가기
+		NetworkManager.singleton.ServerChangeScene("DDD_Main_Room");
 	}
 	[ClientRpc] private void UpdateResultRanktTextUI(int index, string text) { resultRankTextUI[index].text = text; }
 	[ClientRpc] private void UpdateResultRatetTextUI(int index, string text) { resultRateTextUI[index].text = text; }
