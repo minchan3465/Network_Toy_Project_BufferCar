@@ -5406,9 +5406,8 @@ GameObject:
   - component: {fileID: 8811690187291113967}
   - component: {fileID: 721332033141467808}
   - component: {fileID: -3160357476037317387}
-  - component: {fileID: 8546238423936723584}
   m_Layer: 0
-  m_Name: PlayerCar_0115_1900
+  m_Name: NetworkRoomPlayer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5598,7 +5597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
   sceneId: 0
-  _assetId: 139276964
+  _assetId: 890124719
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -5691,14 +5690,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 8588997018763582332}
   sfxVolume: 1
-  ironDuration: 3
-  ironMassMultiplier: 3
+  ironDuration: 5
+  ironMassMultiplier: 5
   ironScaleMultiplier: 1.5
   nitroDuration: 3
-  nitroSpeedMultiplier: 1.25
-  nitroImpulseForce: 25
-  empStunDuration: 1.5
-  empBlastVfxDuration: 1.5
+  nitroSpeedMultiplier: 2.5
+  nitroImpulseForce: 50
+  empStunDuration: 2
+  empBlastVfxDuration: 2
 --- !u!114 &8811690187291113967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5759,25 +5758,6 @@ MonoBehaviour:
   playerRating: 2000
   meshRenderer: {fileID: 8175656362519344762}
   networkPlayer: {fileID: 0}
---- !u!114 &8546238423936723584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6970800248564378294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a251244c5532474985d96448b7a4174, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UserInfoManager
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  PlayerNickname: 
-  PlayerRate: 0
-  PlayerNum: 0
-  isReady: 0
 --- !u!1 &8588997018763582332
 GameObject:
   m_ObjectHideFlags: 0
