@@ -3,177 +3,220 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Mirror; // Mirror 필수
 
-using Mirror; // Mirror 추가
+public class Lobby_UI_Controller : MonoBehaviour
+{
 
-public class Lobby_UI_Controller : MonoBehaviour {
+    [Header("버튼 UI")]
+    public Button Ready_btn;        // 레디 버튼
+    public Text Ready_btn_text;     // 레디 버튼 텍스트
+    private Image readyBtnImage;    // 버튼 색상 변경용
+    public Button Quit_btn;         // 나가기 버튼
 
-	//테스트용 컴포넌트
-	//public LobbyManager _LobbyManager;
+    [Header("시작 연출 UI")]
+    public Text Notice_text;        // "게임이 곧 시작됩니다"
+    public Text Count_text;         // "3, 2, 1..."
 
-	private bool isReady = false; // 이건 우진님이 다른데서 받아서 쓰셔두 댈듯합니당
+    [Header("플레이어 슬롯 UI (인스펙터 연결 필요)")]
+    // 1~4번 플레이어의 테두리 이미지
+    public Image[] Player_Frames;
+    // [추가] 1~4번 플레이어의 닉네임 텍스트 (UI에 닉네임 텍스트들을 만들어서 넣어주세요)
+    public Text[] Player_Nicknames;
+    // [추가] 1~4번 플레이어의 레이팅 텍스트 (UI에 점수 텍스트들을 만들어서 넣어주세요)
+    public Text[] Player_Rates;
 
-	[Header("버튼 UI")]
-	public Button Ready_btn;    // 레디 버튼 오브젝트
-	public Text Ready_btn_text; // 레디 버튼 텍스트
-	private Image readyBtnImage;// 버튼의 색상을 바꾸기 위해
-	public Button Quit_btn;     // 나가기 버튼 오브젝트
+    // 카운트다운 제어용 코루틴
+    private Coroutine countdownCoroutine;
 
-	[Header("시작 연출 UI")]
-	public Text Notice_text;    // [게임이 곧 시작됩니다.] 가 출력될 텍스트
-	public Text Count_text;     // 3.. 2.. 1.. 이 출력될 텍스트
+    // 색상 변수
+    private Color unreadyColor;
+    private Color readyColor;
 
-	[Header("플레이어 상태 UI")]
-	// 1, 2, 3, 4번 플레이어의 테두리 이미지를 인스펙터에서 넣어주세요.
-	public Image[] Player_Frames;
+    // 현재 나의 레디 상태 (UI 표시용)
+    private bool isMyReadyState = false;
 
-	// 카운트다운 도중에 누군가 나갔을 때, 실행 중인 숫지 세기(코루틴)를 
-	// 강제로 멈추기 위해 이 변수가 필요합니다.
-	private Coroutine countdownCoroutine;
+    void Awake()
+    {
+        // 1. 버튼 이미지 컴포넌트 가져오기
+        if (Ready_btn != null)
+        {
+            readyBtnImage = Ready_btn.GetComponent<Image>();
+        }
 
-	// [추가됨] 색상 변수 선언
-	private Color unreadyColor;
-	private Color readyColor;
+        // 2. 시작 시 불필요한 UI 숨기기
+        if (Notice_text) Notice_text.gameObject.SetActive(false);
+        if (Count_text) Count_text.gameObject.SetActive(false);
 
-	void Awake()
-	{
-		// 버튼에서 Image 컴포넌트를 찾아 할당합니다.
-		if (Ready_btn != null)
-		{
-			readyBtnImage = Ready_btn.GetComponent<Image>();
-		}
+        // 3. 버튼 초기화
+        if (Ready_btn) { Ready_btn.interactable = true; Ready_btn.gameObject.SetActive(true); }
+        if (Quit_btn) { Quit_btn.interactable = true; Quit_btn.gameObject.SetActive(true); }
 
-		// 게임 시작 시 UI가 켜져있다면 미리 꺼둡니다.
-		Notice_text.gameObject.SetActive(false);
-		Count_text.gameObject.SetActive(false);
+        // 4. 색상 초기화 (#FFAAAA: 준비전, #FFFFFF: 준비완료)
+        ColorUtility.TryParseHtmlString("#FFAAAA", out unreadyColor);
+        ColorUtility.TryParseHtmlString("#FFFFFF", out readyColor);
 
-		// 버튼들은 활성화 상태여야 합니다.
-		Ready_btn.gameObject.SetActive(true);
-		Quit_btn.gameObject.SetActive(true);
-		// 버튼들은 처음에 당연히 클릭 가능해야 함
-		Ready_btn.interactable = true;
-		Quit_btn.interactable = true;
+        // 5. 슬롯 초기화 (모든 슬롯을 비우거나 기본 상태로)
+        InitializeSlots();
+    }
 
-		// 색상 초기화 (Hex 코드를 Color로 변환)
-		ColorUtility.TryParseHtmlString("#FFAAAA", out unreadyColor);
-		ColorUtility.TryParseHtmlString("#FFFFFF", out readyColor);
+    // UI 슬롯을 깔끔하게 초기화하는 함수
+    void InitializeSlots()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (i < Player_Frames.Length && Player_Frames[i] != null)
+                Player_Frames[i].color = unreadyColor;
 
-		// 모든 플레이어 테두리를 기본 색상(FFAAAA)으로 초기화
-		foreach (Image frame in Player_Frames)
-		{
-			if (frame != null)
-			{
-				frame.color = unreadyColor;
-			}
-		}
-	}
-	// [서버 연동용] 특정 플레이어의 레디 상태에 따라 색상을 바꾸는 메소드
-	// LobbyManager나 Player 스크립트에서 이쪽으로 신호를 주면 됩니다.
-	public void UpdatePlayerFrameColor(int playerIndex, bool isPlayerReady)
-	{
-		// 인덱스 범위 체크 (0~3)
-		if (playerIndex >= 0 && playerIndex < Player_Frames.Length)
-		{
-			if (isPlayerReady == true)
-			{
-				Player_Frames[playerIndex].color = readyColor;
-			}
-			else
-			{
-				Player_Frames[playerIndex].color = unreadyColor;
-			}
-		}
-	}
+            if (i < Player_Nicknames.Length && Player_Nicknames[i] != null)
+                Player_Nicknames[i].text = "Waiting...";
 
-	public void	Lobby_Ready() {
-		//Ready인지 아닌지, 누를때마다 바뀜.
-		isReady = !isReady;
+            if (i < Player_Rates.Length && Player_Rates[i] != null)
+                Player_Rates[i].text = "-";
+        }
+    }
 
-		if(isReady) {
-			//서버에 준비되었다는 메시지
-			//UI상으로 Ready표시
-			Ready_btn_text.text = "CANCLE";
-			//레디 상태일 때 버튼 색상을 흰색(FFFFFF)으로 변경
-			readyBtnImage.color = readyColor;
-		} 
-		else {
-			//서버에 준비 해제되었다는 메시지
-			//UI상으로 Ready표시 해제
-			Ready_btn_text.text = "READY";
-			//레디 해제 상태일 때 버튼 색상을 연빨강(FFAAAA)으로 변경
-			readyBtnImage.color = unreadyColor;
-		}
+    // ---------------------------------------------------------
+    // [서버 연동] UserInfoManager에서 호출하는 함수들
+    // ---------------------------------------------------------
 
-		// [추가 역할] 내 플레이어 객체를 찾아 서버에 레디 상태를 보냅니다.
-		// 예: NetworkClient.localPlayer.GetComponent<MyPlayer>().CmdSetReady(isReady);
-	}
+    // 1. 테두리 색상 변경 (레디 상태 반영)
+    public void UpdatePlayerFrameColor(int slotIndex, bool isPlayerReady)
+    {
+        if (slotIndex < 0 || slotIndex >= Player_Frames.Length) return;
 
-	//서버에 의해 호출됨
-	// 모든 플레이어가 준비되었을 때 서버나 로비매니저가 호출할 메소드
-	public void StartGameSequence()
-	{
-		//모두 레디를 하면 버튼을 사라지게 하지 않고, 클릭만 못하게 막습니다.
-		Ready_btn.interactable = false;
-		Quit_btn.interactable = false;
+        if (Player_Frames[slotIndex] != null)
+        {
+            Player_Frames[slotIndex].color = isPlayerReady ? readyColor : unreadyColor;
+        }
+    }
 
-		// 텍스트들을 활성화하고 카운트다운 시작
-		Notice_text.gameObject.SetActive(true);
-		Count_text.gameObject.SetActive(true);
+    // 2. [신규] 텍스트 정보 갱신 (닉네임, 레이팅 반영)
+    // UserInfoManager.RefreshUI() 에서 이 함수를 호출해야 합니다.
+    public void UpdateSlotText(int slotIndex, string nick, int rate)
+    {
+        if (slotIndex < 0) return; // 아직 번호를 할당받지 못한 경우 무시
 
-		// 코루틴을 사용하여 시간차 연출을 시작합니다.
-		// 서버 신호가 여러 번 오거나 실수가 생겨도 카운트다운이 
-		// 두 개씩 돌아가지 않도록 기존 코루틴을 먼저 찾아 멈춰줍니다.
-		if (countdownCoroutine != null) StopCoroutine(countdownCoroutine);
-		countdownCoroutine = StartCoroutine(C_StartCountdown());
-	}
+        // 닉네임 갱신
+        if (slotIndex < Player_Nicknames.Length && Player_Nicknames[slotIndex] != null)
+        {
+            Player_Nicknames[slotIndex].text = string.IsNullOrEmpty(nick) ? "Connecting..." : nick;
+        }
 
-	//서버에 의해 호출됨
-	// 4명이 다 찼다가 한 명이 나갔을 때 호출하는 용도입니다.
-	// 텍스트를 다시 숨기고 버튼을 다시 클릭 가능하게(interactable = true) 만듭니다.
-	public void CancelGameSequence()
-	{
-		if (countdownCoroutine != null) StopCoroutine(countdownCoroutine);
+        // 레이팅 갱신
+        if (slotIndex < Player_Rates.Length && Player_Rates[slotIndex] != null)
+        {
+            Player_Rates[slotIndex].text = (rate == -1) ? "" : $"Score: {rate}";
+        }
+    }
 
-		Notice_text.gameObject.SetActive(false);
-		Count_text.gameObject.SetActive(false);
 
-		Ready_btn.interactable = true;
-		Quit_btn.interactable = true;
-	}
+    // ---------------------------------------------------------
+    // [유저 입력] 버튼 클릭 이벤트
+    // ---------------------------------------------------------
 
-	IEnumerator C_StartCountdown()
-	{
-		// 1. 안내 문구 표시
-		Notice_text.text = "게임이 곧 시작됩니다.";
+    public void Lobby_Ready()
+    {
+        // 1. 로컬 상태 토글
+        isMyReadyState = !isMyReadyState;
 
-		// 2. 3초 카운트다운
-		int count = 3;
-		while (count > 0)
-		{
-			Count_text.text = count.ToString();
-			yield return new WaitForSeconds(1.0f); // 1초 대기
-			count--;
-		}
+        // 2. 내 버튼 UI 즉시 변경 (반응성 향상)
+        UpdateMyButtonState(isMyReadyState);
 
-		// 3. 마지막 문구 표시
-		Count_text.text = "START!";
+        // 3. [중요] 서버로 "나 레디했어/취소했어" 신호 보내기
+        // Mirror에서는 NetworkClient.localPlayer를 통해 내 플레이어 객체를 찾을 수 있습니다.
+        if (NetworkClient.localPlayer != null)
+        {
+            UserInfoManager myUserInfo = NetworkClient.localPlayer.GetComponent<UserInfoManager>();
+            if (myUserInfo != null)
+            {
+                myUserInfo.CmdSendReadyToServer(isMyReadyState);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[LobbyUI] 로컬 플레이어를 찾을 수 없습니다. 서버와 연결되어 있나요?");
+        }
+    }
 
-		// [중요] 씬 이동은 오직 서버(Host)만 명령할 수 있습니다.
-		if (NetworkServer.active)
-		{
-			yield return new WaitForSeconds(0.5f);
-			// 모든 클라이언트를 한꺼번에 인게임 씬으로 데려갑니다.
-			NetworkManager.singleton.ServerChangeScene("Main_InGame!");
-		}
-	}
-	public void Lobby_Quit() {
-		//NetworkClient.StopClient();
-		//네트워크 클라이언트 종료까지 안전하게 하기.
-		if (NetworkClient.active)
-		{
-			NetworkManager.singleton.StopClient();
-		}
-		//메인신으로 돌아가기
-		SceneManager.LoadScene("Main_Title!");
-	}
+    // 내 버튼의 텍스트와 색상을 바꾸는 내부 함수
+    private void UpdateMyButtonState(bool ready)
+    {
+        if (ready)
+        {
+            if (Ready_btn_text) Ready_btn_text.text = "CANCEL";
+            if (readyBtnImage) readyBtnImage.color = readyColor;
+        }
+        else
+        {
+            if (Ready_btn_text) Ready_btn_text.text = "READY";
+            if (readyBtnImage) readyBtnImage.color = unreadyColor;
+        }
+    }
+
+    public void Lobby_Quit()
+    {
+        // 네트워크 연결 종료
+        if (NetworkClient.active)
+        {
+            if (NetworkServer.active) NetworkManager.singleton.StopHost();
+            else NetworkManager.singleton.StopClient();
+        }
+        // 메인 타이틀로 이동
+        SceneManager.LoadScene("Main_Title!");
+    }
+
+
+    // ---------------------------------------------------------
+    // [게임 흐름] 게임 시작 카운트다운
+    // ---------------------------------------------------------
+
+    public void StartGameSequence()
+    {
+        // 버튼 잠금
+        if (Ready_btn) Ready_btn.interactable = false;
+        if (Quit_btn) Quit_btn.interactable = false;
+
+        // 텍스트 활성화
+        if (Notice_text) Notice_text.gameObject.SetActive(true);
+        if (Count_text) Count_text.gameObject.SetActive(true);
+
+        // 중복 실행 방지 후 코루틴 시작
+        if (countdownCoroutine != null) StopCoroutine(countdownCoroutine);
+        countdownCoroutine = StartCoroutine(C_StartCountdown());
+    }
+
+    public void CancelGameSequence()
+    {
+        if (countdownCoroutine != null) StopCoroutine(countdownCoroutine);
+
+        if (Notice_text) Notice_text.gameObject.SetActive(false);
+        if (Count_text) Count_text.gameObject.SetActive(false);
+
+        // 버튼 다시 활성화
+        if (Ready_btn) Ready_btn.interactable = true;
+        if (Quit_btn) Quit_btn.interactable = true;
+    }
+
+    IEnumerator C_StartCountdown()
+    {
+        if (Notice_text) Notice_text.text = "게임이 곧 시작됩니다.";
+
+        int count = 3;
+        while (count > 0)
+        {
+            if (Count_text) Count_text.text = count.ToString();
+            yield return new WaitForSeconds(1.0f);
+            count--;
+        }
+
+        if (Count_text) Count_text.text = "START!";
+
+        // 씬 이동은 서버(Host)만 명령 가능
+        if (NetworkServer.active)
+        {
+            yield return new WaitForSeconds(0.5f);
+            NetworkManager.singleton.ServerChangeScene("Main_InGame!");
+        }
+    }
 }

@@ -27,7 +27,7 @@ public class PlayerController : NetworkBehaviour
             rb = gameObject.AddComponent<Rigidbody>();
         }
 
-        if (isLocalPlayer)
+        if (isOwned)
         {
             _input = FindAnyObjectByType<Inputsystem>();
             if (Camera_manager.instance != null) Camera_manager.instance.SetCamera(this.transform);
@@ -37,7 +37,7 @@ public class PlayerController : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (isLocalPlayer)
+        if (isOwned)
         {
             CheckAndCommandParticle();// 이동속도+땅 체크로  파티클 실행
         }

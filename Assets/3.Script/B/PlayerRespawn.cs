@@ -19,7 +19,7 @@ public class PlayerRespawn : NetworkBehaviour
 
     private GameObject respawn_ob;
     [SerializeField] private GameObject car;
-    [SerializeField] private NetworkPlayer nplayer;
+    //[SerializeField] private NetworkPlayer nplayer;
 
     public int playerNumber = -1;//값 외부에서 받아주세요
 
@@ -29,7 +29,7 @@ public class PlayerRespawn : NetworkBehaviour
     {
         transform.TryGetComponent(out rb); //player한테 넣어주세요
 
-        playerNumber = nplayer.playerNumber - 1; //NetworkPlayer 안쓰면 제외
+        //playerNumber = nplayer.playerNumber - 1; //NetworkPlayer 안쓰면 제외
 
         List<Transform> startPositions = NetworkManager.startPositions;
 
@@ -57,7 +57,7 @@ public class PlayerRespawn : NetworkBehaviour
         if (rb == null) transform.TryGetComponent(out rb);
         this.playerNumber = PlayerNum;
 
-        if (isLocalPlayer)
+        if (isOwned)
         {
             SetupInitialPosition();
             SetupRespawnObject();
@@ -134,7 +134,7 @@ public class PlayerRespawn : NetworkBehaviour
         }
         car.SetActive(true);
 
-        if (isLocalPlayer)
+        if (isOwned)
         {
             // 깜빡임이 끝난 시점에 모든 클라이언트의 물리 엔진을 켬
             CmdSetKinematic(false);
