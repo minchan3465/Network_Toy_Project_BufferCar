@@ -11,16 +11,16 @@ public class PlayerNumController : NetworkBehaviour
     public int PlayerNum = 0;
 
     [SerializeField] private int Player_Num;
-    [SerializeField] private int[] otherPlayerNum = new int[4];
+    //[SerializeField] private int[] otherPlayerNum = new int[4];
     // Update is called once per frame
     public override void OnStartClient()
     {
         base.OnStartClient();
-        findOtherPlayer();
-        myPlayerNumSet();
-        throwPlayerNum();
-        int playerNum = DataManager.instance.playerInfo.PlayerNum;
-        cmdSendNameToServer(playerNum);
+        //findOtherPlayer();
+        //myPlayerNumSet();
+        //throwPlayerNum();
+        //int playerNum = DataManager.instance.playerInfo.PlayerNum;
+        //cmdSendNameToServer(playerNum);
     }
     void Update()
     {
@@ -40,6 +40,7 @@ public class PlayerNumController : NetworkBehaviour
     {
         set_PlayerNum(newnum);
     }
+    /*
     [ClientRpc]
     public void throwPlayerNum()
     {
@@ -76,4 +77,5 @@ public class PlayerNumController : NetworkBehaviour
             }
         }
     }
+     */
 }

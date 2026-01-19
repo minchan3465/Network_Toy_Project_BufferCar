@@ -17,21 +17,26 @@ public class ServerPlayerRegistry : MonoBehaviour
         if (instance == null)
             instance = this;
         else
+        {
             Destroy(gameObject);
+
+            return;
+        }
+        //DontDestroyOnLoad(gameObject);
     }
-    private void OnEnable()
+    private void Start()
     {
         //Debug.Log($"[Registry] OnEnable | active={gameObject.activeInHierarchy} | server={NetworkServer.active}");
-        StartCoroutine(WaitForServer());
-    }
-    private IEnumerator WaitForServer()
-    {
-        while (!NetworkServer.active)
-            yield return null;
-
-        Debug.Log("[Registry] Server active, subscribe disconnect");
         NetworkServer.OnDisconnectedEvent += OnClientDisconnected;
+        //StartCoroutine(WaitForServer());
     }
+    //private IEnumerator WaitForServer()
+    //{
+    //    while (!NetworkServer.active)
+    //        yield return null;
+
+    //    Debug.Log("[Registry] Server active, subscribe disconnect");
+    //}
     private void OnDisable()
     {
         NetworkServer.OnDisconnectedEvent -= OnClientDisconnected;
@@ -59,12 +64,9 @@ public class ServerPlayerRegistry : MonoBehaviour
     [Server]
     public void RegisterPlayer(UserInfoManager player)
     {
-        Debug.Log($"[Registry] 등록 시도: {player.PlayerNickname}"); // 이 로그가 찍히는지 확인
-
         NetworkConnectionToClient conn = player.connectionToClient;
         connToPlayer[conn] = player;
         int assignedNumber;
-
         if (availableNumbers.Count > 0)
         {
             assignedNumber = availableNumbers.Min;
@@ -75,16 +77,20 @@ public class ServerPlayerRegistry : MonoBehaviour
             assignedNumber = nextPlayerNumber++;
         }
         player.AssignPlayerNumber(assignedNumber);
-        Debug.Log($"[Registry] 번호 배정 완료: {assignedNumber}"); // 이 로그가 찍혀야 합니다.
         players.Add(assignedNumber, player);
 
         Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        Debug.Log($"[Server] Player Registered: {assignedNumber}, Total={players.Count}");
+        //DataManager.instance.playerInfo.PlayerNum = assignedNumber;
+        //Debug.Log(DataManager.instance.playerInfo.PlayerNum+"Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     }
 
-    [Server]
     public void UnregisterPlayer(UserInfoManager player)
     {
-        Debug.Log("실행됨3");
+        //Debug.Log("실행됨3");
         int removeKey = -1;
         foreach (var kv in players)
         {
@@ -100,11 +106,8 @@ public class ServerPlayerRegistry : MonoBehaviour
             return;
         }
         players.Remove(removeKey);
-
-        // 나간 사람의 연결 정보도 딕셔너리에서 제거
         if (player.connectionToClient != null)
             connToPlayer.Remove(player.connectionToClient);
-
         availableNumbers.Add(removeKey);
         Debug.Log($"[Server] Player Left: {removeKey}");
     }
@@ -126,5 +129,4 @@ public class ServerPlayerRegistry : MonoBehaviour
     {
         return players;
     }
-
 }

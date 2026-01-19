@@ -1,4 +1,5 @@
 
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,6 +50,8 @@ public class Serverchecker : MonoBehaviour
             Default_data(Path);
         }
         Path = Path + "/License.json";
+        manager = NetworkManager.singleton;
+        transport = (KcpTransport)manager.transport;
     }
     private void Default_data(string path)
     {
@@ -91,8 +94,6 @@ public class Serverchecker : MonoBehaviour
 }
     private void Start()
     {
-        manager = NetworkManager.singleton;
-        transport = (KcpTransport)manager.transport;
 
         type = License_type(Path);
         //manager = NetworkManager.singleton;

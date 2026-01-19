@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2977243950517692189}
   - component: {fileID: 336994630659478541}
   - component: {fileID: 6954264136292147232}
+  - component: {fileID: 3016475469455278241}
   m_Layer: 0
   m_Name: MainServer_NetworkManager
   m_TagString: Untagged
@@ -52,7 +53,7 @@ MonoBehaviour:
   editorAutoStart: 0
   sendRate: 60
   offlineScene: Assets/1.Scene/Main/Main_Title!.unity
-  onlineScene: Assets/1.Scene/Main/Main_InGame!.unity
+  onlineScene: Assets/1.Scene/Main/Main_Room.unity
   offlineSceneLoadDelay: 0
   transport: {fileID: 336994630659478541}
   networkAddress: 13.124.179.117
@@ -60,7 +61,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 6970800248564378294, guid: 33a9a2768db64f843a81afe47d3dde98, type: 3}
+  playerPrefab: {fileID: 5157216562942663249, guid: 74c8c50ba8aec6b498824ed6a3f972ea, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
@@ -126,3 +127,15 @@ MonoBehaviour:
   type: 1
   manager: {fileID: 0}
   transport: {fileID: 0}
+--- !u!114 &3016475469455278241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2692747007107573942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fce5190b55567647b3380ef14854401, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SystemSetup

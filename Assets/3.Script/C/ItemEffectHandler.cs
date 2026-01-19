@@ -44,10 +44,25 @@ public class ItemEffectHandler : NetworkBehaviour
             return;
         }
         controller = GetComponent<PlayerController>();
-        rb = controller.Rb;
 
-        defaultMass = rb.mass;
-        defaultSpeed = controller.Speed;
+        // [수정 전] controller.Rb가 아직 준비 안 됐을 수 있음 (에러 원인)
+        // rb = controller.Rb; 
+
+        // [수정 후] 실행 순서 상관없이 내 몸에 붙은 리지드바디를 직접 가져옵니다. (안전함)
+        rb = GetComponent<Rigidbody>();
+
+        // rb가 확실히 있을 때만 값 저장
+        if (rb != null)
+        {
+            defaultMass = rb.mass;
+        }
+
+        // controller가 확실히 있을 때만 값 저장
+        if (controller != null)
+        {
+            defaultSpeed = controller.Speed;
+        }
+
         defaultScale = transform.localScale;
     }
 

@@ -5403,8 +5403,10 @@ GameObject:
   - component: {fileID: 5328875335724292207}
   - component: {fileID: 7517677244894276996}
   - component: {fileID: 7201062563975725197}
+  - component: {fileID: 8811690187291113967}
   - component: {fileID: 721332033141467808}
   - component: {fileID: -3160357476037317387}
+  - component: {fileID: 8546238423936723584}
   m_Layer: 0
   m_Name: PlayerCar_0115_1900
   m_TagString: Player
@@ -5420,7 +5422,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6970800248564378294}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.0062208828, y: -0.0062208828, z: -0.0062208828, w: 0.99994195}
   m_LocalPosition: {x: 18.03507, y: 1.37357, z: -17.29808}
   m_LocalScale: {x: 1.8, y: 1.8, z: 1.8}
   m_ConstrainProportionsScale: 0
@@ -5697,6 +5699,24 @@ MonoBehaviour:
   nitroImpulseForce: 50
   empStunDuration: 2
   empBlastVfxDuration: 2
+--- !u!114 &8811690187291113967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6970800248564378294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8806241a8bf114844911be714f6a80e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkPlayer
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  playerNumber: 0
+  nickname: 
+  isReady: 0
 --- !u!114 &721332033141467808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5714,10 +5734,10 @@ MonoBehaviour:
   syncInterval: 0
   isRespawning: 0
   isKinematicSynced: 0
+  canRespawn: 1
   car: {fileID: 681800734350143724}
   nplayer: {fileID: 0}
-  playerNumber: 1
-  canRespawn: 1
+  playerNumber: -1
   appearParticlePrefab: {fileID: 4143439122255155475, guid: d75f41abb5a1fa840adc3bcef1d89353, type: 3}
 --- !u!114 &-3160357476037317387
 MonoBehaviour:
@@ -5739,6 +5759,25 @@ MonoBehaviour:
   playerRating: 2000
   meshRenderer: {fileID: 8175656362519344762}
   networkPlayer: {fileID: 0}
+--- !u!114 &8546238423936723584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6970800248564378294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a251244c5532474985d96448b7a4174, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UserInfoManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  PlayerNickname: 
+  PlayerRate: 0
+  PlayerNum: 0
+  isReady: 0
 --- !u!1 &8588997018763582332
 GameObject:
   m_ObjectHideFlags: 0
