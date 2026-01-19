@@ -136,6 +136,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainTitle_NetworkManager
       objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: onlineScene
+      value: Assets/1.Scene/F/F_Main_InGame!.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: offlineScene
+      value: Assets/1.Scene/F/F_Main_Title!.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: networkAddress
+      value: localhost
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: 'spawnPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 6970800248564378294, guid: debbb0be4462e8c4aa188eca6578afe0, type: 3}
     - target: {fileID: 6091014898218233269, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
       propertyPath: m_LocalPosition.x
       value: 93.86882
@@ -179,7 +199,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2009209254682796026, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1436679559}
   m_SourcePrefab: {fileID: 100100000, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
 --- !u!1 &510461557
 GameObject:
@@ -936,6 +959,14 @@ PrefabInstance:
       propertyPath: bgmSource
       value: 
       objectReference: {fileID: 954277099}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[0].volum
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[3].volum
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3674788909303889778, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -992,6 +1023,25 @@ PrefabInstance:
       insertIndex: 2
       addedObject: {fileID: 954277099}
   m_SourcePrefab: {fileID: 100100000, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+--- !u!1 &1436679554 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2009209254682796026, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+  m_PrefabInstance: {fileID: 84582883}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1436679559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436679554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkManagerHUD
+  offsetX: 0
+  offsetY: 0
 --- !u!1 &1720543765
 GameObject:
   m_ObjectHideFlags: 0

@@ -66,7 +66,7 @@ public class SoundManager : NetworkBehaviour
     {
         //StopAllCoroutines();
 
-        if (scene.name == "Main_Title!" || scene.name == "Room!")
+        if (scene.name == "Main_Title!" || scene.name == "Main_Room")
         {
             PlayBGM(BGM.TitleBGM);
         }
@@ -78,7 +78,6 @@ public class SoundManager : NetworkBehaviour
     }
 
     // 모든 클라이언트에서 소리가 나오게 하는 곳
-    [ClientRpc]
     public void RpcPlaySFX(string clipName)
     {
         PlaySFXInternal(clipName);
@@ -112,11 +111,12 @@ public class SoundManager : NetworkBehaviour
     private void PlaySFXInternal(string clipName)
     {
         SoundData data = sfxClips.Find(x => x.name == clipName);
-        if (data != null&&sfxSources.Length > 1)
-        {
+        if (data == null) return;
 
-            sfxSources[1].PlayOneShot(data.clip,data.volum);
-        }
+        AudioSource src = GetAvailableSFXSource();
+        src.PlayOneShot(data.clip);
+            
+        
     }
 
     // BGM 재생 함수
@@ -171,6 +171,17 @@ public class SoundManager : NetworkBehaviour
 
     }
 
+
+    AudioSource GetAvailableSFXSource()
+    {
+        for(int i=1; i < sfxSources.Length; i++)
+        {
+            if (!sfxSources[i].isPlaying)
+                return sfxSources[i];
+        }
+
+        return sfxSources[1];
+    }
 }
 
 

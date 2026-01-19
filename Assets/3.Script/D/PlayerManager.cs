@@ -4,27 +4,45 @@ using UnityEngine;
 using Mirror;
 
 public class PlayerManager : NetworkBehaviour {
+    public int _index;
+    public string _id;
+    public string _name;
+    public int _rate;
+
     // 서버가 정해주는 순번 (모든 클라이언트에게 동기화)
-    public int playerIndex = -1;
-    public string playerNickname;
-    public int playerRating = 2000;
-
-
     public MeshRenderer meshRenderer;
-    public NetworkPlayer networkPlayer;
+    //public PlayerInfo playerInfo;
+    //public NetworkPlayer networkPlayer;
+    public PlayerController playerController;
+    public PlayerRespawn playerRespawn;
 
-	private void Awake() {
-        TryGetComponent(out networkPlayer);
-    }
+    private void Awake() {
+        //TryGetComponent(out networkPlayer);
+        TryGetComponent(out playerController);
+        TryGetComponent(out playerRespawn);
+	}
 
 	private void Start() {
-        playerIndex = networkPlayer.playerNumber - 1;
-        playerNickname = "Car" + Random.Range(100, 1000);
-        setCarBodyColor(playerIndex);
-        GameManager.Instance.RegisterPlayer(this, networkPlayer);
+        //playerIndex = int.Parse(playerInfo.User_ID) - 1;
+        //playerNickname = playerInfo.User_Nic;
+        //playerRating = playerInfo.User_Rate;
+        //playerInfo = new PlayerInfo(playerID, playerNickname, playerRating);;
+        //playerInfo = new PlayerInfo("id", "Car" + Random.Range(100, 1000), 2000);
+        //packet._index = networkPlayer.playerNumber -1;
+        _index = 0;
+        _id = "id";
+        _name = "Car" + Random.Range(100, 1000);
+        _rate = 2000;
     }
 
-	private void setCarBodyColor(int index) {
+    public override void OnStartServer() {
+        base.OnStartServer();
+        //GameManager.Instance.RegisterPlayer(this);
+        setCarBodyColor(_index);
+    }
+
+
+    private void setCarBodyColor(int index) {
         Color color;
         switch(index) {
             case 0:
@@ -48,15 +66,14 @@ public class PlayerManager : NetworkBehaviour {
 
 	//-----------추락
 	private void OnTriggerEnter(Collider other) {
+        if (!isLocalPlayer) return;
 		if (other.CompareTag("Deadzone")) {
-            if (isLocalPlayer) {
-                CmdRequestFell();
-            }
+            CmdRequestFell();
 		}
 	}
 
     [Command]
     void CmdRequestFell() {
-        GameManager.Instance.ProcessPlayerFell(playerIndex);
+        //GameManager.Instance.ProcessPlayerFell(_index);
     }
 }
