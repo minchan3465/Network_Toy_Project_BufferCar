@@ -173,15 +173,37 @@ public class UserInfoManager : NetworkRoomPlayer
 
     private void RefreshUI()
     {
-        if (lobbyUI == null)
-            if(!TryGetComponent(out Lobby_UI_Controller lobby_UI))
-            {
-                Debug.Log("TryGetComponent Lobby_UI_Controller is fail");
-            }
+        if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
+        if (lobbyUI == null) return;
 
+        Debug.Log($"[UI Debug] 내 이름: {PlayerNickname}, 인덱스: {index}, NetworkIdentity 번호: {netId}");
+
+        //  Mirror 룸 매니저가 관리하는 모든 슬롯을 확인(로그 찍기)합니다.
+        if (NetworkManager.singleton is NetworkRoomManager roomManager)
+        {
+            Debug.Log($"=== Mirror RoomSlots 상태 (총 {roomManager.roomSlots.Count}명) ===");
+
+            int checkIdx = 0;
+            foreach (var slotPlayer in roomManager.roomSlots)
+            {
+                if (slotPlayer == null)
+                {
+                    Debug.Log($"슬롯 [{checkIdx}]: NULL (데이터 없음)");
+                }
+                else
+                {
+                    // slotPlayer 자체가 NetworkRoomPlayer이므로 우리가 만든 UserInfoManager로 캐스팅
+                    var info = slotPlayer as UserInfoManager;
+                    Debug.Log($"슬롯 [{checkIdx}]: Nickname={info?.PlayerNickname ?? "N/A"}, Ready={slotPlayer.readyToBegin}, index={slotPlayer.index}");
+                }
+                checkIdx++;
+            }
+            Debug.Log("======================================");
+        }
+
+        // 실제 UI 갱신 로직 (index를 기반으로 그림)
         if (lobbyUI != null)
         {
-            // index와 readyToBegin은 상속받은 NetworkRoomPlayer에 이미 들어있는 변수입니다.
             lobbyUI.UpdatePlayerFrameColor(index, readyToBegin);
             lobbyUI.UpdateSlotText(index, PlayerNickname, PlayerRate);
         }
