@@ -425,6 +425,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1663205246660976988, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -1524517458099554183, guid: c71f8697cb761f8479d76f0a739a6e8e, type: 3}
+    - target: {fileID: 1663205246660976988, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: m_Color.b
+      value: 0.6666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 1663205246660976988, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: m_Color.g
+      value: 0.6666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 1663205246660976988, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5641979483260535263, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -509,11 +525,79 @@ PrefabInstance:
       propertyPath: m_Name
       value: E_Lobby_UI
       objectReference: {fileID: 0}
+    - target: {fileID: 6252784819771111829, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: Player_Frames.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6252784819771111829, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: 'Player_Frames.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2035273053}
+    - target: {fileID: 6252784819771111829, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: 'Player_Frames.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2035273052}
+    - target: {fileID: 6252784819771111829, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: 'Player_Frames.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2035273051}
+    - target: {fileID: 6252784819771111829, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: 'Player_Frames.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2035273050}
+    - target: {fileID: 7412265623102523209, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+--- !u!114 &2035273050 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6496602409195033520, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+  m_PrefabInstance: {fileID: 2035273049}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &2035273051 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1596972853826704234, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+  m_PrefabInstance: {fileID: 2035273049}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &2035273052 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1320924316155846485, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+  m_PrefabInstance: {fileID: 2035273049}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+--- !u!114 &2035273053 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1663205246660976988, guid: cea181e1af8587b4ba4ea4c3a7287707, type: 3}
+  m_PrefabInstance: {fileID: 2035273049}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
