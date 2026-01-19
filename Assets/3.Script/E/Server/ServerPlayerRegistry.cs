@@ -109,6 +109,7 @@ public class ServerPlayerRegistry : MonoBehaviour
         if (player.connectionToClient != null)
             connToPlayer.Remove(player.connectionToClient);
         availableNumbers.Add(removeKey);
+        GameManager.Instance.SetDisconnectPlayerIndexInfo(removeKey - 1);
         Debug.Log($"[Server] Player Left: {removeKey}");
     }
     [Server]
