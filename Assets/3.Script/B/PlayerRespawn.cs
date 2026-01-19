@@ -19,38 +19,8 @@ public class PlayerRespawn : NetworkBehaviour
 
     private GameObject respawn_ob;
     [SerializeField] private GameObject car;
-    //[SerializeField] private NetworkPlayer nplayer;
 
     public int playerNumber = -1;//값 외부에서 받아주세요
-
-    //past_Logic_OnStartLocalPlayer()
-    /*
-    public override void OnStartLocalPlayer()
-    {
-        transform.TryGetComponent(out rb); //player한테 넣어주세요
-
-        //playerNumber = nplayer.playerNumber - 1; //NetworkPlayer 안쓰면 제외
-
-        List<Transform> startPositions = NetworkManager.startPositions;
-
-        // 이름순 정렬 (순서 꼬임 방지) 0123
-        startPositions.Sort((a, b) => string.Compare(a.name, b.name));
-
-        // 부여받은 번호가 있고, 리스트 범위 내에 있다면 해당 위치 사용
-        if (playerNumber != -1 && playerNumber < startPositions.Count)
-        {
-            Transform targetPos = startPositions[playerNumber];
-            transform.position = targetPos.position;
-            transform.rotation = targetPos.rotation;
-        }
-
-        var respawnList = FindAnyObjectByType<RespawnList>();
-        if (respawnList != null && playerNumber < respawnList.spawnList.Count)
-        {
-            respawn_ob = respawnList.spawnList[playerNumber];
-        }
-    }
-    */
 
     public void InitializePlayer(int PlayerNum)
     {
@@ -111,6 +81,9 @@ public class PlayerRespawn : NetworkBehaviour
             rb.isKinematic = newVal;
         }
     }
+
+    [Command]
+    public void CmdSetRespawningTrue() => isRespawning = true;
 
     [Command]
     public void CmdSetKinematic(bool state) => isKinematicSynced = state;//SyncVar

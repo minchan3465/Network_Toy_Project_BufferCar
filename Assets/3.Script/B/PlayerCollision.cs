@@ -16,15 +16,6 @@ public class PlayerCollision : NetworkBehaviour
     [SyncVar] private bool isPushing = false;//밀림 상황
     [SyncVar] private double lastPushTime; // 서버 시간 기록
 
-    /*
-    public override void OnStartLocalPlayer()
-    {
-        input = FindAnyObjectByType<Inputsystem>();
-        transform.TryGetComponent(out rb);
-        transform.TryGetComponent(out res);
-    }
-    */
-
     private void Start()
     {
         if (!isOwned) { return; }
@@ -37,9 +28,7 @@ public class PlayerCollision : NetworkBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         if (!isOwned) return;
-
         if (res != null && res.isRespawning) return;
-
         if (NetworkTime.time < lastPushTime + pushCooldown) return;
 
         if (collision.gameObject.CompareTag("Player"))
@@ -62,15 +51,10 @@ public class PlayerCollision : NetworkBehaviour
             {
                 // 상대방과의 위치 차이 계산
                 Vector3 dirToTarget = (collision.transform.position - transform.position);
-
                 // Y축 값을 0으로 고정(위로 붕뜨거나 아래로 뚫고가려고 하는거 미연 방지)
                 dirToTarget.y = 0;
-
                 // 방향벡터에 힘
                 Vector3 finalForce = dirToTarget.normalized * pushForce;
-
-                Debug.Log("OnCollisionEnter!");
-
                 // 서버에 계산된 수평 힘을 전달
                 CmdPushBoth(netIdentity, targetIdentity, finalForce, contactPoint, contactNormal);
             }
@@ -80,7 +64,7 @@ public class PlayerCollision : NetworkBehaviour
     [Command]
     public void CmdPushBoth(NetworkIdentity self, NetworkIdentity target, Vector3 force, Vector3 contactPoint, Vector3 contactNormal)
     {
-        // 서버측 보안 검
+        // 서버측 점검
         if (this.res != null && this.res.isRespawning) return;
 
         if (target.TryGetComponent(out PlayerRespawn targetRes))
@@ -89,7 +73,6 @@ public class PlayerCollision : NetworkBehaviour
         }
 
         if (NetworkTime.time < lastPushTime + pushCooldown) return;
-
         lastPushTime = NetworkTime.time; // 현재 서버 시간 저장
 
         // 서버에서 두 플레이어의 상태를 모두 체크
@@ -102,7 +85,6 @@ public class PlayerCollision : NetworkBehaviour
                 Debug.Log("Target is already being pushed. Ignore.");
                 return;
             }
-
             this.isPushing = true;
             targetCol.isPushing = true;
 
@@ -149,21 +131,15 @@ public class PlayerCollision : NetworkBehaviour
     {
         if (collisionParticlePrefab != null)
         {
-            // 1. 위치 보정
-            // normal 방향으로 살짝 띄우고(벽에 파묻힘 방지), 위로 조금 올림
+            // 위치 보정
             Vector3 spawnPos = pos + (normal * 0.2f) + (Vector3.up * 1.0f);
 
-            // 2. 회전 보정 [핵심 수정]
-            // 기존: Quaternion.FromToRotation(Vector3.up, normal); 
-            // -> 파티클이 Y축(위)으로 디자인된 경우에만 맞음.
-
-            // 변경: Quaternion.LookRotation(normal);
-            // -> 파티클의 Z축(앞)을 충돌 반사각(normal)과 일치시킵니다. (대부분 이 방식)
+            // 파티클의 Z축(앞)을 충돌 반사각(normal)과 일치시킵니다.
             Quaternion rotation = Quaternion.LookRotation(normal);
 
             GameObject effect = Instantiate(collisionParticlePrefab, spawnPos, rotation);
 
-            // 3. 자식 파티클 수명 계산
+            // 자식 파티클 수명 계산
             float maxLifeTime = 0f;
             ParticleSystem[] allParticles = effect.GetComponentsInChildren<ParticleSystem>();
             foreach (ParticleSystem ps in allParticles)
@@ -244,10 +220,10 @@ public class PlayerCollision : NetworkBehaviour
     }
     private IEnumerator DelayedRespawnCheck()
     {
-        // 1초대기
+        // 0.1초대기
         // 이 시간 동안 서버는 ProcessPlayerFell을 실행하고 
         // canRespawn = false 패킷을 클라이언트에 보냅니다.
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
 
         if (res != null)
         {
@@ -259,10 +235,13 @@ public class PlayerCollision : NetworkBehaviour
             else
             {
                 // 체력이 0이라서 canRespawn이 false로 변한 경우
+                res.CmdSetRespawningTrue();
+
+                // 내 화면에서 즉시 물리 정지 (다른 차를 밀지 않게)
+                if (rb != null) rb.isKinematic = true;
             }
         }
     }
-
     #endregion
 
     #region Dead_Particle
@@ -298,7 +277,6 @@ public class PlayerCollision : NetworkBehaviour
                     maxLifeTime = currentLifeTime;
                 }
             }
-
             // 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 삭제 (없으면 기본 3초)
             Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
         }
