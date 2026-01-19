@@ -7,7 +7,7 @@ public class ItemEffectHandler : NetworkBehaviour
 {
     private PlayerController controller;
     private Rigidbody rb;
-    private PlayerRespawn myRespawn; // [추가] 내 생존 여부 확인용
+    private PlayerRespawn myRespawn;
 
     [Header("--- VFX 연결 ---")]
     [Tooltip("[0]:Empty, [1]:Nitro, [2]:EMP_Cast, [3]:Stun_Hit")]
@@ -35,14 +35,14 @@ public class ItemEffectHandler : NetworkBehaviour
     private float defaultMass;
     private float defaultSpeed;
     private Vector3 defaultScale;
+
     private bool _isFeverActive = false;
+    private bool _wasDead = false; // [추가] 죽음 처리를 한 번만 실행하기 위한 플래그
 
     void Start()
     {
         controller = GetComponent<PlayerController>();
         rb = GetComponent<Rigidbody>();
-
-        // [추가] 내 죽음 상태를 확인하기 위해 컴포넌트 가져오기
         myRespawn = GetComponent<PlayerRespawn>();
 
         if (rb != null) defaultMass = rb.mass;
@@ -55,21 +55,24 @@ public class ItemEffectHandler : NetworkBehaviour
     {
         if (GameManager.Instance == null) return;
 
-        // [해결책 2] 죽은 플레이어(Respawn 불가)라면 피버 로직 차단
-        // GameManager가 ProcessPlayerFell에서 canRespawn을 false로 만듭니다.
-        if (myRespawn != null && !myRespawn.canRespawn)
+        // 1. 내 생존 여부 확인
+        bool isDead = (myRespawn != null && !myRespawn.canRespawn);
+
+        if (isDead)
         {
-            // 만약 피버 효과가 켜진 상태로 죽었다면 즉시 끕니다.
-            if (_isFeverActive)
+            // 죽었는데 아직 처리를 안 했다면? (죽은 직후 1회 실행)
+            if (!_wasDead)
             {
-                _isFeverActive = false;
-                controller.Speed = defaultSpeed;
-                RpcControlEffect(1, false);
+                ForceStopAllEffects(); // [핵심] 모든 이펙트 강제 종료
+                _wasDead = true;       // 처리 완료 표시
             }
-            return; // 더 이상 아래 로직(피버 체크)을 실행하지 않음
+            return; // 죽어있는 동안은 아래 로직 실행 X
         }
 
-        // --- 기존 피버 로직 ---
+        // 다시 살아났다면 플래그 초기화 (혹시 모를 리스폰 대비)
+        _wasDead = false;
+
+        // 2. 피버 타임 로직 (살아있을 때만)
         bool currentFeverState = GameManager.Instance.gameTime < 0;
 
         if (_isFeverActive != currentFeverState)
@@ -89,10 +92,30 @@ public class ItemEffectHandler : NetworkBehaviour
         }
     }
 
+    // [추가] 모든 효과를 즉시 끄는 함수
+    private void ForceStopAllEffects()
+    {
+        _isFeverActive = false;
+        if (controller != null) controller.Speed = defaultSpeed;
+        if (rb != null)
+        {
+            rb.mass = defaultMass;
+            rb.linearDamping = 0; // 혹시 스턴 중이었다면 해제
+        }
+
+        // 등록된 모든 파티클 끄기
+        if (effectRoots != null)
+        {
+            for (int i = 0; i < effectRoots.Length; i++)
+            {
+                RpcControlEffect(i, false);
+            }
+        }
+    }
+
     [Server]
     public void Svr_ApplyItemEffect(int index)
     {
-        // 죽은 상태면 아이템 사용 불가
         if (myRespawn != null && !myRespawn.canRespawn) return;
 
         switch (index)
@@ -105,7 +128,7 @@ public class ItemEffectHandler : NetworkBehaviour
         TargetShowItemMessage(connectionToClient, index);
     }
 
-    #region 아이템 스킬 구현 (로직)
+    #region 아이템 스킬 구현
 
     [Server]
     private IEnumerator IronBodyRoutine()
@@ -120,9 +143,13 @@ public class ItemEffectHandler : NetworkBehaviour
 
         yield return new WaitForSeconds(ironDuration);
 
-        rb.mass = defaultMass;
-        RpcSetMass(defaultMass);
-        RpcSetScale(defaultScale);
+        // 끝나고 나서 죽어있으면 굳이 복구할 필요 없음 (ForceStop에서 이미 처리됨)
+        if (myRespawn == null || myRespawn.canRespawn)
+        {
+            rb.mass = defaultMass;
+            RpcSetMass(defaultMass);
+            RpcSetScale(defaultScale);
+        }
     }
 
     [Server]
@@ -138,23 +165,25 @@ public class ItemEffectHandler : NetworkBehaviour
 
         yield return new WaitForSeconds(nitroDuration);
 
-        // [해결책 1] 시간이 다 됐어도 피버 타임이면 끄지 않는다!
-        bool isFever = false;
-        if (GameManager.Instance != null)
-        {
-            isFever = GameManager.Instance.gameTime < 0;
-        }
+        // [수정된 로직] 코루틴이 끝난 시점의 상태 체크
+        bool isFever = (GameManager.Instance != null && GameManager.Instance.gameTime < 0);
+        bool isDead = (myRespawn != null && !myRespawn.canRespawn);
 
-        // 죽은 상태가 아니고, 피버 타임도 아닐 때만 끕니다.
-        if (!isFever && (myRespawn == null || myRespawn.canRespawn))
+        // 1. 죽었으면? -> 무조건 끈다.
+        if (isDead)
         {
             RpcControlEffect(1, false);
             controller.Speed = defaultSpeed;
         }
+        // 2. 피버 타임이 아니면? -> 끈다.
+        else if (!isFever)
+        {
+            RpcControlEffect(1, false);
+            controller.Speed = defaultSpeed;
+        }
+        // 3. 피버 타임이면? -> 끄지 않고 유지한다. (Speed도 유지)
         else
         {
-            // 피버 타임이거나 죽은 상태면 로직 유지 (Update문에서 처리됨)
-            // 피버 중이면 속도를 줄이지 않고 계속 빠름 유지
             controller.Speed = defaultSpeed * nitroSpeedMultiplier;
         }
     }
@@ -174,7 +203,6 @@ public class ItemEffectHandler : NetworkBehaviour
             if (target.gameObject == gameObject) continue;
             var targetHandler = target.GetComponent<ItemEffectHandler>();
 
-            // 타겟이 살아있을 때만 스턴
             var targetRespawn = target.GetComponent<PlayerRespawn>();
             if (targetHandler != null && (targetRespawn == null || targetRespawn.canRespawn))
             {
@@ -186,6 +214,7 @@ public class ItemEffectHandler : NetworkBehaviour
     private IEnumerator StopParticleDelay(int index, float delay)
     {
         yield return new WaitForSeconds(delay);
+        // 혹시 그 사이에 죽었더라도 끄는 건 문제없음
         RpcControlEffect(index, false);
     }
 
@@ -217,7 +246,6 @@ public class ItemEffectHandler : NetworkBehaviour
 
         if (effectRoots.Length > 3) RpcControlEffect(3, false);
 
-        // 스턴 끝났을 때 죽어있으면 다시 켜지 않음
         if (myRespawn == null || myRespawn.canRespawn)
         {
             controller.IsStunned = false;
@@ -273,6 +301,7 @@ public class ItemEffectHandler : NetworkBehaviour
     private void RpcSetDrag(float newDrag)
     {
         if (rb == null && transform.TryGetComponent(out PlayerController pc)) rb = pc.Rb;
+        if (rb == null) rb = GetComponent<Rigidbody>();
         if (rb == null) rb = GetComponent<Rigidbody>();
         if (rb != null) rb.linearDamping = newDrag;
     }
