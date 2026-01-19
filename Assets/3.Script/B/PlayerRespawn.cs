@@ -163,7 +163,7 @@ public class PlayerRespawn : NetworkBehaviour
         isKinematicSynced = true; // 서버에서 물리 고정 시작
 
         TargetRpcRespawn(connectionToClient);
-        Invoke(nameof(ResetRespawnFlag), 3.0f);
+        Invoke(nameof(ResetRespawnFlag), 2.0f);
     }
 
     private Coroutine respawnRoutine;
