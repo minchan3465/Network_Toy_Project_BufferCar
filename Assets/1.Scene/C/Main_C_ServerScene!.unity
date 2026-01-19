@@ -183,6 +183,14 @@ PrefabInstance:
       propertyPath: networkAddress
       value: localhost
       objectReference: {fileID: 0}
+    - target: {fileID: 2977243950517692189, guid: 30f31530d30a1974bbec45171f7d7c78, type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2977243950517692189, guid: 30f31530d30a1974bbec45171f7d7c78, type: 3}
+      propertyPath: 'spawnPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 6970800248564378294, guid: debbb0be4462e8c4aa188eca6578afe0, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
