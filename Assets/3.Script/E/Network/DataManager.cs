@@ -291,7 +291,7 @@ public class DataManager : MonoBehaviour
                 Debug.Log("connection not open");
                 return false;
             }
-            string sqlCommand = string.Format(@"INSERT INTO `userdata`.`userinfo` (`User_Name`, `User_Nic`, `User_Password`, `User_Rate`) VALUES('{0}', '{1}', '{2}', '{3}');", _name, _nic, _paasword, 0);
+            string sqlCommand = string.Format(@"INSERT INTO `userdata`.`userinfo` (`User_Name`, `User_Nic`, `User_Password`, `User_Rate`) VALUES('{0}', '{1}', '{2}', '{3}');", _name, _nic, _paasword, 2000);
             MySqlCommand command = new MySqlCommand(sqlCommand, connection);
             if (command.ExecuteNonQuery() == 1)//데이터 업데이트 성공
             {
@@ -347,6 +347,32 @@ public class DataManager : MonoBehaviour
         {
             Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
+            return false;
+        }
+    }
+    public bool SetRate(string _name, int _rate)
+    {
+        try
+        {
+            if (!Connection_Check(connection))
+            {
+                return false;
+            }
+            string sqlCommand = string.Format(@"UPDATE `userdata`.`userinfo` SET `User_Nic`='{0}' WHERE  `User_Name`='{1}';", _name, _rate);
+            MySqlCommand command = new MySqlCommand(sqlCommand, connection);
+            reader = command.ExecuteReader();
+            if (command.ExecuteNonQuery() == 1)//데이터 업데이트 성공
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
             return false;
         }
     }
