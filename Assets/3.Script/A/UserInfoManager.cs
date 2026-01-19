@@ -8,7 +8,7 @@ public class UserInfoManager : NetworkRoomPlayer
     [SyncVar(hook = nameof(OnNicknameChange))] public string PlayerNickname = "";
     [SyncVar(hook = nameof(OnRateChange))] public int PlayerRate = 0;
     [SyncVar(hook = nameof(OnNumChange))] public int PlayerNum = 0;
-    [SyncVar(hook = nameof(OnReadyChange))] public bool isReady = false;
+    //[SyncVar(hook = nameof(OnReadyChange))] public bool isReady = false;
 
     private Lobby_UI_Controller lobbyUI;
 
@@ -23,7 +23,12 @@ public class UserInfoManager : NetworkRoomPlayer
     {
         StartCoroutine(C_StartRegistry());
     }
-
+    public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
+    {
+        base.ReadyStateChanged(oldReadyState, newReadyState);
+        // 내장 변수인 readyToBegin이 바뀔 때 UI를 갱신하도록 함
+        RefreshUI();
+    }
     // 룸 플레이어의 상태가 바뀔 때 호출되는 Mirror 내장 콜백
     public override void OnClientEnterRoom()
     {
@@ -116,7 +121,7 @@ public class UserInfoManager : NetworkRoomPlayer
     [Command]
     public void CmdSendReadyToServer(bool ready)
     {
-        this.isReady = ready;
+        //this.isReady = ready;
         // 레디 상태가 바뀔 때마다 서버 레지스트리에게 "다 준비됐어?"라고 물어봅니다.
         if (ServerPlayerRegistry.instance != null)
         {
@@ -178,34 +183,38 @@ public class UserInfoManager : NetworkRoomPlayer
 
         Debug.Log($"[UI Debug] 내 이름: {PlayerNickname}, 인덱스: {index}, NetworkIdentity 번호: {netId}");
 
-        //  Mirror 룸 매니저가 관리하는 모든 슬롯을 확인(로그 찍기)합니다.
-        if (NetworkManager.singleton is NetworkRoomManager roomManager)
-        {
-            Debug.Log($"=== Mirror RoomSlots 상태 (총 {roomManager.roomSlots.Count}명) ===");
+        ////  Mirror 룸 매니저가 관리하는 모든 슬롯을 확인(로그 찍기)합니다.
+        //if (NetworkManager.singleton is NetworkRoomManager roomManager)
+        //{
+        //    Debug.Log($"=== Mirror RoomSlots 상태 (총 {roomManager.roomSlots.Count}명) ===");
+        //
+        //    int checkIdx = 0;
+        //    foreach (var slotPlayer in roomManager.roomSlots)
+        //    {
+        //        if (slotPlayer == null)
+        //        {
+        //            Debug.Log($"슬롯 [{checkIdx}]: NULL (데이터 없음)");
+        //        }
+        //        else
+        //        {
+        //            // slotPlayer 자체가 NetworkRoomPlayer이므로 우리가 만든 UserInfoManager로 캐스팅
+        //            var info = slotPlayer as UserInfoManager;
+        //            Debug.Log($"슬롯 [{checkIdx}]: Nickname={info?.PlayerNickname ?? "N/A"}, Ready={slotPlayer.readyToBegin}, index={slotPlayer.index}");
+        //        }
+        //        checkIdx++;
+        //    }
+        //    Debug.Log("======================================");
+        //}
 
-            int checkIdx = 0;
-            foreach (var slotPlayer in roomManager.roomSlots)
-            {
-                if (slotPlayer == null)
-                {
-                    Debug.Log($"슬롯 [{checkIdx}]: NULL (데이터 없음)");
-                }
-                else
-                {
-                    // slotPlayer 자체가 NetworkRoomPlayer이므로 우리가 만든 UserInfoManager로 캐스팅
-                    var info = slotPlayer as UserInfoManager;
-                    Debug.Log($"슬롯 [{checkIdx}]: Nickname={info?.PlayerNickname ?? "N/A"}, Ready={slotPlayer.readyToBegin}, index={slotPlayer.index}");
-                }
-                checkIdx++;
-            }
-            Debug.Log("======================================");
-        }
+        int uiSlot = PlayerNum - 1;
 
-        // 실제 UI 갱신 로직 (index를 기반으로 그림)
-        if (lobbyUI != null)
+        if (uiSlot >= 0 && uiSlot < 4)
         {
-            lobbyUI.UpdatePlayerFrameColor(index, readyToBegin);
-            lobbyUI.UpdateSlotText(index, PlayerNickname, PlayerRate);
+            // readyToBegin은 Mirror 내장 변수입니다.
+            lobbyUI.UpdateSlotText(uiSlot, PlayerNickname, PlayerRate);
+            lobbyUI.UpdatePlayerFrameColor(uiSlot, readyToBegin);
+
+            Debug.Log($"[UI 갱신] {PlayerNickname}님을 {uiSlot}번 슬롯에 배치함");
         }
     }
 
