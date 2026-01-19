@@ -66,6 +66,7 @@ public class GameManager : NetworkBehaviour {
 	public void ImReady(PlayerData player) {
 		//if (!isOwned) return;
 		//플레이어 정보 등록, HP 갱신
+		Debug.Log("who is using this command");
 		playersData.Add(player);
 		playersHp.Add(6);
 		playersName.Add(player.nickname);
@@ -73,8 +74,13 @@ public class GameManager : NetworkBehaviour {
 	//플레이어 나가면, 그 번호는 Lost라는 이름을 가지게 하고, hp를 0으로 함.
 	//근데 정보가 그대로 남아있을지는 모르겠음;
 	public void SetDisconnectPlayerIndexInfo(int index) {
-		PlayerData lostPlayer = playersData[index];
-		lostPlayer.name = "Lost...";
+		PlayerData lostPlayer = new PlayerData();
+		lostPlayer.id = playersData[index].id;
+		Debug.Log("[GDD] lostPlayer id : " + lostPlayer.id);
+		lostPlayer.index = index;
+		lostPlayer.nickname = "Lost...";
+		lostPlayer.rate = playersData[index].rate;
+		playersData[index] = lostPlayer;
 		playersHp[index] = 0;
 		if (!Ranks.Contains(lostPlayer.index)) {
 			Ranks.Push(lostPlayer.index);
