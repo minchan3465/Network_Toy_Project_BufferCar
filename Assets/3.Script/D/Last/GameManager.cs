@@ -217,12 +217,12 @@ public class GameManager : NetworkBehaviour {
 				case 2:
 					point = -100;
 					isHigh = false;
-					result_rate += $"<color=blue>- {point}</color>";
+					result_rate += $"<color=blue>- {-point}</color>";
 					break;
 				case 3:
 					point = -200;
 					isHigh = false;
-					result_rate += $"<color=blue>- {point}</color>";
+					result_rate += $"<color=blue>- {-point}</color>";
 					break;
 			}
 			UpdateResultRanktTextUI(i, result_rank);
@@ -230,10 +230,10 @@ public class GameManager : NetworkBehaviour {
 			UpdateResultRatetTextUI(i, playersData[index].rate, point, 1f, isHigh);
 
 			//플레이어 레이트값 조정
-			UpdatePlayerRateToDB(point);
+			UpdatePlayerRateToDB(index, point);
 		}
 
-		yield return new WaitForSeconds(4f);
+		yield return new WaitForSeconds(6f);
 		NetworkManager.singleton.ServerChangeScene("DDD_Main_Room");
 	}
 	[ClientRpc] private void UpdateResultRanktTextUI(int index, string text) { resultRankTextUI[index].text = text; }
@@ -260,14 +260,12 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	[ClientRpc]
-	private void UpdatePlayerRateToDB(int rate) {
+	private void UpdatePlayerRateToDB(int index, int rate) {
 		//이게 클라이언트한테 시켜서 번호 업데이트하는거라 그냥 DB에 담긴 데이터를 통해 업데이트하는게 맞을듯.
-		string id = DataManager.instance.playerInfo.User_ID;
 		if(car.TryGetComponent(out PlayerData playerData)) {
-			if(playerData.nickname.Equals(DataManager.instance.playerInfo.User_Nic)) {
-				bool result = DataManager.instance.SetRate(id, rate);
-				Debug.Log("DB 업데이트 결과 : " + result);
-			}
+			if (!playerData.index.Equals(index)) return;
+			string id = DataManager.instance.playerInfo.User_ID;
+			bool result = DataManager.instance.SetRate(id, rate);
 		}
 	}
 
