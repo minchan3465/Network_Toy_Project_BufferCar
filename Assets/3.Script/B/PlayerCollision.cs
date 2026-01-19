@@ -226,28 +226,43 @@ public class PlayerCollision : NetworkBehaviour
         if (other.CompareTag("Deadzone"))
         {
             Debug.Log("Deadzone Tag Detected!");
-            //GameManager.Instance.ProcessPlayerFell(res.playerNumber);
+            if (res != null && res.isRespawning) return;
+            
+            PlayVibration(vpower, duration);//진동호출!
 
-            if (res != null)
+            if (rb != null)
             {
-                 //체력이 남아있다면 리스폰 호출, 그렇지 않으면 실격처리 들어가야됩니다.
-                 if (res.isRespawning || !res.canRespawn) { return; }
-                 
-                 PlayVibration(vpower, duration);//진동호출!
-                 //여기 사운드호출!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                 
-                 if (rb != null)
-                 {
-                     rb.linearVelocity = Vector3.zero;
-                     rb.angularVelocity = Vector3.zero;
-                     rb.isKinematic = true;
-                 }
-                 res.CmdRequestRespawn();//리스폰 요청
-                 CmdRpcDeadEffect(transform.position);//현재 죽은 위치에 폭발 효과
-                 Debug.Log("My car fell! Requesting Respawn to Server...");
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.isKinematic = true;
+            }
+
+            CmdRpcDeadEffect(transform.position);//현재 죽은 위치에 폭발
+
+            StartCoroutine(DelayedRespawnCheck());
+        }
+    }
+    private IEnumerator DelayedRespawnCheck()
+    {
+        // 1초대기
+        // 이 시간 동안 서버는 ProcessPlayerFell을 실행하고 
+        // canRespawn = false 패킷을 클라이언트에 보냅니다.
+        yield return new WaitForSeconds(1f);
+
+        if (res != null)
+        {
+            // 서버에서 동기화된 최신 canRespawn 값을 확인
+            if (res.canRespawn)
+            {
+                res.CmdRequestRespawn(); // 리스폰 요청
+            }
+            else
+            {
+                // 체력이 0이라서 canRespawn이 false로 변한 경우
             }
         }
     }
+
     #endregion
 
     #region Dead_Particle
