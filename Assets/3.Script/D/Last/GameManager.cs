@@ -7,12 +7,16 @@ using TMPro;
 
 public class GameManager : NetworkBehaviour {
 	public static GameManager Instance;
-
 	// 플레이어별 HP 버튼 UI를 담는 클래스 (인스펙터에서 할당하기 편하게)
 	[System.Serializable]
 	public class PlayerUI {
 		public Button[] hpButtons; // 3개씩 할당
 	}
+
+	[Space]
+	[Header("몇명이 되면 시작할거냐? (0~4)")]
+	public int max_player = 1;
+	[Space(30f)]
 
 	//Sync할거
 	[SyncVar(hook = nameof(OnGameStartingCheck))] public bool isGameStart;
@@ -28,8 +32,8 @@ public class GameManager : NetworkBehaviour {
 	public TMP_Text winnerTextUI;
 	public MeshRenderer winnerCar;
 	public GameObject winnerCamera;
-	public TMP_Text resultRankTextUI;
-	public TMP_Text resultRateTextUI;
+	public TMP_Text[] resultRankTextUI;
+	public TMP_Text[] resultRateTextUI;
 	public TMP_Text feverTextUI;
 	private bool isFever = false;
 	public GameObject spectatorCamera;
@@ -53,6 +57,7 @@ public class GameManager : NetworkBehaviour {
 	private void Start() {
 		playersData.OnChange += OnPlayersDataChanged;
 		playersHp.OnChange += OnHpListChanged;
+		RefreshNameUI();
 	}
 	//플레이어 준비됨 파트
 	public void ImReady(PlayerData player) {
@@ -71,12 +76,18 @@ public class GameManager : NetworkBehaviour {
 		Debug.Log("[All] User Updated.");
 		if (isServer) {
 			if (isGameStart) return;
-			if (playersData.Count.Equals(3)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			if (playersData.Count.Equals(max_player)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				StartCoroutine(Game_Start());
 				Debug.Log("[Server] Game Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			}
 		}
 	}
+	private void RefreshNameUI() {
+		for(int i = 0; i < playersData.Count; i++) {
+			UpdateNameUI(i, playersData[i].nickname);
+		}
+	}
+
 	private void UpdateNameUI(int playernumber, string name) {
 		if (playernumber >= playersData.Count) return;
 		string str = string.Empty;
@@ -114,7 +125,7 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	[Server]
-	public IEnumerator Game_Start() {
+	private IEnumerator Game_Start() {
 		Game_Setup();
 		yield return StartCoroutine("StartCdTimer_co");
 		isGameStart = true;
@@ -129,7 +140,7 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	[Server]
-	public void Game_Set(int winnerNumber) {
+	private void Game_Set(int winnerNumber) {
 		isGameStart = false;
 		this.winnerNumber = winnerNumber;
 		winnerName = playersData[winnerNumber].nickname;
@@ -138,8 +149,7 @@ public class GameManager : NetworkBehaviour {
 		UpdateMiddleTextUI("GAME SET!");
 		StartCoroutine("Game_Result");
 	}
-	[Server]
-	public IEnumerator Game_Result() {
+	private IEnumerator Game_Result() {
 		yield return new WaitForSeconds(3f);
 		UpdateMiddleTextUI(string.Empty);
 
@@ -156,7 +166,7 @@ public class GameManager : NetworkBehaviour {
 		//우승 결과
 		UpdateWinnerTextUI(string.Empty);
 		//플레이어 UI, 실제 데이터 변경
-		ResultCal();
+		StartCoroutine(ResultCal());
 
 		yield return new WaitForSeconds(7f);
 		//룸으로 돌아가는 세팅
@@ -174,47 +184,70 @@ public class GameManager : NetworkBehaviour {
 	}
 	////////////////////////////
 	[ClientRpc] private void offWinnerCamera() { winnerCamera.SetActive(false); }
-	[Server]
-	private void ResultCal() {
+	/// ///////////////////////////////////
+	private IEnumerator ResultCal() {
 		string result_rank = string.Empty;
-		string resultrate = string.Empty;
+		string result_rate = string.Empty;
 		int rank_count = Ranks.Count;
 		for (int i =0; i < rank_count; i++ ) {
 			int index = Ranks.Pop();
+			///////////////////////////////////////////////////////////////////////////////// 순위, 닉네임
 			string color = setColor(index);
-			int rate = 0;
-			result_rank += $"{i + 1}\t<color={color}>{playersData[index].nickname}</color>";
-			resultrate += $"{playersData[index].rate} ";
+			result_rank = $"{i + 1}\t<color={color}>{playersData[index].nickname}</color>";
+			///////////////////////////////////////////////////////////////////////////////// 순위, 레이팅
+			int point = 0;
+			bool isHigh = true;
 			switch (i) {
 				case 0:
-					rate = 200;
-					resultrate += $"<color=orange>+ {rate}</color>";
+					point = 200;
+					isHigh = true;
 					break;
 				case 1:
-					rate = 100;
-					resultrate += $"<color=orange>+ {rate}</color>";
+					point = 100;
+					isHigh = true;
 					break;
 				case 2:
-					rate = 100;
-					resultrate += $"<color=blue>- {rate}</color>";
+					point = -100;
+					isHigh = false;
 					break;
 				case 3:
-					rate = 200;
-					resultrate += $"<color=blue>- {rate}</color>";
+					point = -200;
+					isHigh = false;
 					break;
 			}
-			UpdatePlayerRate(index, rate);
-			result_rank += "\n\n";
-			resultrate += "\n\n";
+			UpdateResultRanktTextUI(result_rank, i);
+			UpdateResultRatetTextUI(i, playersData[index].rate, point, 2f, isHigh);
 
 			//플레이어 레이트값 조정
+			//UpdatePlayerRate(index, rate);
 		}
-		UpdateResultRanktTextUI(result_rank);
-		UpdateResultRatetTextUI(resultrate);
+
+		yield return new WaitForSeconds(4f);
+		//룸으로 돌아가기
 	}
-	[Server] public void UpdatePlayerRate(int index, int rate) {	playersData[index].rate += rate; }
-	[ClientRpc] private void UpdateResultRanktTextUI(string str) { resultRankTextUI.text = str; }
-	[ClientRpc] private void UpdateResultRatetTextUI(string str) { resultRateTextUI.text = str; }
+	[ClientRpc] private void UpdateResultRanktTextUI(string str, int index) { resultRankTextUI[index].text = str; }
+	[ClientRpc] private void UpdateResultRatetTextUI(int index, int rate, int point, float duration, bool isHigh) {
+		StartCoroutine(RateChangeAnimation_co(index, rate, point, duration, isHigh));
+	}
+	//[Server] private void UpdatePlayerRate(int index, int rate) { playersData[index].rate += rate; }
+	private IEnumerator RateChangeAnimation_co(int index, int rate, int point, float duration, bool isHigh) {
+		yield return new WaitForSeconds(2f);
+		float timer = 0f;
+		string text = string.Empty;
+		while(timer < duration) {
+			timer += Time.deltaTime;
+			int newRate = Mathf.RoundToInt(Mathf.Lerp(rate, rate + point, timer / duration));
+			int newPoint = Mathf.RoundToInt(Mathf.Lerp(point, 0, timer / duration));
+			if(isHigh) {
+				text = $"{newRate} <color=orange>+ {newPoint}</color>";
+			} else {
+				text = $"{newRate} <color=blue>- {newPoint}</color>";
+			}
+			resultRateTextUI[index].text = text;
+			yield return null;
+		}
+	}
+
 
 
 	//------------ 추락시
