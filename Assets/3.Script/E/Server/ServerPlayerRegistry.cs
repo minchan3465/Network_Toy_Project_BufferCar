@@ -118,7 +118,7 @@ public class ServerPlayerRegistry : MonoBehaviour
             return;
         foreach (var p in players)
         {
-            if (!p.Value.isReady)
+            if (!p.Value.readyToBegin)
                 return;
         }
         Debug.Log("[Server] All players ready. Starting game.");
