@@ -148,6 +148,14 @@ PrefabInstance:
       propertyPath: networkAddress
       value: localhost
       objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5452007440566520097, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
+      propertyPath: 'spawnPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 6970800248564378294, guid: 7ea7d527aa94b9942b14f886c5edd1a9, type: 3}
     - target: {fileID: 6091014898218233269, guid: 82043e45b24e1af4ca19185b8fb23c58, type: 3}
       propertyPath: m_LocalPosition.x
       value: 93.86882

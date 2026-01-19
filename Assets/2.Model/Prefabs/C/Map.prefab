@@ -132,9 +132,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   warningUI: {fileID: 0}
-  shrinkStartTime: 60
-  shrinkDuration: 5
-  targetRatio: {x: 0.6, y: 0.6, z: 1}
+  shrinkStartTime: 45
+  shrinkDuration: 45
+  targetRatio: {x: 0.5, y: 0.5, z: 1}
 --- !u!114 &4379160189415399363
 MonoBehaviour:
   m_ObjectHideFlags: 0
