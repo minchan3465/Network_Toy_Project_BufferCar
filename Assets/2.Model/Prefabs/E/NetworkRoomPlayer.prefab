@@ -5406,6 +5406,7 @@ GameObject:
   - component: {fileID: 8811690187291113967}
   - component: {fileID: 721332033141467808}
   - component: {fileID: -3160357476037317387}
+  - component: {fileID: 50499709919684026}
   m_Layer: 0
   m_Name: NetworkRoomPlayer
   m_TagString: Player
@@ -5758,6 +5759,28 @@ MonoBehaviour:
   playerRating: 2000
   meshRenderer: {fileID: 8175656362519344762}
   networkPlayer: {fileID: 0}
+--- !u!114 &50499709919684026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6970800248564378294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a251244c5532474985d96448b7a4174, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UserInfoManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  showRoomGUI: 1
+  readyToBegin: 0
+  index: 0
+  PlayerNickname: 
+  PlayerRate: 0
+  PlayerNum: 0
+  isReady: 0
 --- !u!1 &8588997018763582332
 GameObject:
   m_ObjectHideFlags: 0
