@@ -24,26 +24,23 @@ public class PlayerData : NetworkBehaviour {
 		playerController.IsStunned = true;
 		CmdImReady();
 	}
+	public override void OnStopServer() {
+		base.OnStopServer();
+		CmdImOut(index);
+	}
 
 	[Command]
-	public void CmdImReady() {
-		GameManager.Instance.ImReady(this);
-	}
+	public void CmdImReady() {	GameManager.Instance.ImReady(this); }
+	[Command]
+	public void CmdImOut(int index) { GameManager.Instance.SetDisconnectPlayerIndexInfo(index); }
 
-	public void PlayerStunChange(bool _bool) {
-		playerController.IsStunned = _bool;
-	}
-
-	public void UpdatePlayerIndex(int oldIndex, int newIndex) {	
-		SetCarBodyColor(Setting_CarBodyColor(index));
-	}
-
+	public void PlayerStunChange(bool _bool) {	playerController.IsStunned = _bool; }
+	public void UpdatePlayerIndex(int oldIndex, int newIndex) { SetCarBodyColor(Setting_CarBodyColor(index)); }
 	private void SetCarBodyColor(Color color) {
 		if(carMeshRenderer.TryGetComponent(out MeshRenderer meshRenderer)) {
 			meshRenderer.materials[0].color = color;
 		}
 	}
-
 	private Color Setting_CarBodyColor(int index) {
 		switch (index) {
 			case 0: return Color.red;
@@ -60,7 +57,6 @@ public class PlayerData : NetworkBehaviour {
 			Onfall();
 		}
 	}
-
 	[Command]
 	private void Onfall() {
 		GameManager.Instance.ProcessPlayerFell(index, connectionToClient);

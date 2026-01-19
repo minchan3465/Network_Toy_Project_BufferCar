@@ -55,6 +55,7 @@ public class GameManager : NetworkBehaviour {
 		if (Instance == null) { Instance = this; } else { Destroy(Instance); }
 	}
 	private void Start() {
+		//NetworkServer.OnDisconnectedEvent += OnClientDisconnected;
 		playersData.OnChange += OnPlayersDataChanged;
 		playersHp.OnChange += OnHpListChanged;
 		RefreshNameUI();
@@ -65,7 +66,29 @@ public class GameManager : NetworkBehaviour {
 		//플레이어 정보 등록, HP 갱신
 		playersData.Add(player);
 		playersHp.Add(6);
-		Debug.Log("[GameManager] User Data Get.");
+	}
+	//private void OnClientDisconnected(NetworkConnectionToClient conn) {
+	//	Debug.Log("[GDD] Debug Log 1");
+	//	if (!NetworkServer.active) return;
+	//	int disconnectPlayer_index = -1;
+	//	Debug.Log("[GDD] Debug Log 2");
+	//	if (conn.identity != null) {
+	//		GameObject disconnectPlayer = conn.identity.gameObject;
+	//		Debug.Log("[GDD] Debug Log 3");
+	//		if(disconnectPlayer.TryGetComponent(out UserInfoManager manager)) {
+	//			disconnectPlayer_index = manager.PlayerNum;
+	//			SetDisconnectPlayerIndexInfo(disconnectPlayer_index);
+	//			Debug.Log("[GDD] Debug Log 4");
+	//		}
+	//	}
+	//}
+	public void SetDisconnectPlayerIndexInfo(int index) {
+		PlayerData lostPlayer = playersData[index];
+		lostPlayer.name = "Lost...";
+		playersHp[index] = 0;
+		if (!Ranks.Contains(lostPlayer.index)) {
+			Ranks.Push(lostPlayer.index);
+		}
 	}
 
 	//------------ UI 변경
@@ -73,12 +96,10 @@ public class GameManager : NetworkBehaviour {
 	/////////////////////그리고 4명이 모였다면, (서버기준) 시작!!!!!!!!!!
 	private void OnPlayersDataChanged(SyncList<PlayerData>.Operation op, int playernumber, PlayerData newItem) {
 		UpdateNameUI(playernumber, playersData[playernumber].nickname);
-		Debug.Log("[All] User Updated.");
 		if (isServer) {
 			if (isGameStart) return;
 			if (playersData.Count.Equals(max_player)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				StartCoroutine(Game_Start());
-				Debug.Log("[Server] Game Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			}
 		}
 	}
@@ -90,13 +111,10 @@ public class GameManager : NetworkBehaviour {
 
 	private void UpdateNameUI(int playernumber, string name) {
 		if (playernumber >= playersData.Count) return;
-		string str = string.Empty;
+		string str;
 		string color = setColor(playernumber);
-		if ((playernumber % 2).Equals(0)) {
-			str = $"{playernumber + 1}P <color={color}>{name}</color>";
-		} else {
-			str = $"<color={color}>{name}</color> {playernumber + 1}P";
-		}
+		if ((playernumber % 2).Equals(0)) {	str = $"{playernumber + 1}P <color={color}>{name}</color>";	} 
+		else {	str = $"<color={color}>{name}</color> {playernumber + 1}P";	}
 		playerNameUI[playernumber].text = str;
 	}
 	////////////////////////////////////////////////////////////////////////////////////////// Hp 변경
@@ -169,7 +187,7 @@ public class GameManager : NetworkBehaviour {
 		//플레이어 UI, 실제 데이터 변경
 		StartCoroutine(ResultCal());
 
-		yield return new WaitForSeconds(7f);
+		//yield return new WaitForSeconds(7f);
 		//룸으로 돌아가는 세팅
 		//그 전에, 플레이어들한테 아바타 권한 다시 돌려놔야함.
 	}
@@ -226,7 +244,7 @@ public class GameManager : NetworkBehaviour {
 			UpdateResultRatetTextUI(i, playersData[index].rate, point, 1f, isHigh);
 
 			//플레이어 레이트값 조정
-			//UpdatePlayerRate(index, rate);
+			UpdatePlayerRateToDB(point);
 		}
 
 		yield return new WaitForSeconds(4f);
@@ -237,7 +255,6 @@ public class GameManager : NetworkBehaviour {
 	[ClientRpc] private void UpdateResultRatetTextUI(int index, int rate, int point, float duration, bool isHigh) {
 		StartCoroutine(RateChangeAnimation_co(index, rate, point, duration, isHigh));
 	}
-	//[Server] private void UpdatePlayerRate(int index, int rate) { playersData[index].rate += rate; }
 	private IEnumerator RateChangeAnimation_co(int index, int rate, int point, float duration, bool isHigh) {
 		yield return new WaitForSeconds(2f);
 		float timer = 0f;
@@ -256,6 +273,17 @@ public class GameManager : NetworkBehaviour {
 		}
 	}
 
+	[ClientRpc]
+	private void UpdatePlayerRateToDB(int rate) {
+		//이게 클라이언트한테 시켜서 번호 업데이트하는거라 그냥 DB에 담긴 데이터를 통해 업데이트하는게 맞을듯.
+		string id = DataManager.instance.playerInfo.User_ID;
+		if(car.TryGetComponent(out PlayerData playerData)) {
+			if(playerData.nickname.Equals(DataManager.instance.playerInfo.User_Nic)) {
+				bool result = DataManager.instance.SetRate(id, rate);
+				Debug.Log("DB 업데이트 결과 : " + result);
+			}
+		}
+	}
 
 
 	//------------ 추락시
@@ -321,7 +349,6 @@ public class GameManager : NetworkBehaviour {
 	public IEnumerator StartCdTimer_co() {
 		WaitForSeconds wfs = new WaitForSeconds(1f);
 		while (startCountdownTime >= 0) {
-			//Debug.Log(startCountdownTime);
 			if(startCountdownTime.Equals(0)) {
 				UpdateStartCdTimer("Go!!!");
 			} else {
