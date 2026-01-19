@@ -62,15 +62,23 @@ public class GameManager : NetworkBehaviour {
 		playersHp.OnChange += OnHpListChanged;
 		RefreshNameUI();
 	}
+	public override void OnStartServer() {
+		base.OnStartServer();
+		for(int i = 0; i < max_player; i++) {
+			playersData.Add(new());
+			playersName.Add("Wait...");
+		}
+	}
+
 	//플레이어 준비됨 파트
 	public void ImReady(PlayerData player) {
 		//if (!isOwned) return;
 		//플레이어 정보 등록, HP 갱신
-		Debug.Log("who is using this command");
-		playersData.Add(player);
 		playersHp.Add(6);
-		playersName.Add(player.nickname);
+		playersName[player.index] = player.nickname;
+		playersData [player.index] = player;
 	}
+
 	//플레이어 나가면, 그 번호는 Lost라는 이름을 가지게 하고, hp를 0으로 함.
 	//근데 정보가 그대로 남아있을지는 모르겠음;
 	public void SetDisconnectPlayerIndexInfo(int index) {
@@ -92,18 +100,18 @@ public class GameManager : NetworkBehaviour {
 	private void OnPlayersDataChanged(SyncList<PlayerData>.Operation op, int playernumber, PlayerData newItem) {
 		if (isServer) {
 			if (isGameStart) return;
-			if (playersData.Count.Equals(max_player)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			if (playersHp.Count.Equals(max_player)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				StartCoroutine(Game_Start());
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////////////// Name변경
 	private void OnPlayersNameChanged(SyncList<string>.Operation op, int playernumber, string newItem) {
-		UpdateNameUI(playernumber, newItem);
+		UpdateNameUI(playernumber, playersName[playernumber]);
 	}
 	private void RefreshNameUI() {
 		for(int i = 0; i < playersData.Count; i++) {
-			UpdateNameUI(i, playersData[i].nickname);
+			UpdateNameUI(i, playersName[i]);
 		}
 	}
 	private void UpdateNameUI(int playernumber, string name) {
