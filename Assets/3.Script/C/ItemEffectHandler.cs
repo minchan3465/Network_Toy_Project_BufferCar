@@ -283,7 +283,6 @@ public class ItemEffectHandler : NetworkBehaviour
     {
         string[] names = { "Iron Body", "Nitro", "EMP" };
         string msg = (index >= 0 && index < names.Length) ? names[index] : "Unknown";
-        Debug.Log($"[Item] {msg} Activated");
     }
     [ClientRpc]
     private void RpcPlaySound(string name)

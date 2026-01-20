@@ -52,8 +52,6 @@ public class MapShrinker : NetworkBehaviour
         elapsedTime = 0f;
         this.enabled = true;
 
-        //[추가] 누가 줄어드는지 이름 출력
-        Debug.Log($"[범인 색출] 현재 줄어들고 있는 오브젝트 이름: {gameObject.name}");
     }
 
     [Server]
@@ -69,7 +67,6 @@ public class MapShrinker : NetworkBehaviour
 
         // 클라이언트 크기 복구 명령
         RpcResetMap(initialScale);
-        Debug.Log("[MapShrinker] 맵 크기 초기화 완료.");
     }
 
     [ClientRpc]
