@@ -5696,7 +5696,7 @@ MonoBehaviour:
   nitroSpeedMultiplier: 2
   nitroImpulseForce: 25
   empStunDuration: 1.2
-  empBlastVfxDuration: 1.2
+  empBlastDuration: 2
 --- !u!114 &721332033141467808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5717,7 +5717,7 @@ MonoBehaviour:
   canRespawn: 1
   car: {fileID: 681800734350143724}
   playerNumber: -1
-  appearParticlePrefab: {fileID: 4143439122255155475, guid: d75f41abb5a1fa840adc3bcef1d89353, type: 3}
+  appearParticlePrefab: {fileID: 8424245486792183312, guid: 3ca40fd87ae0bed4aacbb4cc51912e95, type: 3}
 --- !u!114 &4631832448925590629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5734,6 +5734,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   index: -1
+  id: 
   nickname: 
   rate: -1
   playerController: {fileID: 2341995391491258313}

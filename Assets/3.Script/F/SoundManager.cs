@@ -108,7 +108,7 @@ public class SoundManager : NetworkBehaviour
     }
 
     //실제 재생하는 곳
-    private void PlaySFXInternal(string clipName)
+    public void PlaySFXInternal(string clipName)
     {
         SoundData data = sfxClips.Find(x => x.name == clipName);
         if (data == null) return;

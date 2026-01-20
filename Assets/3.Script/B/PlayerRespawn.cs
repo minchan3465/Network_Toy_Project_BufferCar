@@ -187,28 +187,12 @@ public class PlayerRespawn : NetworkBehaviour
 
             if (isOwned) 
             {
-                //CmdRequestExile();
                 CmdSetKinematic(true);
             }
             Debug.Log($"{gameObject.name} 플레이어가 최종 탈락하여 모든 기능을 정지합니다.");
         }
     }
-
-    //[Command]
-    //private void CmdRequestExile()
-    //{
-    //    // 서버에서 1초 뒤에 유배를 보냄 (코루틴 사용을 위해 서버 측 코루틴 호출 가능)
-    //    StartCoroutine(ServerExileRoutine());
-    //}
-    //
-    //private IEnumerator ServerExileRoutine()
-    //{
-    //    yield return new WaitForSeconds(2.0f); // 파티클 연출 시간 대기
-    //    isKinematicSynced = true;
-    //    // 서버가 직접 위치를 변경 (NetworkTransform이 모든 클라이언트에 유배 위치 전달)
-    //    transform.position = new Vector3(50000f, 0f, 50000f);
-    //    // 혹시 모르니 서버에서도 물리/충돌체 다시 한번 체크
-    //}
+    
     #endregion
 
     #region Respawn Particle
@@ -247,7 +231,7 @@ public class PlayerRespawn : NetworkBehaviour
 
             // 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 통째로 삭제
             // 계산된 시간이 없으면 기본 3초 후 삭제
-            Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
+            Destroy(effect, maxLifeTime);
         }
     }
     #endregion
