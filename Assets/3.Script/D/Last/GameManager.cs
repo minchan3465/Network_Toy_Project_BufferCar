@@ -76,40 +76,57 @@ public class GameManager : NetworkBehaviour {
 			playersData.Add(new());
 			playersName.Add("Wait...");
 		}
+		Debug.Log("[GDD] server setting done!" + Time.time);
 	}
 
 	//플레이어 준비됨 파트
 	public void ImReady(PlayerData player) {
 		//if (!isOwned) return;
 		//플레이어 정보 등록, HP 갱신
+		Debug.Log("[GDD] player ready...!" + Time.time);
 		playersHp.Add(6);
 		playersName[player.index] = player.nickname;
 		playersId[player.index] = player.id;
 		playersRate[player.index] = player.rate;
 		playersData [player.index] = player;
+		Debug.Log("[GDD] player done!" + Time.time);
 	}
 
 	//플레이어 나가면, 그 번호는 Lost라는 이름을 가지게 하고, hp를 0으로 함.
 	//근데 정보가 그대로 남아있을지는 모르겠음;
 	public void SetDisconnectPlayerIndexInfo(int index) {
+		Debug.Log("[GDD] who left" + Time.time);
 		PlayerData lostPlayer = new PlayerData();
-		if(playersId[index] != null) lostPlayer.id = playersId[index];
+		Debug.Log("[GDD] left test debug 1" + Time.time);
+		if (playersId[index] != null) lostPlayer.id = playersId[index];
+		Debug.Log("[GDD] left test debug 2" + Time.time);
 		lostPlayer.index = index;
+		Debug.Log("[GDD] left test debug 3" + Time.time);
 		lostPlayer.nickname = "Lost...";
+		Debug.Log("[GDD] left test debug 4" + Time.time);
 		if (playersName[index] != null) playersName[index] = lostPlayer.nickname;
+		Debug.Log("[GDD] left test debug 5" + Time.time);
 		lostPlayer.rate = playersRate[index];
+		Debug.Log("[GDD] left test debug 6" + Time.time);
 		playersData[index] = lostPlayer;
+		Debug.Log("[GDD] left test debug 7" + Time.time);
 		if (!Ranks.Contains(lostPlayer.index)) {
+			Debug.Log("[GDD] left test debug 8" + Time.time);
 			Ranks.Push(lostPlayer.index);
+			Debug.Log("[GDD] left test debug 9" + Time.time);
 		}
+		Debug.Log("[GDD] left test debug 10" + Time.time);
 		playersHp[index] = 0;
 		CheckPlayerHps();
+		Debug.Log("[GDD] left test debug 11" + Time.time);
 		bool anyRemain = false;
 		foreach (string playerName in playersName) {
 			if (playerName.Equals("Lost...")) continue;
 			else anyRemain = true;
 		}
-		if(!anyRemain) NetworkManager.singleton.ServerChangeScene(Room_Scene_Name);
+		Debug.Log("[GDD] left test debug 12" + Time.time);
+		if (!anyRemain) NetworkManager.singleton.ServerChangeScene(Room_Scene_Name);
+		Debug.Log("[GDD] left test debug 13" + Time.time);
 	}
 
 	//------------ UI 변경
