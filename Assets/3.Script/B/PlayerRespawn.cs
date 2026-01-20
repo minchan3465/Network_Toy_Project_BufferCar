@@ -231,7 +231,7 @@ public class PlayerRespawn : NetworkBehaviour
 
             // 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 통째로 삭제
             // 계산된 시간이 없으면 기본 3초 후 삭제
-            Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
+            Destroy(effect, maxLifeTime);
         }
     }
     #endregion
