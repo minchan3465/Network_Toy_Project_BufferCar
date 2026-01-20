@@ -88,9 +88,9 @@ public class ServerPlayerRegistry : MonoBehaviour
         //Debug.Log(DataManager.instance.playerInfo.PlayerNum+"Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     }
 
+    [Server]
     public void UnregisterPlayer(UserInfoManager player)
     {
-        //Debug.Log("실행됨3");
         int removeKey = -1;
         foreach (var kv in players)
         {
@@ -100,31 +100,55 @@ public class ServerPlayerRegistry : MonoBehaviour
                 break;
             }
         }
-        Debug.Log(removeKey);
-        if (removeKey == -1)
+
+        if (removeKey == -1) return;
+
+        // 1. UI 갱신 명령: 모든 클라이언트에게 해당 슬롯(removeKey - 1)을 비우라고 전달
+        // players에 남아있는 아무 플레이어나 사용하여 Rpc를 쏩니다.
+        foreach (var p in players.Values)
         {
-            return;
+            if (p != null && p != player)
+            {
+                p.RpcClearLobbyUI(removeKey - 1);
+            }
         }
+
+        // 2. 데이터 삭제 및 번호 회수
         players.Remove(removeKey);
         if (player.connectionToClient != null)
             connToPlayer.Remove(player.connectionToClient);
+
         availableNumbers.Add(removeKey);
-        GameManager.Instance.SetDisconnectPlayerIndexInfo(removeKey - 1);
+
+        // 기존 로직 유지
+        if (GameManager.Instance != null)
+            GameManager.Instance.SetDisconnectPlayerIndexInfo(removeKey - 1);
+
         Debug.Log($"[Server] Player Left: {removeKey}");
     }
     [Server]
     public void TryStartGame()
     {
-        if (players.Count == 0) return;
-
-        foreach (var p in players)
+        // 1. [수정 핵심] 접속한 플레이어 수가 반드시 4명이어야 함
+        // (테스트를 위해 인원수를 조절하고 싶다면 이 숫자를 바꾸면 됩니다)
+        if (players.Count < 4)
         {
-            // [수정] UserInfoManager의 프로퍼티를 통해 NetworkRoomPlayer의 레디 상태 확인
-            if (!p.Value.IsReady)
-                return;
+            Debug.Log($"[Server] 현재 인원 {players.Count}/4. 더 많은 플레이어가 필요합니다.");
+            return;
         }
 
-        Debug.Log("[Server] All players ready. Starting game.");
+        // 2. 4명이 다 찼다면, 모든 플레이어의 레디 상태를 확인
+        foreach (var p in players)
+        {
+            if (p.Value == null || !p.Value.IsReady)
+            {
+                // 한 명이라도 레디를 안 했다면 시작하지 않음
+                return;
+            }
+        }
+
+        // 3. 인원수(4명)와 전원 레디 조건을 모두 만족함
+        Debug.Log("[Server] 4명 전원 접속 및 레디 완료! 게임을 시작합니다.");
         GameFlowManager.Instance.StartGame();
     }
     [Server]
