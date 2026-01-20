@@ -19,13 +19,7 @@ public class GameDirector : MonoBehaviour
             if (GameManager.Instance.isGameStart)
             {
                 // [게임 시작 순간] -> 초기화 실행!
-                Debug.Log("[GameDirector] 게임 시작 감지! 맵 초기화 및 청소 실행");
                 InitializeRound();
-            }
-            else
-            {
-                // [게임 종료 순간]
-                Debug.Log("[GameDirector] 게임 종료 감지.");
             }
 
             // 상태 갱신 (현재 상태를 기억해둠)
@@ -41,8 +35,6 @@ public class GameDirector : MonoBehaviour
 
             if (GameManager.Instance.gameTime == triggerTime && !hasTriggeredShrink)
             {
-                Debug.Log($"[GameDirector] {triggerTime}초 감지! 맵 축소 명령 실행.");
-
                 if (MapShrinker.Instance != null)
                 {
                     MapShrinker.Instance.StartShrinking();
@@ -55,8 +47,6 @@ public class GameDirector : MonoBehaviour
     [Server]
     private void InitializeRound()
     {
-        Debug.Log("[GameDirector] 라운드 초기화 시작...");
-
         // 1. 맵 크기 원상 복구
         if (MapShrinker.Instance != null)
         {
@@ -78,6 +68,6 @@ public class GameDirector : MonoBehaviour
         {
             NetworkServer.Destroy(item);
         }
-        Debug.Log($"[GameDirector] 아이템 {items.Length}개 청소 완료.");
+        //Debug.Log($"[GameDirector] 아이템 {items.Length}개 청소 완료.");
     }
 }
