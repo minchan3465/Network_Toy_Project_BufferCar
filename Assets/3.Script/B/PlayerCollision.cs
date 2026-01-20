@@ -138,6 +138,7 @@ public class PlayerCollision : NetworkBehaviour
                 Vector3 forceToSelf = -dirToTarget * pushForce / attackerBonus;
 
                 ContactPoint contact = collision.GetContact(0);
+                PlayVibration(vpower, duration);
 
                 ApplyImpulseLocal(forceToSelf);
 
@@ -197,7 +198,6 @@ public class PlayerCollision : NetworkBehaviour
         // 물리 적용
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(force + Vector3.up * 3f, ForceMode.Impulse); // 살짝 띄워줌
-        Debug.Log($"Addforce {force} power to {name} player");
     }
     #endregion
 
@@ -244,12 +244,9 @@ public class PlayerCollision : NetworkBehaviour
 
     public void PlayVibration(float intensity, float time)
     {
-        if (!isOwned) return;
-
         if (Camera_manager.instance != null)
         {
             Camera_manager.instance.ShakeCamera();
-            Debug.Log("Camera shake+PlayVibration");
         }
 
         var xboxGamepad = Gamepad.current;
@@ -262,6 +259,7 @@ public class PlayerCollision : NetworkBehaviour
 
     private IEnumerator HapticRoutine(Gamepad gamepad, float intensity, float time)
     {
+        if (gamepad == null) yield break;
         // 낮은 주파수(왼쪽, 큰 모터라서 진동이 큽니다. 폭발등)와
         // 높은 주파수(오른쪽, 작고 가벼운 모터라서 징~ 거리는 진동)에 강도 적용
         gamepad.SetMotorSpeeds(intensity * 0.8f, intensity);
