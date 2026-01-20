@@ -20,6 +20,21 @@ public class UserInfoManager : NetworkBehaviour
     public override void OnStartClient()
     {
         base.OnStartClient();
+
+        // 만약 내가 로컬 플레이어인데, 씬에 이미 다른 UserInfoManager가 있다면 (이전 씬 유물)
+        if (isLocalPlayer)
+        {
+            UserInfoManager[] allPlayers = FindObjectsByType<UserInfoManager>(FindObjectsSortMode.None);
+            foreach (var p in allPlayers)
+            {
+                if (p != this && p.isLocalPlayer)
+                {
+                    // 이전 씬에서 넘어온 중복 객체 제거
+                    Destroy(p.gameObject);
+                }
+            }
+        }
+
         roomPlayer = GetComponent<NetworkRoomPlayer>();
         if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
 

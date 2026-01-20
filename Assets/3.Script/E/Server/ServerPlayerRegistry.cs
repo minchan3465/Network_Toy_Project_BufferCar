@@ -67,10 +67,37 @@ public class ServerPlayerRegistry : MonoBehaviour
     public void RegisterPlayer(UserInfoManager player)
     {
         if (player.connectionToClient == null) return;
+        NetworkConnectionToClient conn = player.connectionToClient;
 
-        // 이미 등록된 커넥션이면 무시 (중복 생성 방지 핵심)
-        if (connToPlayer.ContainsKey(player.connectionToClient)) return;
+        // 1. 기존에 이 커넥션으로 등록된 정보가 있는지 확인
+        if (connToPlayer.TryGetValue(conn, out var oldPlayer))
+        {
+            if (oldPlayer != null && oldPlayer != player)
+            {
+                Debug.Log($"[Server] 중복 객체 제거 시도: {conn.connectionId}");
 
+                // 기존 번호 찾아서 players에서 제거
+                int oldKey = -1;
+                foreach (var kv in players)
+                {
+                    if (kv.Value == oldPlayer) { oldKey = kv.Key; break; }
+                }
+
+                if (oldKey != -1)
+                {
+                    players.Remove(oldKey);
+                    availableNumbers.Add(oldKey); // 번호 회수
+                }
+
+                // [중요] 딕셔너리에서 먼저 밀어내기
+                connToPlayer.Remove(conn);
+
+                // 실제 객체 파괴
+                NetworkServer.Destroy(oldPlayer.gameObject);
+            }
+        }
+
+        // 2. 새로운 정보로 갱신
         int assignedNumber;
         if (availableNumbers.Count > 0)
         {
@@ -83,11 +110,10 @@ public class ServerPlayerRegistry : MonoBehaviour
         }
 
         players[assignedNumber] = player;
-        connToPlayer[player.connectionToClient] = player;
+        connToPlayer[conn] = player; // 새 객체로 교체
 
         player.AssignPlayerNumber(assignedNumber);
-        Debug.Log($"[Server] {player.PlayerNickname} 등록 완료. 슬롯: {assignedNumber}");
-        //Debug.Log(DataManager.instance.playerInfo.PlayerNum+"Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+        Debug.Log($"[Server] {player.PlayerNickname} 신규 등록 완료. 슬롯: {assignedNumber}");
     }
 
     [Server]
