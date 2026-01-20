@@ -19,38 +19,8 @@ public class PlayerRespawn : NetworkBehaviour
 
     private GameObject respawn_ob;
     [SerializeField] private GameObject car;
-    //[SerializeField] private NetworkPlayer nplayer;
 
     public int playerNumber = -1;//값 외부에서 받아주세요
-
-    //past_Logic_OnStartLocalPlayer()
-    /*
-    public override void OnStartLocalPlayer()
-    {
-        transform.TryGetComponent(out rb); //player한테 넣어주세요
-
-        //playerNumber = nplayer.playerNumber - 1; //NetworkPlayer 안쓰면 제외
-
-        List<Transform> startPositions = NetworkManager.startPositions;
-
-        // 이름순 정렬 (순서 꼬임 방지) 0123
-        startPositions.Sort((a, b) => string.Compare(a.name, b.name));
-
-        // 부여받은 번호가 있고, 리스트 범위 내에 있다면 해당 위치 사용
-        if (playerNumber != -1 && playerNumber < startPositions.Count)
-        {
-            Transform targetPos = startPositions[playerNumber];
-            transform.position = targetPos.position;
-            transform.rotation = targetPos.rotation;
-        }
-
-        var respawnList = FindAnyObjectByType<RespawnList>();
-        if (respawnList != null && playerNumber < respawnList.spawnList.Count)
-        {
-            respawn_ob = respawnList.spawnList[playerNumber];
-        }
-    }
-    */
 
     public void InitializePlayer(int PlayerNum)
     {
@@ -59,9 +29,17 @@ public class PlayerRespawn : NetworkBehaviour
 
         if (isOwned)
         {
+            CmdSetKinematic(true);
             SetupInitialPosition();
             SetupRespawnObject();
+            StartCoroutine(ReleaseKinematicAfterInit());
         }
+    }
+
+    private IEnumerator ReleaseKinematicAfterInit()
+    {
+        yield return new WaitForSeconds(0.2f);
+        CmdSetKinematic(false);
     }
 
     private void SetupInitialPosition()
@@ -111,6 +89,9 @@ public class PlayerRespawn : NetworkBehaviour
             rb.isKinematic = newVal;
         }
     }
+
+    [Command]
+    public void CmdSetRespawningTrue() => isRespawning = true;
 
     [Command]
     public void CmdSetKinematic(bool state) => isKinematicSynced = state;//SyncVar
@@ -190,7 +171,6 @@ public class PlayerRespawn : NetworkBehaviour
         transform.rotation = respawn_ob.transform.rotation;
 
         CmdRequestAppearEffect(transform.position);
-        //공중에서 잠시 대기 여기서도 부활 파티클 같은거 있으면 좋을 것 같습니다.(공중에 그냥 가만히 있음)
 
         respawnRoutine = null;
     }
@@ -200,19 +180,35 @@ public class PlayerRespawn : NetworkBehaviour
         // 만약 canRespawn이 false가 되었다면 (탈락 확정)
         if (newVal == false)
         {
-            // 1. 물리 연산 중지
-            if (rb != null) rb.isKinematic = true;
-
-            // 2. 충돌체 끄기 (Deadzone 재감지 방지 및 다른 플레이어와 충돌 방지)
+            if (car != null) car.SetActive(false);//여기서 차를 끕니다.
             if (TryGetComponent(out MeshCollider col)) col.enabled = false;
 
-            // 3. 시각적 제거 (선택 사항: 완전히 없애거나 투명하게 처리)
-            if (car != null) car.SetActive(false);
+            if (rb != null) rb.isKinematic = true;
 
+            if (isOwned) 
+            {
+                //CmdRequestExile();
+                CmdSetKinematic(true);
+            }
             Debug.Log($"{gameObject.name} 플레이어가 최종 탈락하여 모든 기능을 정지합니다.");
         }
     }
 
+    //[Command]
+    //private void CmdRequestExile()
+    //{
+    //    // 서버에서 1초 뒤에 유배를 보냄 (코루틴 사용을 위해 서버 측 코루틴 호출 가능)
+    //    StartCoroutine(ServerExileRoutine());
+    //}
+    //
+    //private IEnumerator ServerExileRoutine()
+    //{
+    //    yield return new WaitForSeconds(2.0f); // 파티클 연출 시간 대기
+    //    isKinematicSynced = true;
+    //    // 서버가 직접 위치를 변경 (NetworkTransform이 모든 클라이언트에 유배 위치 전달)
+    //    transform.position = new Vector3(50000f, 0f, 50000f);
+    //    // 혹시 모르니 서버에서도 물리/충돌체 다시 한번 체크
+    //}
     #endregion
 
     #region Respawn Particle
