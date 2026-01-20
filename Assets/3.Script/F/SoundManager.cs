@@ -78,6 +78,7 @@ public class SoundManager : NetworkBehaviour
     }
 
     // 모든 클라이언트에서 소리가 나오게 하는 곳
+    [ClientRpc]
     public void RpcPlaySFX(string clipName)
     {
         PlaySFXInternal(clipName);
