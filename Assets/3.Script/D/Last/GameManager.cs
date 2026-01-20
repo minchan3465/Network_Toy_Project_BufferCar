@@ -16,6 +16,9 @@ public class GameManager : NetworkBehaviour {
 	[Space]
 	[Header("몇명이 되면 시작할거냐? (0~4)")]
 	public int max_player = 1;
+	[Space(10f)]
+	[Header("게임 종료 시, 돌아갈 Scene 이름 (필수 기입)")]
+	public string Room_Scene_Name = string.Empty;
 	[Space(30f)]
 
 	//Sync할거
@@ -42,6 +45,9 @@ public class GameManager : NetworkBehaviour {
 	public GameObject car;
 
 	//Server가 관리할거
+	public string[] playersId;
+	public int[] playersRate;
+
 	public Stack<int> Ranks = new Stack<int>();
 	public int winnerNumber = -1;
 	public string winnerName = string.Empty;
@@ -64,6 +70,8 @@ public class GameManager : NetworkBehaviour {
 	}
 	public override void OnStartServer() {
 		base.OnStartServer();
+		playersId = new string[max_player];
+		playersRate = new int[max_player];
 		for(int i = 0; i < max_player; i++) {
 			playersData.Add(new());
 			playersName.Add("Wait...");
@@ -76,6 +84,8 @@ public class GameManager : NetworkBehaviour {
 		//플레이어 정보 등록, HP 갱신
 		playersHp.Add(6);
 		playersName[player.index] = player.nickname;
+		playersId[player.index] = player.id;
+		playersRate[player.index] = player.rate;
 		playersData [player.index] = player;
 	}
 
@@ -83,15 +93,20 @@ public class GameManager : NetworkBehaviour {
 	//근데 정보가 그대로 남아있을지는 모르겠음;
 	public void SetDisconnectPlayerIndexInfo(int index) {
 		PlayerData lostPlayer = new PlayerData();
-		lostPlayer.id = playersData[index].id;
-		Debug.Log("[GDD] lostPlayer id : " + lostPlayer.id);
+		lostPlayer.id = playersId[index];
 		lostPlayer.index = index;
 		lostPlayer.nickname = "Lost...";
-		lostPlayer.rate = playersData[index].rate;
+		playersName[index] = lostPlayer.nickname;
+		lostPlayer.rate = playersRate[index];
 		playersData[index] = lostPlayer;
-		playersHp[index] = 0;
 		if (!Ranks.Contains(lostPlayer.index)) {
 			Ranks.Push(lostPlayer.index);
+		}
+		playersHp[index] = 0;
+		CheckPlayerHps();
+		foreach(string playerName in playersName) {
+			if (!playerName.Equals("Lost...")) return;
+			NetworkManager.singleton.ServerChangeScene(Room_Scene_Name);
 		}
 	}
 
@@ -175,7 +190,6 @@ public class GameManager : NetworkBehaviour {
 		yield return new WaitForSeconds(3f);
 		PlayerCanMoveChange(true);
 		UpdateMiddleTextUI(string.Empty);
-
 		/////////////////////////////////////////////////// 승리한 사람 텍스트
 		string str = string.Empty;
 		string color = setColor(winnerNumber);
@@ -212,11 +226,11 @@ public class GameManager : NetworkBehaviour {
 			int index = Ranks.Pop();
 			///////////////////////////////////////////////////////////////////////////////// 순위, 닉네임
 			string color = setColor(index);
-			result_rank = $"{i + 1}\t<color={color}>{playersData[index].nickname}</color>";
+			result_rank = $"{i + 1}\t<color={color}>{playersName[index]}</color>";
 			///////////////////////////////////////////////////////////////////////////////// 순위, 레이팅
 			int point = 0;
 			bool isHigh = true;
-			result_rate = $"{playersData[index].rate} ";
+			result_rate = $"{playersRate[index]} ";
 			switch (i) {
 				case 0:
 					point = 200;
@@ -248,7 +262,7 @@ public class GameManager : NetworkBehaviour {
 		}
 
 		yield return new WaitForSeconds(6f);
-		NetworkManager.singleton.ServerChangeScene("DDD_Main_Room");
+		NetworkManager.singleton.ServerChangeScene(Room_Scene_Name);
 	}
 	[ClientRpc] private void UpdateResultRanktTextUI(int index, string text) { resultRankTextUI[index].text = text; }
 	[ClientRpc] private void UpdateResultRatetTextUI(int index, string text) { resultRateTextUI[index].text = text; }
@@ -280,6 +294,7 @@ public class GameManager : NetworkBehaviour {
 			if (!playerData.index.Equals(index)) return;
 			string id = DataManager.instance.playerInfo.User_ID;
 			bool result = DataManager.instance.SetRate(id, rate);
+			Debug.Log("DB 업데이트 결과 : " + result);
 		}
 	}
 
