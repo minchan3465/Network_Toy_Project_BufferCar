@@ -171,7 +171,6 @@ public class PlayerRespawn : NetworkBehaviour
         transform.rotation = respawn_ob.transform.rotation;
 
         CmdRequestAppearEffect(transform.position);
-        //공중에서 잠시 대기 여기서도 부활 파티클 같은거 있으면 좋을 것 같습니다.(공중에 그냥 가만히 있음)
 
         respawnRoutine = null;
     }
@@ -181,25 +180,35 @@ public class PlayerRespawn : NetworkBehaviour
         // 만약 canRespawn이 false가 되었다면 (탈락 확정)
         if (newVal == false)
         {
-            // 1. 물리 연산 중지
-            if (rb != null) rb.isKinematic = true;
-
-            // 2. 충돌체 끄기 (Deadzone 재감지 방지 및 다른 플레이어와 충돌 방지)
+            if (car != null) car.SetActive(false);//여기서 차를 끕니다.
             if (TryGetComponent(out MeshCollider col)) col.enabled = false;
 
-            // 3. 시각적 제거 (선택 사항: 완전히 없애거나 투명하게 처리)
-            if (car != null) car.SetActive(false);
-            if (isOwned) StartCoroutine(FinalExileSequence());
+            if (rb != null) rb.isKinematic = true;
+
+            if (isOwned) 
+            {
+                //CmdRequestExile();
+                CmdSetKinematic(true);
+            }
             Debug.Log($"{gameObject.name} 플레이어가 최종 탈락하여 모든 기능을 정지합니다.");
         }
     }
 
-    private IEnumerator FinalExileSequence()
-    {
-        yield return new WaitForSeconds(1f);
-        transform.position = new Vector3(50000f, 0, 50000f);
-    }
-
+    //[Command]
+    //private void CmdRequestExile()
+    //{
+    //    // 서버에서 1초 뒤에 유배를 보냄 (코루틴 사용을 위해 서버 측 코루틴 호출 가능)
+    //    StartCoroutine(ServerExileRoutine());
+    //}
+    //
+    //private IEnumerator ServerExileRoutine()
+    //{
+    //    yield return new WaitForSeconds(2.0f); // 파티클 연출 시간 대기
+    //    isKinematicSynced = true;
+    //    // 서버가 직접 위치를 변경 (NetworkTransform이 모든 클라이언트에 유배 위치 전달)
+    //    transform.position = new Vector3(50000f, 0f, 50000f);
+    //    // 혹시 모르니 서버에서도 물리/충돌체 다시 한번 체크
+    //}
     #endregion
 
     #region Respawn Particle
