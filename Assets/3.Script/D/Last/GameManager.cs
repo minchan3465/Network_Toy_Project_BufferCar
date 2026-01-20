@@ -258,7 +258,7 @@ public class GameManager : NetworkBehaviour {
 			UpdateResultRatetTextUI(i, playersData[index].rate, point, 1f, isHigh);
 
 			//플레이어 레이트값 조정
-			UpdatePlayerRateToDB(index, point);
+			UpdatePlayerRateToDB(winnerNumber, playersId[index], point);
 		}
 
 		yield return new WaitForSeconds(6f);
@@ -288,11 +288,12 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	[ClientRpc]
-	private void UpdatePlayerRateToDB(int index, int rate) {
+	private void UpdatePlayerRateToDB(int index, string id, int rate) {
 		//이게 클라이언트한테 시켜서 번호 업데이트하는거라 그냥 DB에 담긴 데이터를 통해 업데이트하는게 맞을듯.
+		//시간 부족으로, 서버에서 작업하는거 말고
+		//1등이 나머지 플레이어까지 업데이트 하는걸로.
 		if(car.TryGetComponent(out PlayerData playerData)) {
-			if (!playerData.index.Equals(index)) return;
-			string id = DataManager.instance.playerInfo.User_ID;
+			if (!playerData.index.Equals(index)) return;	//1등이 아니면 꺼지쇼~
 			bool result = DataManager.instance.SetRate(id, rate);
 			Debug.Log("DB 업데이트 결과 : " + result);
 		}
