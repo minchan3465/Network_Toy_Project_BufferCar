@@ -67,8 +67,6 @@ public class ItemEffectHandler_rigid : NetworkBehaviour
     [Server]
     private IEnumerator IronBodyRoutine()
     {
-        if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("Power UpSFX", transform.position, 1.0f, sfxVolume);
 
         // 서버 물리 적용
         rb.mass = defaultMass * ironMassMultiplier;
@@ -108,8 +106,6 @@ public class ItemEffectHandler_rigid : NetworkBehaviour
     {
         RpcControlEffect(1, true);
 
-        if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("Burst_ImpactSFX", transform.position, 1.0f, sfxVolume);
 
         // 최대 속도 제한 해제
         controller.Speed = defaultSpeed * nitroSpeedMultiplier;
@@ -149,8 +145,6 @@ public class ItemEffectHandler_rigid : NetworkBehaviour
         RpcControlEffect(2, true);
         StartCoroutine(StopParticleDelay(2, empBlastVfxDuration));
 
-        if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
 
         // UnityEngine.Object.FindObjectsByType은 Unity 2023.1+ 권장 (구버전이면 FindObjectsOfType 사용)
         PlayerController_rigid[] allPlayers = FindObjectsByType<PlayerController_rigid>(FindObjectsSortMode.None);
@@ -196,8 +190,6 @@ public class ItemEffectHandler_rigid : NetworkBehaviour
         // 이유: FixedUpdate가 돌아야 PlayerController 내부의 "if(IsStunned) velocity=0" 로직이 작동하여
         // 예측 엔진과 싸우지 않고 위치를 고정할 수 있습니다.
 
-        if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint("EmpSFX", transform.position, 1.0f, sfxVolume);
 
         if (effectRoots.Length > 3) RpcControlEffect(3, true);
 

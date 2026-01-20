@@ -51,7 +51,7 @@ public class ItemSpawner : NetworkBehaviour
             Vector3 targetSpawnPos = CalculateSpawnPosition();
 
             // 2. 경고 단계: 해당 위치에서 소리 재생
-            RpcPlaySpawnSound("ItemDropSFX");
+            RpcPlaySpawnSound("GearDropSFX");
             // (대기하는 동안 게임이 끝났을 수도 있으니 한 번 더 체크)
             if (GameManager.Instance == null || GameManager.Instance.isGameStart)
             {
@@ -107,7 +107,7 @@ public class ItemSpawner : NetworkBehaviour
     [ClientRpc]
     private void RpcPlaySpawnSound(string name)
     {
-        if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXInternal(name);
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFX(name);
     }
 }
