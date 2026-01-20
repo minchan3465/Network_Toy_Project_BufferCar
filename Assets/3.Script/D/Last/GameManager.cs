@@ -104,10 +104,12 @@ public class GameManager : NetworkBehaviour {
 		}
 		playersHp[index] = 0;
 		CheckPlayerHps();
-		foreach(string playerName in playersName) {
-			if (!playerName.Equals("Lost...")) return;
-			NetworkManager.singleton.ServerChangeScene(Room_Scene_Name);
+		bool anyRemain = false;
+		foreach (string playerName in playersName) {
+			if (playerName.Equals("Lost...")) continue;
+			else anyRemain = true;
 		}
+		if(!anyRemain) NetworkManager.singleton.ServerChangeScene(Room_Scene_Name);
 	}
 
 	//------------ UI 변경
@@ -245,12 +247,12 @@ public class GameManager : NetworkBehaviour {
 				case 2:
 					point = -100;
 					isHigh = false;
-					result_rate += $"<color=blue>- {-point}</color>";
+					result_rate += $"<color=blue>- {-1 * point}</color>";
 					break;
 				case 3:
 					point = -200;
 					isHigh = false;
-					result_rate += $"<color=blue>- {-point}</color>";
+					result_rate += $"<color=blue>- {-1 * point}</color>";
 					break;
 			}
 			UpdateResultRanktTextUI(i, result_rank);
@@ -258,7 +260,7 @@ public class GameManager : NetworkBehaviour {
 			UpdateResultRatetTextUI(i, playersData[index].rate, point, 1f, isHigh);
 
 			//플레이어 레이트값 조정
-			UpdatePlayerRateToDB(winnerNumber, playersId[index], point);
+			UpdatePlayerRateToDB(winnerNumber, playersId[index], playersRate[index], point);
 		}
 
 		yield return new WaitForSeconds(6f);
@@ -280,7 +282,7 @@ public class GameManager : NetworkBehaviour {
 			if(isHigh) {
 				text = $"{newRate} <color=orange>+ {newPoint}</color>";
 			} else {
-				text = $"{newRate} <color=blue>- {newPoint}</color>";
+				text = $"{newRate} <color=blue> {newPoint}</color>";
 			}
 			resultRateTextUI[index].text = text;
 			yield return null;
@@ -288,13 +290,13 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	[ClientRpc]
-	private void UpdatePlayerRateToDB(int index, string id, int rate) {
+	private void UpdatePlayerRateToDB(int index, string id, int rate, int point) {
 		//이게 클라이언트한테 시켜서 번호 업데이트하는거라 그냥 DB에 담긴 데이터를 통해 업데이트하는게 맞을듯.
 		//시간 부족으로, 서버에서 작업하는거 말고
 		//1등이 나머지 플레이어까지 업데이트 하는걸로.
 		if(car.TryGetComponent(out PlayerData playerData)) {
 			if (!playerData.index.Equals(index)) return;	//1등이 아니면 꺼지쇼~
-			bool result = DataManager.instance.SetRate(id, rate);
+			bool result = DataManager.instance.SetRate(id, rate + point);
 			Debug.Log("DB 업데이트 결과 : " + result);
 		}
 	}
