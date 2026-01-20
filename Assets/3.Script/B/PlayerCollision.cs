@@ -289,7 +289,7 @@ public class PlayerCollision : NetworkBehaviour
             Debug.Log("Deadzone Tag Detected!");
             if (res != null && res.isRespawning) return;
 
-            SoundManager.instance.RpcPlaySFX("Impact_MetalSFX");//충돌 사운드 호출
+            SoundManager.instance.RpcPlaySFX("Bomb Explosion");//폭발 사운드 호출
             PlayVibration(vpower, duration);//진동호출!
 
             if (rb != null)
