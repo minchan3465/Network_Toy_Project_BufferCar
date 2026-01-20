@@ -14,6 +14,7 @@ public class WinnerCameraController : MonoBehaviour {
 
 	private void OnEnable() {
 		_orbital.HorizontalAxis.Value = orbitSpeed;
+		SoundManager.instance.RpcPlaySFX("VictorySFX");
 	}
 
 	private void Update() {

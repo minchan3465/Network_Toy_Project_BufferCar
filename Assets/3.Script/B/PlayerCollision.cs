@@ -214,6 +214,8 @@ public class PlayerCollision : NetworkBehaviour
     {
         if (collisionParticlePrefab != null)
         {
+            SoundManager.instance.RpcPlaySFX("Impact_MetalSFX");//충돌 사운드 호출
+
             // 위치 보정
             Vector3 spawnPos = pos + (normal * 0.2f) + (Vector3.up * 1.0f);
 
@@ -286,7 +288,8 @@ public class PlayerCollision : NetworkBehaviour
         {
             Debug.Log("Deadzone Tag Detected!");
             if (res != null && res.isRespawning) return;
-            
+
+            SoundManager.instance.RpcPlaySFX("Impact_MetalSFX");//충돌 사운드 호출
             PlayVibration(vpower, duration);//진동호출!
 
             if (rb != null)
