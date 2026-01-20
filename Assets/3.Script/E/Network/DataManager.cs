@@ -28,7 +28,7 @@ public class PlayerInfo
     // 유저 아이디, 비밀번호, 등수
     public string User_ID { get; private set; }
     public string User_Nic { get; private set; }
-    public int User_Rate { get; private set; }
+    public int User_Rate { get; set; }
     public int PlayerNum { get; set; }
     public PlayerInfo(string _id, string _nic, int _rate)
     {
@@ -358,16 +358,20 @@ public class DataManager : MonoBehaviour
             {
                 return false;
             }
-            string sqlCommand = string.Format(@"UPDATE `userdata`.`userinfo` SET `User_Rate`='{0}' WHERE  `User_Name`='{1}';", _rate , _name);
-            MySqlCommand command = new MySqlCommand(sqlCommand, connection);
-            reader = command.ExecuteReader();
-            if (command.ExecuteNonQuery() == 1)//데이터 업데이트 성공
+            string sqlCommand = string.Format(@"UPDATE userdata.userinfo SET User_Rate='{0}' WHERE User_Name='{1}';", _rate, _name);
+
+            using (MySqlCommand command = new MySqlCommand(sqlCommand, connection))
             {
-                return true;
-            }
-            else
-            {
-                return false;
+                command.Parameters.AddWithValue("{0}", _rate);
+                command.Parameters.AddWithValue("{1}", _name);
+
+                int affectedRows = command.ExecuteNonQuery();
+
+                // 0 이상이면 정상 (0은 값이 같아서 변경이 없는 경우)
+                Debug.Log("SET User_Rate='"+ _rate +"' WHERE User_Name='"+ _name + "'");
+                playerInfo.User_Rate = _rate;
+                Debug.Log("SET User_Rate='"+ playerInfo.User_Rate + "' WHERE User_Name='"+ _name + "'");
+                return affectedRows >= 0;
             }
         }
         catch (Exception e)

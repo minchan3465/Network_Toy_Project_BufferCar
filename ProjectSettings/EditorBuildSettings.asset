@@ -17,18 +17,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/1.Scene/Main/Main_ServerScene!.unity
     guid: d32e84d659ae78b46b507f170f3d7897
-  - enabled: 0
-    path: Assets/1.Scene/D/DDD_Main_Title!.unity
-    guid: 31b7e8fccd512cd42902a9330b8fcbb2
-  - enabled: 0
-    path: Assets/1.Scene/D/DDD_Main_Room.unity
-    guid: e2baaf22545e5b7458945480b44caa64
-  - enabled: 0
-    path: Assets/1.Scene/D/D_Main_InGame.unity
-    guid: 863be5316ec27a342b991218c2b021dc
-  - enabled: 0
-    path: Assets/1.Scene/D/DDD_Main_ServerScene!.unity
-    guid: 48212d2251125ce4f9461386ab66fa04
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
