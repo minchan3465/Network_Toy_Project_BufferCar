@@ -21,7 +21,7 @@ public class PlayerRespawnController : NetworkBehaviour
         initialPosition = transform.position;
         initialRotation = transform.rotation;
 
-        Debug.Log($"<color=green>[Spawn Success]</color> 시작 위치 기억 완료: {initialPosition}");
+        //Debug.Log($"<color=green>[Spawn Success]</color> 시작 위치 기억 완료: {initialPosition}");
 
         // ---------------------------------------------------------
         // [TODO: 임우진] 로그인 정보 확인 및 유저 데이터 매칭
@@ -97,6 +97,6 @@ public class PlayerRespawnController : NetworkBehaviour
         // [TODO: 사운드] 리스폰 효과음(SFX) 출력
         // ---------------------------------------------------------
 
-        Debug.Log("<color=yellow>리스폰 완료</color>");
+        //Debug.Log("<color=yellow>리스폰 완료</color>");
     }
 }

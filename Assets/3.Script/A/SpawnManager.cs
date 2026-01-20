@@ -24,7 +24,7 @@ public class SpawnManager : MonoBehaviour
     // 로컬에서 4명이 잘 소환되는지 확인하기 위한 함수
     private void LocalSpawnTest()
     {
-        Debug.Log("<color=cyan>[Local Test]</color> 4인 스폰을 시작합니다.");
+        //Debug.Log("<color=cyan>[Local Test]</color> 4인 스폰을 시작합니다.");
         for (int i = 0; i < 4; i++)
         {
             if (i < spawnPoints.Length)

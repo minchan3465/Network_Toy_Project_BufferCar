@@ -55,11 +55,11 @@ public class SignupController : MonoBehaviour
             //gameObject.SetActive(false);
             Name_input.text = string.Empty;
             Pwd_input.text = string.Empty;
-            Debug.Log(LoginController.gameObject.transform.name);
+            //Debug.Log(LoginController.gameObject.transform.name);
             //LoginController.gameObject.SetActive(false);
-            Debug.Log(LoginController.gameObject.activeSelf);
+            //Debug.Log(LoginController.gameObject.activeSelf);
             Login.gameObject.SetActive(true);
-            Debug.Log(LoginController.gameObject.activeSelf);
+            //Debug.Log(LoginController.gameObject.activeSelf);
             LoginController.LogText_viewing("생성되었습니다.");
             LoginController.LogText_viewing("Success Sign UP.");
             Signup_ob.SetActive(false);

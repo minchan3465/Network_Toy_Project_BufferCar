@@ -301,7 +301,7 @@ public class GameManager : NetworkBehaviour {
 		if(car.TryGetComponent(out PlayerData playerData)) {
 			if (!playerData.index.Equals(index)) return;	//1등이 아니면 꺼지쇼~
 			bool result = DataManager.instance.SetRate(id, rate + point);
-			Debug.Log("DB 업데이트 결과 : " + result);
+			//Debug.Log("DB 업데이트 결과 : " + result);
 		}
 	}
 

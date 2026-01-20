@@ -84,7 +84,7 @@ public class PlayerCollision : NetworkBehaviour
         {
             if (targetCol.isPushing)
             {
-                Debug.Log("Target is already being pushed. Ignore.");
+                //Debug.Log("Target is already being pushed. Ignore.");
                 return;
             }
             this.isPushing = true;

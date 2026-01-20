@@ -28,7 +28,7 @@ public class ServerPlayerRegistry : MonoBehaviour
     }
     private void Start()
     {
-        //Debug.Log($"[Registry] OnEnable | active={gameObject.activeInHierarchy} | server={NetworkServer.active}");
+        ////Debug.Log($"[Registry] OnEnable | active={gameObject.activeInHierarchy} | server={NetworkServer.active}");
         NetworkServer.OnDisconnectedEvent += OnClientDisconnected;
         //StartCoroutine(WaitForServer());
     }
@@ -37,7 +37,7 @@ public class ServerPlayerRegistry : MonoBehaviour
     //    while (!NetworkServer.active)
     //        yield return null;
 
-    //    Debug.Log("[Registry] Server active, subscribe disconnect");
+    //    //Debug.Log("[Registry] Server active, subscribe disconnect");
     //}
     private void OnDisable()
     {
@@ -45,12 +45,12 @@ public class ServerPlayerRegistry : MonoBehaviour
     }
     private void OnClientDisconnected(NetworkConnectionToClient conn)
     {
-        Debug.Log("is starttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
+        //Debug.Log("is starttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
         if (!NetworkServer.active)
             return;
         //if (conn.identity == null)
         //{
-        //    Debug.Log("is starrrrrrrrrrrrrrrrrrrrrrrrrrr");
+        //    //Debug.Log("is starrrrrrrrrrrrrrrrrrrrrrrrrrr");
         //    return;
         //}
 
@@ -97,7 +97,7 @@ public class ServerPlayerRegistry : MonoBehaviour
         connToPlayer[conn] = player;
         player.AssignPlayerNumber(assignedNum);
 
-        Debug.Log($"[Server] HUD {roomPlayer.index}번에 맞춰 UI {assignedNum}번으로 동기화 완료.");
+        //Debug.Log($"[Server] HUD {roomPlayer.index}번에 맞춰 UI {assignedNum}번으로 동기화 완료.");
     }
 
     [Server]
@@ -136,7 +136,7 @@ public class ServerPlayerRegistry : MonoBehaviour
         if (GameManager.Instance != null)
             GameManager.Instance.SetDisconnectPlayerIndexInfo(removeKey - 1);
 
-        Debug.Log($"[Server] Player Left: {removeKey}");
+        //Debug.Log($"[Server] Player Left: {removeKey}");
     }
     [Server]
     public void TryStartGame()
@@ -151,7 +151,7 @@ public class ServerPlayerRegistry : MonoBehaviour
 
         // 모든 조건 만족 시
         isStarting = true;
-        Debug.Log("[Server] 4명 레디 완료. 1초 후 게임 씬으로 이동합니다.");
+        //Debug.Log("[Server] 4명 레디 완료. 1초 후 게임 씬으로 이동합니다.");
 
         // 지연 후 씬 전환 (코루틴 활용)
         StartCoroutine(C_DelayedStart());
@@ -176,6 +176,6 @@ public class ServerPlayerRegistry : MonoBehaviour
     {
         // 네트워크 연결을 유지한 채 로비로 돌아왔을 때 사용
         isStarting = false;
-        Debug.Log("[Server] Registry 상태 재설정. 새로운 게임 준비 완료.");
+        //Debug.Log("[Server] Registry 상태 재설정. 새로운 게임 준비 완료.");
     }
 }

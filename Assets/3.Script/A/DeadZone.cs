@@ -8,11 +8,11 @@ public class DeadZone : MonoBehaviour
 {
     //private void OnTriggerEnter(Collider other)
     //{
-    //    Debug.Log($"Something hit DeadZone: {other.name}");
+    //    //Debug.Log($"Something hit DeadZone: {other.name}");
     //
     //    if (other.CompareTag("Player"))
     //    {
-    //        Debug.Log("Player Tag Detected!");
+    //        //Debug.Log("Player Tag Detected!");
     //
     //        PlayerRespawn respawnController = other.GetComponent<PlayerRespawn>();
     //
@@ -23,13 +23,13 @@ public class DeadZone : MonoBehaviour
     //                //여기 사운드나 파티클 넣어주세요?
     //                
     //                //체력이 남아있다면 리스폰 호출, 그렇지 않으면 실격입니다.
-    //                Debug.Log("My car fell! Requesting Respawn to Server...");
+    //                //Debug.Log("My car fell! Requesting Respawn to Server...");
     //                respawnController.CmdRequestRespawn();
     //            }
     //        }
     //        else
     //        {
-    //            Debug.LogWarning("PlayerRespawn component NOT found on this object or its parents!");
+    //            //Debug.LogWarning("PlayerRespawn component NOT found on this object or its parents!");
     //        }
     //    }
     //}

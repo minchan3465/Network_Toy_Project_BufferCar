@@ -20,9 +20,9 @@ public class NetworkPlayer : NetworkBehaviour
     }
     public override void OnStartServer()
     {
-        Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
+        //Debug.Log($"[Player] OnStartServer registry={(ServerPlayerRegistry.instance == null ? "NULL" : "OK")}");
         //ServerPlayerRegistry.instance.RegisterPlayer(this);
-        Debug.Log("Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+        //Debug.Log("Sucessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
     }
     public override void OnStopServer()
     {
@@ -49,7 +49,7 @@ public class NetworkPlayer : NetworkBehaviour
     }
     private void OnReadyChanged(bool _, bool newValue)
     {
-        Debug.Log($"Player {playerNumber} Ready: {newValue}");
+        //Debug.Log($"Player {playerNumber} Ready: {newValue}");
     }
     #endregion
 }

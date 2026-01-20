@@ -140,7 +140,7 @@ public class ItemEffectHandler_rigid : NetworkBehaviour
     [Server]
     private void Svr_UseEMP()
     {
-        Debug.Log($"[EMP] {name}°¡ EMP ¹ßµ¿!");
+        //Debug.Log($"[EMP] {name}°¡ EMP ¹ßµ¿!");
 
         RpcControlEffect(2, true);
         StartCoroutine(StopParticleDelay(2, empBlastVfxDuration));
@@ -244,7 +244,7 @@ public class ItemEffectHandler_rigid : NetworkBehaviour
     {
         string[] itemNames = { "Iron Body", "Nitro", "EMP" };
         string msg = (index >= 0 && index < itemNames.Length) ? itemNames[index] : "Unknown";
-        Debug.Log($"[¾ÆÀÌÅÛ È¹µæ] {msg} »ç¿ë!");
+        //Debug.Log($"[¾ÆÀÌÅÛ È¹µæ] {msg} »ç¿ë!");
     }
 
     #endregion

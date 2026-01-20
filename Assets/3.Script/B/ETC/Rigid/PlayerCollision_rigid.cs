@@ -62,7 +62,7 @@ public class PlayerCollision_rigid : NetworkBehaviour
                 dirToTarget.y = 0;
                 Vector3 finalForce = dirToTarget.normalized * pushForce;
 
-                Debug.Log("OnCollisionEnter with Predicted Logic!");
+                //Debug.Log("OnCollisionEnter with Predicted Logic!");
 
                 // Ghost가 아닌 진짜 주인(targetIdentity)을 서버로 보냅니다.
                 CmdPushBoth(netIdentity, targetIdentity, finalForce, contactPoint, contactNormal);
@@ -113,7 +113,7 @@ public class PlayerCollision_rigid : NetworkBehaviour
     public void RpcApplyImpulse(Vector3 force)
     {
         PlayVibration(vpower, duration);
-        Debug.Log($"{name} RPC execution. IsLocal: {isLocalPlayer}");
+        //Debug.Log($"{name} RPC execution. IsLocal: {isLocalPlayer}");
 
         if (input != null) input.Enter();
 

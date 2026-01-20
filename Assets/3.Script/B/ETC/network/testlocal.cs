@@ -13,6 +13,6 @@ public class testlocal : MonoBehaviour
     {
         manager = NetworkManager.singleton;
         manager.StartServer();
-        Debug.Log("서버 열림");
+        //Debug.Log("서버 열림");
     }
 }

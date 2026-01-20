@@ -96,13 +96,13 @@ public class Lobby_UI_Controller : MonoBehaviour
             var info = NetworkClient.localPlayer.GetComponent<UserInfoManager>();
             if (info != null)
             {
-                Debug.Log("[UI] 내 캐릭터의 ToggleReady 호출");
+                //Debug.Log("[UI] 내 캐릭터의 ToggleReady 호출");
                 info.ToggleReady();
             }
         }
         else
         {
-            Debug.LogWarning("[UI] 로컬 플레이어 객체를 찾을 수 없습니다.");
+            //Debug.LogWarning("[UI] 로컬 플레이어 객체를 찾을 수 없습니다.");
         }
     }
 

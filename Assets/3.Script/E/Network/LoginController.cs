@@ -41,9 +41,9 @@ public class LoginController : MonoBehaviour
             {
                 checker.Start_Client();
             }
-            Debug.Log("check1"+ DataManager.instance.playerInfo.User_ID);
-            Debug.Log("check2"+ DataManager.instance.playerInfo.User_Nic);
-            Debug.Log("check3"+ DataManager.instance.playerInfo.User_Rate);
+            //Debug.Log("check1"+ DataManager.instance.playerInfo.User_ID);
+            //Debug.Log("check2"+ DataManager.instance.playerInfo.User_Nic);
+            //Debug.Log("check3"+ DataManager.instance.playerInfo.User_Rate);
             //gameObject.SetActive(false);
             //SceneManager.LoadScene("Main_InGame!");
 

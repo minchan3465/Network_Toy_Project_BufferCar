@@ -68,6 +68,6 @@ public class GameDirector : MonoBehaviour
         {
             NetworkServer.Destroy(item);
         }
-        //Debug.Log($"[GameDirector] 아이템 {items.Length}개 청소 완료.");
+        ////Debug.Log($"[GameDirector] 아이템 {items.Length}개 청소 완료.");
     }
 }

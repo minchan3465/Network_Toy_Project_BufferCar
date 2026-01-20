@@ -88,7 +88,7 @@ public class Serverchecker : MonoBehaviour
         }
         catch(Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
             return Type.Empty;
         }
 }
@@ -111,27 +111,27 @@ public class Serverchecker : MonoBehaviour
     {
         if(Application.platform == RuntimePlatform.WebGLPlayer)
         {
-            Debug.Log("cannot webGL Server");
+            //Debug.Log("cannot webGL Server");
         }
         else
         {
             NetworkServer.OnConnectedEvent += (NetworkConnectionToClient) =>
             {
-                Debug.Log($"New Client connect : {NetworkConnectionToClient.address }");
+                //Debug.Log($"New Client connect : {NetworkConnectionToClient.address }");
             };
             NetworkServer.OnDisconnectedEvent +=(NetworkConnectionToClient) =>
             {
-                Debug.Log($"Client Disconnect : {NetworkConnectionToClient.address }");
+                //Debug.Log($"Client Disconnect : {NetworkConnectionToClient.address }");
             };
 
             manager.StartServer();
-            Debug.Log($"{manager.networkAddress} : start Server...");
+            //Debug.Log($"{manager.networkAddress} : start Server...");
         }
     }
     public void Start_Client()
     {
         manager.StartClient();
-        Debug.Log($"{manager.networkAddress} : start client...");
+        //Debug.Log($"{manager.networkAddress} : start client...");
     }
     private void OnApplicationQuit()
     {//프로그램이 꺼졌을 때

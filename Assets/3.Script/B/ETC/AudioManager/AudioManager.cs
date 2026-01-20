@@ -22,7 +22,7 @@ public class AudioManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-            Debug.Log("AudioManager instance가 이미 있습니다. Destroy");
+            //Debug.Log("AudioManager instance가 이미 있습니다. Destroy");
         }
         AutoSetting();
     }
@@ -77,10 +77,10 @@ public class AudioManager : MonoBehaviour
                         return; //Method에서 나가!
                     }
                 }
-                Debug.Log("모든 Audio Source가 Play 중입니다.");
+                //Debug.Log("모든 Audio Source가 Play 중입니다.");
                 return;
             }
         }
-        Debug.Log($"해당 name: [{name}] 을 key로 가진 SFX가 없습니다.");
+        //Debug.Log($"해당 name: [{name}] 을 key로 가진 SFX가 없습니다.");
     }
 }

@@ -158,5 +158,5 @@ public class PlayerController_rigid : NetworkBehaviour
         if (isLocalPlayer && _input != null) _input.ESCEvent -= HandleMenu;
     }
 
-    private void HandleMenu() => Debug.Log("Menu");
+    private void HandleMenu() => //Debug.Log("Menu");
 }

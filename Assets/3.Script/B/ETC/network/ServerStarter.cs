@@ -31,19 +31,19 @@ public class ServerStarter : MonoBehaviour
     {
         if(Application.platform == RuntimePlatform.WebGLPlayer)
         {
-            Debug.Log("can't Start server on webSL");
+            //Debug.Log("can't Start server on webSL");
         }
         else
         {
             manager.StartServer();
-            Debug.Log($"{manager.networkAddress} : StartServer");
+            //Debug.Log($"{manager.networkAddress} : StartServer");
         }
     }
 
     private void StartClient()
     {
         manager.StartClient();
-        Debug.Log($"{manager.networkAddress} : StartClient");
+        //Debug.Log($"{manager.networkAddress} : StartClient");
     }
 
     private void OnApplicationQuit()

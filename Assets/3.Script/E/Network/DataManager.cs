@@ -70,16 +70,16 @@ public class DataManager : MonoBehaviour
         {
             if (serverinfo.Equals(string.Empty))
             {
-                Debug.Log("SQL Server JsonError");
+                //Debug.Log("SQL Server JsonError");
                 return;
             }
             connection = new MySqlConnection(serverinfo);
             connection.Open();
-            Debug.Log("SQL Server Open");
+            //Debug.Log("SQL Server Open");
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
         }
     }
     private string serverSet()
@@ -118,7 +118,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
         }
         return string.Empty;
     }
@@ -130,7 +130,7 @@ public class DataManager : MonoBehaviour
         JsonData data = JsonMapper.ToJson(item);
 
         File.WriteAllText(path + "/config.json", data.ToString());
-        Debug.Log("Create config");
+        //Debug.Log("Create config");
     }
     private bool FolderCheck()
     {
@@ -195,7 +195,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
             return false;
         }
@@ -236,7 +236,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
             return false;
         }
@@ -277,7 +277,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
             return false;
         }
@@ -288,7 +288,7 @@ public class DataManager : MonoBehaviour
         {
             if (!Connection_Check(connection))
             {
-                Debug.Log("connection not open");
+                //Debug.Log("connection not open");
                 return false;
             }
             string sqlCommand = string.Format(@"INSERT INTO `userdata`.`userinfo` (`User_Name`, `User_Nic`, `User_Password`, `User_Rate`) VALUES('{0}', '{1}', '{2}', '{3}');", _name, _nic, _paasword, 2000);
@@ -304,7 +304,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
             return false;
         }
     }
@@ -345,7 +345,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
             return false;
         }
@@ -368,15 +368,15 @@ public class DataManager : MonoBehaviour
                 int affectedRows = command.ExecuteNonQuery();
 
                 // 0 이상이면 정상 (0은 값이 같아서 변경이 없는 경우)
-                Debug.Log("SET User_Rate='"+ _rate +"' WHERE User_Name='"+ _name + "'");
+                //Debug.Log("SET User_Rate='"+ _rate +"' WHERE User_Name='"+ _name + "'");
                 playerInfo.User_Rate = _rate;
-                Debug.Log("SET User_Rate='"+ playerInfo.User_Rate + "' WHERE User_Name='"+ _name + "'");
+                //Debug.Log("SET User_Rate='"+ playerInfo.User_Rate + "' WHERE User_Name='"+ _name + "'");
                 return affectedRows >= 0;
             }
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            //Debug.Log(e.Message);
             return false;
         }
     }
