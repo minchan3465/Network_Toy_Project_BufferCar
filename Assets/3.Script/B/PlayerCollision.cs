@@ -129,8 +129,8 @@ public class PlayerCollision : NetworkBehaviour
 
                 // (내 속도 - 상대 속도)의 차이를 0~1 사이의 비율로 환산
                 float speedDiff = Mathf.Max(0, mySpeed - targetSpeed);
-                // 22로 나누어 0~1 사이 값으로 만든 뒤 0.2를 곱함 (최대 20% 보너스 제한)
-                float attackerBonus = 1f + (speedDiff / 22f * 0.8f);
+                // 22로 나누어 0~1 사이 값으로 만든 뒤 0.24를 곱함 (최대 24% 보너스 제한)
+                float attackerBonus = 1f + (speedDiff / 22f * 0.24f);
 
                 // 최종 힘 계산
                 // 기본 pushForce(19)에서 크게 벗어나지 않음 (최대 22~23 정도)
