@@ -61,19 +61,23 @@ MonoBehaviour:
   - name: GameFinishSFX
     clip: {fileID: 8300000, guid: f70ec4ec8220f334d88c35a1ece8d7eb, type: 3}
   - name: GameStartSFX
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 6375da362316bf24db6a73e5b0c60458, type: 3}
   - name: GearDropSFX
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 6aa539a58ef27dc499b3768d1f53bde6, type: 3}
   - name: GearPickupSFX
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: ec0f1257dfa6d4242b2cd874dd79653d, type: 3}
   - name: Impact_MetalSFX
     clip: {fileID: 0}
   - name: Power_UpSFX
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: cdd3841d141ae274b87371a6054caa7a, type: 3}
   - name: VictorySFX
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: df859e33f98d0d74989eba4c135d3e10, type: 3}
   - name: Engine_IdleSFX
     clip: {fileID: 8300000, guid: 240191053e5c40a46803f87b3e95e626, type: 3}
+  - name: Bomb Explosion
+    clip: {fileID: 8300000, guid: d84467081a96bfc4f822896bd8470643, type: 3}
+  - name: Impact_MetalSFX
+    clip: {fileID: 8300000, guid: aed654b73eac9d3469522abe604bdba1, type: 3}
   BGMPlayer: {fileID: 0}
   SFXPlayer: []
 --- !u!1 &4103116491175121368

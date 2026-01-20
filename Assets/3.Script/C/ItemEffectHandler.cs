@@ -139,7 +139,7 @@ public class ItemEffectHandler : NetworkBehaviour
     [Server]
     private IEnumerator IronBodyRoutine()
     {
-        PlaySound("Power UpSFX");
+        PlaySound("Power_UpSFX");
 
         // 적용
         rb.mass = defaultMass * ironMassMultiplier;
@@ -271,8 +271,8 @@ public class ItemEffectHandler : NetworkBehaviour
     [ClientRpc]
     private void RpcPlaySound(string name)
     {
-        if (SoundManager.instance != null)
+        if (AudioManager.instance != null)
             // 3D 위치 무시하고 일단 소리부터 나게 PlaySFXInternal 사용
-            SoundManager.instance.PlaySFXInternal(name);
+            AudioManager.instance.PlaySFX(name);
     }
 }
