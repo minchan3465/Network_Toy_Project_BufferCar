@@ -112,12 +112,14 @@ public class SoundManager : NetworkBehaviour
     public void PlaySFXInternal(string clipName)
     {
         SoundData data = sfxClips.Find(x => x.name == clipName);
-        if (data == null) return;
+        if (data == null)
+        {
+            Debug.LogError($"[SFX] Clip not found: {clipName}");
+            return;
+        }
 
         AudioSource src = GetAvailableSFXSource();
-        src.PlayOneShot(data.clip);
-            
-        
+        src.PlayOneShot(data.clip, data.volum);
     }
 
     // BGM 재생 함수
