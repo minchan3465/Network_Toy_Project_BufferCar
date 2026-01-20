@@ -16,6 +16,9 @@ public class GameManager : NetworkBehaviour {
 	[Space]
 	[Header("몇명이 되면 시작할거냐? (0~4)")]
 	public int max_player = 1;
+	[Space(10f)]
+	[Header("게임 종료 시, 돌아갈 Scene 이름 (필수 기입)")]
+	public string Room_Scene_Name = string.Empty;
 	[Space(30f)]
 
 	//Sync할거
@@ -42,6 +45,9 @@ public class GameManager : NetworkBehaviour {
 	public GameObject car;
 
 	//Server가 관리할거
+	public string[] playersId;
+	public int[] playersRate;
+
 	public Stack<int> Ranks = new Stack<int>();
 	public int winnerNumber = -1;
 	public string winnerName = string.Empty;
@@ -62,22 +68,45 @@ public class GameManager : NetworkBehaviour {
 		playersHp.OnChange += OnHpListChanged;
 		RefreshNameUI();
 	}
+	public override void OnStartServer() {
+		base.OnStartServer();
+		playersId = new string[max_player];
+		playersRate = new int[max_player];
+		for(int i = 0; i < max_player; i++) {
+			playersData.Add(new());
+			playersName.Add("Wait...");
+		}
+	}
+
 	//플레이어 준비됨 파트
 	public void ImReady(PlayerData player) {
 		//if (!isOwned) return;
 		//플레이어 정보 등록, HP 갱신
-		playersData.Add(player);
 		playersHp.Add(6);
-		playersName.Add(player.nickname);
+		playersName[player.index] = player.nickname;
+		playersId[player.index] = player.id;
+		playersRate[player.index] = player.rate;
+		playersData [player.index] = player;
 	}
+
 	//플레이어 나가면, 그 번호는 Lost라는 이름을 가지게 하고, hp를 0으로 함.
 	//근데 정보가 그대로 남아있을지는 모르겠음;
 	public void SetDisconnectPlayerIndexInfo(int index) {
-		PlayerData lostPlayer = playersData[index];
-		lostPlayer.name = "Lost...";
-		playersHp[index] = 0;
+		PlayerData lostPlayer = new PlayerData();
+		lostPlayer.id = playersId[index];
+		lostPlayer.index = index;
+		lostPlayer.nickname = "Lost...";
+		playersName[index] = lostPlayer.nickname;
+		lostPlayer.rate = playersRate[index];
+		playersData[index] = lostPlayer;
 		if (!Ranks.Contains(lostPlayer.index)) {
 			Ranks.Push(lostPlayer.index);
+		}
+		playersHp[index] = 0;
+		CheckPlayerHps();
+		foreach(string playerName in playersName) {
+			if (!playerName.Equals("Lost...")) return;
+			NetworkManager.singleton.ServerChangeScene(Room_Scene_Name);
 		}
 	}
 
@@ -86,18 +115,18 @@ public class GameManager : NetworkBehaviour {
 	private void OnPlayersDataChanged(SyncList<PlayerData>.Operation op, int playernumber, PlayerData newItem) {
 		if (isServer) {
 			if (isGameStart) return;
-			if (playersData.Count.Equals(max_player)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			if (playersHp.Count.Equals(max_player)) { //서버 시작 인원 설정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				StartCoroutine(Game_Start());
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////////////// Name변경
 	private void OnPlayersNameChanged(SyncList<string>.Operation op, int playernumber, string newItem) {
-		UpdateNameUI(playernumber, newItem);
+		UpdateNameUI(playernumber, playersName[playernumber]);
 	}
 	private void RefreshNameUI() {
 		for(int i = 0; i < playersData.Count; i++) {
-			UpdateNameUI(i, playersData[i].nickname);
+			UpdateNameUI(i, playersName[i]);
 		}
 	}
 	private void UpdateNameUI(int playernumber, string name) {
@@ -161,7 +190,6 @@ public class GameManager : NetworkBehaviour {
 		yield return new WaitForSeconds(3f);
 		PlayerCanMoveChange(true);
 		UpdateMiddleTextUI(string.Empty);
-
 		/////////////////////////////////////////////////// 승리한 사람 텍스트
 		string str = string.Empty;
 		string color = setColor(winnerNumber);
@@ -176,10 +204,6 @@ public class GameManager : NetworkBehaviour {
 		UpdateWinnerTextUI(string.Empty);
 		//플레이어 UI, 실제 데이터 변경
 		StartCoroutine(ResultCal());
-
-		//yield return new WaitForSeconds(7f);
-		//룸으로 돌아가는 세팅
-		//그 전에, 플레이어들한테 아바타 권한 다시 돌려놔야함.
 	}
 
 	[ClientRpc] private void UpdateMiddleTextUI(string str) { middleTextUI.text = str; }
@@ -202,11 +226,11 @@ public class GameManager : NetworkBehaviour {
 			int index = Ranks.Pop();
 			///////////////////////////////////////////////////////////////////////////////// 순위, 닉네임
 			string color = setColor(index);
-			result_rank = $"{i + 1}\t<color={color}>{playersData[index].nickname}</color>";
+			result_rank = $"{i + 1}\t<color={color}>{playersName[index]}</color>";
 			///////////////////////////////////////////////////////////////////////////////// 순위, 레이팅
 			int point = 0;
 			bool isHigh = true;
-			result_rate = $"{playersData[index].rate} ";
+			result_rate = $"{playersRate[index]} ";
 			switch (i) {
 				case 0:
 					point = 200;
@@ -221,12 +245,12 @@ public class GameManager : NetworkBehaviour {
 				case 2:
 					point = -100;
 					isHigh = false;
-					result_rate += $"<color=blue>- {point}</color>";
+					result_rate += $"<color=blue>- {-point}</color>";
 					break;
 				case 3:
 					point = -200;
 					isHigh = false;
-					result_rate += $"<color=blue>- {point}</color>";
+					result_rate += $"<color=blue>- {-point}</color>";
 					break;
 			}
 			UpdateResultRanktTextUI(i, result_rank);
@@ -234,11 +258,11 @@ public class GameManager : NetworkBehaviour {
 			UpdateResultRatetTextUI(i, playersData[index].rate, point, 1f, isHigh);
 
 			//플레이어 레이트값 조정
-			UpdatePlayerRateToDB(point);
+			UpdatePlayerRateToDB(index, point);
 		}
 
-		yield return new WaitForSeconds(4f);
-		//룸으로 돌아가기
+		yield return new WaitForSeconds(6f);
+		NetworkManager.singleton.ServerChangeScene(Room_Scene_Name);
 	}
 	[ClientRpc] private void UpdateResultRanktTextUI(int index, string text) { resultRankTextUI[index].text = text; }
 	[ClientRpc] private void UpdateResultRatetTextUI(int index, string text) { resultRateTextUI[index].text = text; }
@@ -264,14 +288,13 @@ public class GameManager : NetworkBehaviour {
 	}
 
 	[ClientRpc]
-	private void UpdatePlayerRateToDB(int rate) {
+	private void UpdatePlayerRateToDB(int index, int rate) {
 		//이게 클라이언트한테 시켜서 번호 업데이트하는거라 그냥 DB에 담긴 데이터를 통해 업데이트하는게 맞을듯.
-		string id = DataManager.instance.playerInfo.User_ID;
 		if(car.TryGetComponent(out PlayerData playerData)) {
-			if(playerData.nickname.Equals(DataManager.instance.playerInfo.User_Nic)) {
-				bool result = DataManager.instance.SetRate(id, rate);
-				Debug.Log("DB 업데이트 결과 : " + result);
-			}
+			if (!playerData.index.Equals(index)) return;
+			string id = DataManager.instance.playerInfo.User_ID;
+			bool result = DataManager.instance.SetRate(id, rate);
+			Debug.Log("DB 업데이트 결과 : " + result);
 		}
 	}
 

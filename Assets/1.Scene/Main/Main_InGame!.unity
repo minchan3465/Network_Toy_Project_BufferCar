@@ -1802,7 +1802,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  max_player: 1
+  max_player: 4
+  Room_Scene_Name: Main_Room
   isGameStart: 0
   playerHpUI:
   - hpButtons:
@@ -1845,6 +1846,8 @@ MonoBehaviour:
   feverTextUI: {fileID: 127312639}
   spectatorCamera: {fileID: 706949604}
   car: {fileID: 0}
+  playersId: []
+  playersRate: 
   winnerNumber: -1
   winnerName: 
   startCountdownTime: 3
