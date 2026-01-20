@@ -358,7 +358,7 @@ public class DataManager : MonoBehaviour
             {
                 return false;
             }
-            string sqlCommand = string.Format(@"UPDATE `userdata`.`userinfo` SET `User_Rate`='{0}' WHERE  `User_Name`='{1}';", _name, _rate);
+            string sqlCommand = string.Format(@"UPDATE `userdata`.`userinfo` SET `User_Rate`='{0}' WHERE  `User_Name`='{1}';", _rate , _name);
             MySqlCommand command = new MySqlCommand(sqlCommand, connection);
             reader = command.ExecuteReader();
             if (command.ExecuteNonQuery() == 1)//데이터 업데이트 성공
