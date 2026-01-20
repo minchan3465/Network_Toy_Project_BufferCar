@@ -93,10 +93,10 @@ public class GameManager : NetworkBehaviour {
 	//근데 정보가 그대로 남아있을지는 모르겠음;
 	public void SetDisconnectPlayerIndexInfo(int index) {
 		PlayerData lostPlayer = new PlayerData();
-		lostPlayer.id = playersId[index];
+		if(playersId[index] != null) lostPlayer.id = playersId[index];
 		lostPlayer.index = index;
 		lostPlayer.nickname = "Lost...";
-		playersName[index] = lostPlayer.nickname;
+		if (playersName[index] != null) playersName[index] = lostPlayer.nickname;
 		lostPlayer.rate = playersRate[index];
 		playersData[index] = lostPlayer;
 		if (!Ranks.Contains(lostPlayer.index)) {
@@ -294,6 +294,7 @@ public class GameManager : NetworkBehaviour {
 		//이게 클라이언트한테 시켜서 번호 업데이트하는거라 그냥 DB에 담긴 데이터를 통해 업데이트하는게 맞을듯.
 		//시간 부족으로, 서버에서 작업하는거 말고
 		//1등이 나머지 플레이어까지 업데이트 하는걸로.
+		if (string.IsNullOrEmpty(id)) return;	//id가 공백이면 꺼지쇼~ (에러방지)
 		if(car.TryGetComponent(out PlayerData playerData)) {
 			if (!playerData.index.Equals(index)) return;	//1등이 아니면 꺼지쇼~
 			bool result = DataManager.instance.SetRate(id, rate + point);
