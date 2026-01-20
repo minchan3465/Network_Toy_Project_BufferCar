@@ -995,6 +995,10 @@ PrefabInstance:
       propertyPath: roomPlayerPrefab
       value: 
       objectReference: {fileID: -6973232329894679171, guid: 74c8c50ba8aec6b498824ed6a3f972ea, type: 3}
+    - target: {fileID: 1070023286011161959, guid: 952ff7c2530c838438d98855e75c6bd1, type: 3}
+      propertyPath: spawnPrefabs.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4595744137644906518, guid: 952ff7c2530c838438d98855e75c6bd1, type: 3}
       propertyPath: m_Name
       value: MainTitle_NetworkManager
