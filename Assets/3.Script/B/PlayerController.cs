@@ -146,5 +146,12 @@ public class PlayerController : NetworkBehaviour
         if (isLocalPlayer && _input != null) _input.ESCEvent -= HandleMenu;
     }
 
-    private void HandleMenu() => Debug.Log("Menu");
+    private void HandleMenu()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
 }
