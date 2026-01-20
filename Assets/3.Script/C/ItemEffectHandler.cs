@@ -232,16 +232,8 @@ public class ItemEffectHandler : NetworkBehaviour
 
     private void PlaySound(string name)
     {
-        // 서버에서 모든 클라이언트에게 "이 소리 재생해"라고 명령
+        // SoundManager의 RPC를 부르는 게 아니라, 내 RPC를 부른다!
         RpcPlaySound(name);
-    }
-
-    [ClientRpc]
-    private void RpcPlaySound(string name)
-    {
-        // 각 클라이언트의 로컬 사운드 매니저 실행
-        if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXInternal(name);
     }
 
     private IEnumerator DelayEffectOff(int index, float delay)
@@ -275,5 +267,12 @@ public class ItemEffectHandler : NetworkBehaviour
         string[] names = { "Iron Body", "Nitro", "EMP" };
         string msg = (index >= 0 && index < names.Length) ? names[index] : "Unknown";
         Debug.Log($"[Item] {msg} Activated");
+    }
+    [ClientRpc]
+    private void RpcPlaySound(string name)
+    {
+        if (SoundManager.instance != null)
+            // 3D 위치 무시하고 일단 소리부터 나게 PlaySFXInternal 사용
+            SoundManager.instance.PlaySFXInternal(name);
     }
 }
