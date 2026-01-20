@@ -40,7 +40,7 @@ public class UserInfoManager : NetworkBehaviour
     // 씬이 전환될 때마다 실행되는 함수
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 로비 씬 이름으로 이동했을 때만 실행 (씬 이름에 맞게 수정하세요)
+        // 로비 씬 이름으로 이동했을 때만 실행 
         if (scene.name == "Main_Room")
         {
             StartCoroutine(C_RebindUI());

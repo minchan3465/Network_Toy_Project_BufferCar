@@ -1,5 +1,7 @@
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 public class GameFlowManager : NetworkBehaviour
 {
     public static GameFlowManager Instance;
@@ -35,5 +37,19 @@ public class GameFlowManager : NetworkBehaviour
         {
             lobbyUI.StartGameSequence(); // 카운트다운 3, 2, 1 시작
         }
+    }
+    // [핵심] 게임이 끝나고 로비로 돌아가는 로직
+    [Server]
+    public void BackToRoom()
+    {
+        // 1. 다음 판을 위해 레지스트리 상태 재설정 (중복 방지)
+        if (ServerPlayerRegistry.instance != null)
+        {
+            ServerPlayerRegistry.instance.PrepareForNewGame();
+        }
+
+        // 2. [가장 중요] SceneManager.LoadScene이 아니라 이 함수를 써야 함!
+        // 그래야 모든 클라이언트가 '접속을 유지한 채' 다 같이 로비로 이동합니다.
+        NetworkManager.singleton.ServerChangeScene("Main_Room");
     }
 }

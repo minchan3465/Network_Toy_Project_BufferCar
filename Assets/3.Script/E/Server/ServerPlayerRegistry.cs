@@ -161,4 +161,11 @@ public class ServerPlayerRegistry : MonoBehaviour
             GameFlowManager.Instance.StartGame(); // 여기서 ServerChangeScene 호출
         }
     }
+    [Server]
+    public void PrepareForNewGame()
+    {
+        // 네트워크 연결을 유지한 채 로비로 돌아왔을 때 사용
+        isStarting = false;
+        Debug.Log("[Server] Registry 상태 재설정. 새로운 게임 준비 완료.");
+    }
 }
