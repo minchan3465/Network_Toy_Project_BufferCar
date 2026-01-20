@@ -70,16 +70,16 @@ public class DataManager : MonoBehaviour
         {
             if (serverinfo.Equals(string.Empty))
             {
-                //Debug.Log("SQL Server JsonError");
+                Debug.Log("SQL Server JsonError");
                 return;
             }
             connection = new MySqlConnection(serverinfo);
             connection.Open();
-            //Debug.Log("SQL Server Open");
+            Debug.Log("SQL Server Open");
         }
         catch (Exception e)
         {
-            //Debug.Log(e.Message);
+            Debug.Log(e.Message);
         }
     }
     private string serverSet()
@@ -118,7 +118,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            //Debug.Log(e.Message);
+            Debug.Log(e.Message);
         }
         return string.Empty;
     }
@@ -195,7 +195,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            //Debug.Log(e.Message);
+            Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
             return false;
         }
@@ -236,7 +236,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            //Debug.Log(e.Message);
+            Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
             return false;
         }
@@ -277,7 +277,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            //Debug.Log(e.Message);
+            Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
             return false;
         }
@@ -304,7 +304,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            //Debug.Log(e.Message);
+            Debug.Log(e.Message);
             return false;
         }
     }
@@ -345,7 +345,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            //Debug.Log(e.Message);
+            Debug.Log(e.Message);
             if (!reader.IsClosed) reader.Close();
             return false;
         }
@@ -376,7 +376,7 @@ public class DataManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            //Debug.Log(e.Message);
+            Debug.Log(e.Message);
             return false;
         }
     }
