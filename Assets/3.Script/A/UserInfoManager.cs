@@ -1,6 +1,7 @@
 using UnityEngine;
 using Mirror;
 using System.Collections;
+using UnityEngine.SceneManagement; // 씬 관리 네임스페이스 추가
 
 public class UserInfoManager : NetworkBehaviour
 {
@@ -24,6 +25,42 @@ public class UserInfoManager : NetworkBehaviour
 
         RefreshUI();
         StartCoroutine(C_SendInitialInfo());
+    }
+    private void OnEnable()
+    {
+        // 씬 로드 완료 이벤트 구독
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    private void OnDisable()
+    {
+        // 이벤트 구독 해제 (메모리 누수 방지)
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    // 씬이 전환될 때마다 실행되는 함수
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 로비 씬 이름으로 이동했을 때만 실행 (씬 이름에 맞게 수정하세요)
+        if (scene.name == "Main_Room")
+        {
+            StartCoroutine(C_RebindUI());
+        }
+    }
+
+    private IEnumerator C_RebindUI()
+    {
+        // 씬이 로드된 직후에는 UI 객체가 아직 생성 중일 수 있으므로 한 프레임 쉽니다.
+        yield return null;
+
+        // 1. 새로운 씬의 UI 컨트롤러 찾기
+        lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
+
+        // 2. 즉시 UI 갱신
+        if (lobbyUI != null)
+        {
+            Debug.Log($"[UI 복구] {PlayerNickname}의 UI를 다시 연결합니다.");
+            RefreshUI();
+        }
     }
 
     private void Update()
