@@ -232,8 +232,16 @@ public class ItemEffectHandler : NetworkBehaviour
 
     private void PlaySound(string name)
     {
+        // 서버에서 모든 클라이언트에게 "이 소리 재생해"라고 명령
+        RpcPlaySound(name);
+    }
+
+    [ClientRpc]
+    private void RpcPlaySound(string name)
+    {
+        // 각 클라이언트의 로컬 사운드 매니저 실행
         if (SoundManager.instance != null)
-            SoundManager.instance.PlaySFXPoint(name, transform.position, 1.0f, sfxVolume);
+            SoundManager.instance.PlaySFXInternal(name);
     }
 
     private IEnumerator DelayEffectOff(int index, float delay)
