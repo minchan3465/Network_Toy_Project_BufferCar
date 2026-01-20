@@ -207,9 +207,12 @@ public class PlayerCollision : NetworkBehaviour
     [ClientRpc]
     public void RPCSoundandParticle(Vector3 pos, Vector3 normal)
     {
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX("Impact_MetalSFX");
+        }
         if (collisionParticlePrefab != null)
         {
-            AudioManager.instance.PlaySFX("Impact_MetalSFX");//충돌 사운드 호출
 
             // 위치 보정
             Vector3 spawnPos = pos + (normal * 0.2f) + (Vector3.up * 1.0f);
