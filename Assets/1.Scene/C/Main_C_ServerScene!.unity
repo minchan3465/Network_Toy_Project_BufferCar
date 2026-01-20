@@ -173,7 +173,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2977243950517692189, guid: 30f31530d30a1974bbec45171f7d7c78, type: 3}
       propertyPath: onlineScene
-      value: Assets/1.Scene/Main/Main_InGame!.unity
+      value: Assets/1.Scene/C/Main_C_InGame!.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 2977243950517692189, guid: 30f31530d30a1974bbec45171f7d7c78, type: 3}
+      propertyPath: offlineScene
+      value: Assets/1.Scene/C/Main_C_Title!.unity
+      objectReference: {fileID: 0}
+    - target: {fileID: 2977243950517692189, guid: 30f31530d30a1974bbec45171f7d7c78, type: 3}
+      propertyPath: networkAddress
+      value: localhost
       objectReference: {fileID: 0}
     - target: {fileID: 2977243950517692189, guid: 30f31530d30a1974bbec45171f7d7c78, type: 3}
       propertyPath: spawnPrefabs.Array.size
