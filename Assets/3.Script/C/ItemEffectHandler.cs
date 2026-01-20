@@ -36,6 +36,7 @@ public class ItemEffectHandler : NetworkBehaviour
     private bool _isFeverActive = false;  // 피버 타임
     private bool _isNitroPlaying = false; // 니트로 사용 중
     private bool _wasDead = false;        // 죽음 상태 플래그 (중복 처리 방지)
+    private bool _wasRespawning = false;
 
     // [리팩토링 1] 복잡한 죽음 확인 로직을 프로퍼티 하나로 압축
     private bool IsDead
@@ -74,21 +75,37 @@ public class ItemEffectHandler : NetworkBehaviour
     {
         if (GameManager.Instance == null) return;
 
-        // 1. 죽음 처리 (상태가 변할 때만 로직 수행)
+        // 1. 죽음 처리 (기존 코드 유지)
         if (IsDead)
         {
-            if (!_wasDead) ResetAllState(); // 죽는 순간 초기화
+            if (!_wasDead) ResetAllState();
             _wasDead = true;
             return;
         }
         _wasDead = false;
 
-        // 2. 피버 타임 감지
+        // --- [여기부터 추가/수정] ---
+        // 1.5 리스폰 완료 감지 로직
+        // PlayerRespawn의 isRespawning이 true -> false로 바뀌는 순간(서버 대기 끝)을 포착
+        if (myRespawn != null)
+        {
+            bool isRespawning = myRespawn.isRespawning;
+            if (_wasRespawning && !isRespawning)
+            {
+                // 서버 대기(2초)는 끝났지만, 클라이언트에서는 깜빡임(2초)이 시작됨.
+                // 깜빡임이 다 끝난 뒤에 파티클을 켜주기 위해 코루틴 실행
+                StartCoroutine(RestoreEffectAfterBlink());
+            }
+            _wasRespawning = isRespawning;
+        }
+        // ---------------------------
+
+        // 2. 피버 타임 감지 (기존 코드 유지)
         bool nowFever = GameManager.Instance.gameTime < 0;
         if (_isFeverActive != nowFever)
         {
             _isFeverActive = nowFever;
-            RefreshState(); // 상태가 변했으니 갱신
+            RefreshState();
         }
     }
 
@@ -274,5 +291,16 @@ public class ItemEffectHandler : NetworkBehaviour
         if (AudioManager.instance != null)
             // 3D 위치 무시하고 일단 소리부터 나게 PlaySFXInternal 사용
             AudioManager.instance.PlaySFX(name);
+    }
+
+    [Server]
+    private IEnumerator RestoreEffectAfterBlink()
+    {
+        // PlayerRespawn.cs의 BlinkVisualsDuration이 2.0초이므로
+        // 확실하게 깜빡임이 끝난 뒤(2.2초 후)에 명령을 보내야 함
+        yield return new WaitForSeconds(2.2f);
+
+        // 현재 상태(피버인지, 니트로인지 등)를 다시 확인해서 RPC 전송
+        RefreshState();
     }
 }
