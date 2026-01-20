@@ -69,51 +69,35 @@ public class ServerPlayerRegistry : MonoBehaviour
         if (player.connectionToClient == null) return;
         NetworkConnectionToClient conn = player.connectionToClient;
 
-        // 1. 기존에 이 커넥션으로 등록된 정보가 있는지 확인
+        // 1. 중복 객체 제거 (기존 로직 유지)
         if (connToPlayer.TryGetValue(conn, out var oldPlayer))
         {
             if (oldPlayer != null && oldPlayer != player)
             {
-                Debug.Log($"[Server] 중복 객체 제거 시도: {conn.connectionId}");
-
-                // 기존 번호 찾아서 players에서 제거
                 int oldKey = -1;
-                foreach (var kv in players)
-                {
-                    if (kv.Value == oldPlayer) { oldKey = kv.Key; break; }
-                }
-
-                if (oldKey != -1)
-                {
-                    players.Remove(oldKey);
-                    availableNumbers.Add(oldKey); // 번호 회수
-                }
-
-                // [중요] 딕셔너리에서 먼저 밀어내기
-                connToPlayer.Remove(conn);
-
-                // 실제 객체 파괴
+                foreach (var kv in players) { if (kv.Value == oldPlayer) { oldKey = kv.Key; break; } }
+                if (oldKey != -1) players.Remove(oldKey);
                 NetworkServer.Destroy(oldPlayer.gameObject);
             }
         }
 
-        // 2. 새로운 정보로 갱신
-        int assignedNumber;
-        if (availableNumbers.Count > 0)
-        {
-            assignedNumber = availableNumbers.Min;
-            availableNumbers.Remove(assignedNumber);
-        }
-        else
-        {
-            assignedNumber = nextPlayerNumber++;
-        }
+        // 2. [수정] Mirror HUD 인덱스가 할당될 때까지 기다렸다가 등록
+        StartCoroutine(C_RegisterByHUDIndex(player, conn));
+    }
 
-        players[assignedNumber] = player;
-        connToPlayer[conn] = player; // 새 객체로 교체
+    private IEnumerator C_RegisterByHUDIndex(UserInfoManager player, NetworkConnectionToClient conn)
+    {
+        var roomPlayer = player.GetComponent<NetworkRoomPlayer>();
+        // Mirror 내부에서 index가 0, 1, 2, 3 중 하나로 할당될 때까지 대기
+        yield return new WaitUntil(() => roomPlayer != null && roomPlayer.index != -1);
 
-        player.AssignPlayerNumber(assignedNumber);
-        Debug.Log($"[Server] {player.PlayerNickname} 신규 등록 완료. 슬롯: {assignedNumber}");
+        int assignedNum = roomPlayer.index + 1; // Mirror HUD 번호를 그대로 사용
+
+        players[assignedNum] = player;
+        connToPlayer[conn] = player;
+        player.AssignPlayerNumber(assignedNum);
+
+        Debug.Log($"[Server] HUD {roomPlayer.index}번에 맞춰 UI {assignedNum}번으로 동기화 완료.");
     }
 
     [Server]

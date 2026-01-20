@@ -51,7 +51,32 @@ public class UserInfoManager : NetworkBehaviour
         // 이벤트 구독 해제 (메모리 누수 방지)
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+    private void Update()
+    {
+        if (roomPlayer == null) roomPlayer = GetComponent<NetworkRoomPlayer>();
 
+        // [핵심] HUD와 UI 동기화: Mirror HUD 번호(index)를 UI 번호(PlayerNum)에 강제 주입
+        if (isServer && roomPlayer != null && roomPlayer.index != -1)
+        {
+            int hudBasedNum = roomPlayer.index + 1; // HUD 0번 -> UI 1번
+            if (PlayerNum != hudBasedNum)
+            {
+                PlayerNum = hudBasedNum; // SyncVar이므로 모든 클라이언트에 즉시 전파
+            }
+        }
+
+        // [기존 기능 유지] 레디 상태가 변할 때만 UI 갱신 및 게임 시작 체크
+        if (roomPlayer != null && roomPlayer.readyToBegin != lastReadyState)
+        {
+            lastReadyState = roomPlayer.readyToBegin;
+            RefreshUI();
+
+            if (isServer)
+            {
+                ServerPlayerRegistry.instance?.TryStartGame();
+            }
+        }
+    }
     // 씬이 전환될 때마다 실행되는 함수
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -78,23 +103,7 @@ public class UserInfoManager : NetworkBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (roomPlayer == null) roomPlayer = GetComponent<NetworkRoomPlayer>();
 
-        // 상태가 실제로 변했을 때만 UI 갱신 (매 프레임 UI 연산 방지)
-        if (roomPlayer != null && roomPlayer.readyToBegin != lastReadyState)
-        {
-            lastReadyState = roomPlayer.readyToBegin;
-            RefreshUI();
-
-            // 서버라면 레디 상태가 변할 때마다 게임 시작 가능 여부 체크
-            if (isServer)
-            {
-                ServerPlayerRegistry.instance?.TryStartGame();
-            }
-        }
-    }
 
     public void ToggleReady()
     {
