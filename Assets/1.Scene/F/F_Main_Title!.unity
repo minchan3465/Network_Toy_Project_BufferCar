@@ -956,6 +956,34 @@ PrefabInstance:
       propertyPath: bgmSource
       value: 
       objectReference: {fileID: 954277099}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[11].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: d84467081a96bfc4f822896bd8470643, type: 3}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[11].name
+      value: Bomb Explosion
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[12].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: df859e33f98d0d74989eba4c135d3e10, type: 3}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[12].name
+      value: VictorySFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[11].volum
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3582688471795892386, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
+      propertyPath: sfxClips.Array.data[12].volum
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3674788909303889778, guid: 21648fee328a6a146b4d5c62bc2d8393, type: 3}
       propertyPath: m_Enabled
       value: 1
