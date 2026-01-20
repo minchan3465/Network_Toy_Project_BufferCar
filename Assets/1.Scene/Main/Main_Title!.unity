@@ -353,6 +353,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5888855129888293860, guid: b57ba6085045b6f4fb87b65ebc7532be, type: 3}
+      propertyPath: SFX.Array.size
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 5888855129888293860, guid: b57ba6085045b6f4fb87b65ebc7532be, type: 3}
+      propertyPath: SFX.Array.data[13].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: aed654b73eac9d3469522abe604bdba1, type: 3}
+    - target: {fileID: 5888855129888293860, guid: b57ba6085045b6f4fb87b65ebc7532be, type: 3}
+      propertyPath: SFX.Array.data[13].name
+      value: Impact_MetalSFX
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

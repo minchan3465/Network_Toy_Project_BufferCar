@@ -140,6 +140,11 @@ public class PlayerCollision : NetworkBehaviour
                 ContactPoint contact = collision.GetContact(0);
                 PlayVibration(vpower, duration);
 
+                if (AudioManager.instance != null)
+                {
+                    AudioManager.instance.PlaySFX("Impact_MetalSFX");
+                }
+
                 ApplyImpulseLocal(forceToSelf);
 
                 // 서버 전송
@@ -161,6 +166,8 @@ public class PlayerCollision : NetworkBehaviour
         if (this.isPushing) return;
         if (target.TryGetComponent(out PlayerCollision targetCol))
         {
+            RpcPlayEffectExcludeOwner(contactPoint, contactNormal);
+
             if (targetCol.isPushing) return;
 
             this.isPushing = true;
@@ -174,6 +181,19 @@ public class PlayerCollision : NetworkBehaviour
 
             Invoke(nameof(ServerResetPushStatus), (float)pushCooldown);
             targetCol.Invoke(nameof(targetCol.ServerResetPushStatus), (float)pushCooldown);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcPlayEffectExcludeOwner(Vector3 pos, Vector3 normal)
+    {
+        // 공격자 본인이라면 중복 재생 방지를 위해 리턴
+        if (isOwned) return;
+
+        // 관전자와 피격자 화면에서 실행됨
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX("Impact_MetalSFX");
         }
     }
     //
@@ -206,10 +226,6 @@ public class PlayerCollision : NetworkBehaviour
     [ClientRpc]
     public void RPCSoundandParticle(Vector3 pos, Vector3 normal)
     {
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlaySFX("Impact_MetalSFX");
-        }
         if (collisionParticlePrefab != null)
         {
 
