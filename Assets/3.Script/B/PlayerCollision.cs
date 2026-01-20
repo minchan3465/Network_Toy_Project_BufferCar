@@ -188,7 +188,6 @@ public class PlayerCollision : NetworkBehaviour
     public void RpcApplyImpulse(Vector3 force)
     {
         PlayVibration(vpower, duration);//진동호출!
-        Debug.Log($"{name} RPC execution. IsLocal: {isOwned}");
         // 각 플레이어의 화면에서 실행
         if (rb == null) rb = GetComponent<Rigidbody>();
 
@@ -282,7 +281,6 @@ public class PlayerCollision : NetworkBehaviour
 
         if (other.CompareTag("Deadzone"))
         {
-            Debug.Log("Deadzone Tag Detected!");
             if (res != null && res.isRespawning) return;
 
             PlayVibration(vpower, duration);//진동호출!

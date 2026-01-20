@@ -136,7 +136,6 @@ public class PlayerRespawn : NetworkBehaviour
 
         if (!canRespawn)
         {
-            Debug.Log($"{name}탈락");
             return;
         }
 
@@ -189,7 +188,6 @@ public class PlayerRespawn : NetworkBehaviour
             {
                 CmdSetKinematic(true);
             }
-            Debug.Log($"{gameObject.name} 플레이어가 최종 탈락하여 모든 기능을 정지합니다.");
         }
     }
     
