@@ -996,6 +996,10 @@ PrefabInstance:
       value: Assets/1.Scene/Main/Main_Room.unity
       objectReference: {fileID: 0}
     - target: {fileID: 1070023286011161959, guid: 952ff7c2530c838438d98855e75c6bd1, type: 3}
+      propertyPath: showRoomGUI
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1070023286011161959, guid: 952ff7c2530c838438d98855e75c6bd1, type: 3}
       propertyPath: offlineScene
       value: Assets/1.Scene/Main/Main_Title!.unity
       objectReference: {fileID: 0}

@@ -98,7 +98,7 @@ public class UserInfoManager : NetworkBehaviour
         // 2. 즉시 UI 갱신
         if (lobbyUI != null)
         {
-            Debug.Log($"[UI 복구] {PlayerNickname}의 UI를 다시 연결합니다.");
+            //Debug.Log($"[UI 복구] {PlayerNickname}의 UI를 다시 연결합니다.");
             RefreshUI();
         }
     }
