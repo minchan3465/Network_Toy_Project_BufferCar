@@ -12,6 +12,8 @@ public class ServerPlayerRegistry : MonoBehaviour
     private readonly SortedSet<int> availableNumbers = new();
     private int nextPlayerNumber = 1;
     public int PlayerCount => players.Count;
+    private bool isStarting = false; // 중복 시작 방지 플래그
+
     private void Awake()
     {
         if (instance == null)
@@ -129,31 +131,34 @@ public class ServerPlayerRegistry : MonoBehaviour
     [Server]
     public void TryStartGame()
     {
-        // 1. [수정 핵심] 접속한 플레이어 수가 반드시 4명이어야 함
-        // (테스트를 위해 인원수를 조절하고 싶다면 이 숫자를 바꾸면 됩니다)
-        if (players.Count < 4)
-        {
-            Debug.Log($"[Server] 현재 인원 {players.Count}/4. 더 많은 플레이어가 필요합니다.");
-            return;
-        }
+        if (isStarting || players.Count < 4) return; // 이미 시작 중이거나 인원 부족 시 리턴
 
-        // 2. 4명이 다 찼다면, 모든 플레이어의 레디 상태를 확인
         foreach (var p in players)
         {
-            if (p.Value == null || !p.Value.IsReady)
-            {
-                // 한 명이라도 레디를 안 했다면 시작하지 않음
+            if (p.Value == null || !p.Value.IsReady) // 한 명이라도 준비 안 됐으면 리턴
                 return;
-            }
         }
 
-        // 3. 인원수(4명)와 전원 레디 조건을 모두 만족함
-        Debug.Log("[Server] 4명 전원 접속 및 레디 완료! 게임을 시작합니다.");
-        GameFlowManager.Instance.StartGame();
+        // 모든 조건 만족 시
+        isStarting = true;
+        Debug.Log("[Server] 4명 레디 완료. 1초 후 게임 씬으로 이동합니다.");
+
+        // 지연 후 씬 전환 (코루틴 활용)
+        StartCoroutine(C_DelayedStart());
     }
     [Server]
     public IReadOnlyDictionary<int, UserInfoManager> GetAllPlayers()
     {
         return players;
+    }
+    private IEnumerator C_DelayedStart()
+    {
+        // AWS 지연을 고려하여 모든 클라이언트에게 레디 상태가 동기화될 시간을 줍니다.
+        yield return new WaitForSeconds(1.0f);
+
+        if (GameFlowManager.Instance != null)
+        {
+            GameFlowManager.Instance.StartGame(); // 여기서 ServerChangeScene 호출
+        }
     }
 }
