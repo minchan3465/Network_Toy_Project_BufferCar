@@ -78,6 +78,7 @@ public class SoundManager : NetworkBehaviour
     }
 
     // 모든 클라이언트에서 소리가 나오게 하는 곳
+    [ClientRpc]
     public void RpcPlaySFX(string clipName)
     {
         PlaySFXInternal(clipName);
@@ -108,7 +109,7 @@ public class SoundManager : NetworkBehaviour
     }
 
     //실제 재생하는 곳
-    private void PlaySFXInternal(string clipName)
+    public void PlaySFXInternal(string clipName)
     {
         SoundData data = sfxClips.Find(x => x.name == clipName);
         if (data == null) return;

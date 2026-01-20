@@ -103,7 +103,7 @@ public class PlayerCollision : NetworkBehaviour
     */
 
     //
-    //충돌로직2
+    //충돌로직1_2
     private void OnCollisionEnter(Collision collision)
     {
         if (!isOwned || isPushing) return;
@@ -117,29 +117,28 @@ public class PlayerCollision : NetworkBehaviour
 
             if (collision.gameObject.TryGetComponent(out NetworkIdentity targetIdentity))
             {
-                // 1. 방향 계산 (원래 로직 유지)
+                // 방향 계산
                 Vector3 dirToTarget = (collision.transform.position - transform.position);
                 dirToTarget.y = 0;
                 dirToTarget.Normalize();
 
-                // 2. 속도 보너스 (매우 미세하게 설정)
+                // 속도 보너스 (매우 미세하게 설정)
                 // magnitude를 사용하여 속도 비례 선형 증가 유도
                 float mySpeed = rb.linearVelocity.magnitude;
                 float targetSpeed = collision.gameObject.GetComponent<Rigidbody>().linearVelocity.magnitude;
 
-                // (내 속도 - 상대 속도)의 차이를 0~1 사이의 비율로 환산 (최대 속도 22 기준)
+                // (내 속도 - 상대 속도)의 차이를 0~1 사이의 비율로 환산
                 float speedDiff = Mathf.Max(0, mySpeed - targetSpeed);
                 // 22로 나누어 0~1 사이 값으로 만든 뒤 0.2를 곱함 (최대 20% 보너스 제한)
                 float attackerBonus = 1f + (speedDiff / 22f * 0.8f);
 
-                // 3. 최종 힘 계산
+                // 최종 힘 계산
                 // 기본 pushForce(19)에서 크게 벗어나지 않음 (최대 22~23 정도)
                 Vector3 forceToTarget = dirToTarget * pushForce * attackerBonus;
                 Vector3 forceToSelf = -dirToTarget * pushForce / attackerBonus;
 
                 ContactPoint contact = collision.GetContact(0);
 
-                // 선행 예측 적용
                 ApplyImpulseLocal(forceToSelf);
 
                 // 서버 전송
@@ -152,7 +151,7 @@ public class PlayerCollision : NetworkBehaviour
         if (rb == null) rb = GetComponent<Rigidbody>();
         rb.linearVelocity = Vector3.zero;
         rb.AddForce(force + Vector3.up * 3f, ForceMode.Impulse);
-        if (input != null) input.Enter(); // 조작 차단 로직
+        if (input != null) input.Enter(); // 조작 차단
     }
 
     [Command]
@@ -168,10 +167,7 @@ public class PlayerCollision : NetworkBehaviour
             this.lastPushTime = NetworkTime.time;
             targetCol.lastPushTime = NetworkTime.time;
 
-            // 호출자(connectionToClient)에게는 이미 선행 적용했으므로 전송 제외하고 상대에게만 Rpc
             targetCol.RpcApplyImpulse(forceToTarget);
-            // 나를 제외한 다른 사람들에게 내 위치 동기화를 위해 Rpc (선택 사항)
-            // RpcApplyImpulseExcludeOwner(forceToSelf); 
 
             RPCSoundandParticle(contactPoint, contactNormal);
 
@@ -179,7 +175,6 @@ public class PlayerCollision : NetworkBehaviour
             targetCol.Invoke(nameof(targetCol.ServerResetPushStatus), (float)pushCooldown);
         }
     }
-
     //
 
     [Server]
@@ -234,7 +229,7 @@ public class PlayerCollision : NetworkBehaviour
                 if (currentLifeTime > maxLifeTime) maxLifeTime = currentLifeTime;
             }
 
-            Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 1.5f);
+            Destroy(effect, maxLifeTime);
         }
     }
 
@@ -289,7 +284,7 @@ public class PlayerCollision : NetworkBehaviour
             Debug.Log("Deadzone Tag Detected!");
             if (res != null && res.isRespawning) return;
 
-            SoundManager.instance.RpcPlaySFX("Impact_MetalSFX");//충돌 사운드 호출
+            SoundManager.instance.RpcPlaySFX("Bomb Explosion");//폭발 사운드 호출
             PlayVibration(vpower, duration);//진동호출!
 
             if (rb != null)
@@ -308,7 +303,7 @@ public class PlayerCollision : NetworkBehaviour
     {
         // 0.1초대기
         // 이 시간 동안 서버는 ProcessPlayerFell을 실행하고 
-        // canRespawn = false 패킷을 클라이언트에 보냅니다.
+        // canRespawn = false 패킷을 클라이언트에 전송
         yield return new WaitForSeconds(0.1f);
 
         if (res != null)
@@ -363,8 +358,8 @@ public class PlayerCollision : NetworkBehaviour
                     maxLifeTime = currentLifeTime;
                 }
             }
-            // 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 삭제 (없으면 기본 3초)
-            Destroy(effect, maxLifeTime > 0 ? maxLifeTime : 3.0f);
+            // 가장 긴 파티클이 끝나는 시점에 부모 오브젝트 삭제
+            Destroy(effect, maxLifeTime);
         }
     }
     #endregion

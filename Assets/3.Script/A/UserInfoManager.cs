@@ -74,6 +74,17 @@ public class UserInfoManager : NetworkBehaviour
             DataManager.instance.playerInfo.PlayerNum = newV;
         RefreshUI();
     }
+    [ClientRpc]
+    public void RpcClearLobbyUI(int slotIndex)
+    {
+        if (lobbyUI == null) lobbyUI = FindAnyObjectByType<Lobby_UI_Controller>();
+        if (lobbyUI != null)
+        {
+            // 해당 슬롯을 초기 상태(Waiting...)로 되돌립니다.
+            lobbyUI.UpdateSlotText(slotIndex, "Waiting...", -1);
+            lobbyUI.UpdatePlayerFrameColor(slotIndex, false);
+        }
+    }
 
     // --- 서버 관련 로직 (기존 유지) ---
     public override void OnStartServer() => StartCoroutine(C_StartRegistry());

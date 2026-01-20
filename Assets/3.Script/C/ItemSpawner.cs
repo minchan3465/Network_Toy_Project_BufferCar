@@ -51,11 +51,7 @@ public class ItemSpawner : NetworkBehaviour
             Vector3 targetSpawnPos = CalculateSpawnPosition();
 
             // 2. 경고 단계: 해당 위치에서 소리 재생
-            if (SoundManager.instance != null)
-            {
-                // [수정] 매개변수 4개 (이름, 위치, 더미값, 볼륨배율)
-                SoundManager.instance.PlaySFXPoint("ItemDropSFX", targetSpawnPos, 1.0f, sfxVolume);
-            }
+            RpcPlaySpawnSound("ItemDropSFX");
             // (대기하는 동안 게임이 끝났을 수도 있으니 한 번 더 체크)
             if (GameManager.Instance == null || GameManager.Instance.isGameStart)
             {
@@ -107,5 +103,11 @@ public class ItemSpawner : NetworkBehaviour
             float ratio = MapShrinker.Instance.CurrentScaleRatio;
             Gizmos.DrawWireSphere(center, maxSpawnRadius * ratio);
         }
+    }
+    [ClientRpc]
+    private void RpcPlaySpawnSound(string name)
+    {
+        if (SoundManager.instance != null)
+            SoundManager.instance.PlaySFXInternal(name);
     }
 }
